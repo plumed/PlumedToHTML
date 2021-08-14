@@ -1,1 +1,34 @@
 # PlumedToHTML
+
+This is a Python implementation that allows you to generate pretified PLUMED input files that can be included in HTML documents.  These pretified inputs have the following features:
+
+* There is a badge that shows whether PLUMED is able to parse the input or not.
+* The names of actions are links to the corresponding pages in the PLUMED documentation.
+* When you hover over the keyword name a tooltip explains the meaning of that particular keyword.
+* If you click on the label for an action an explanation of that quantity that is stored in that label is given.  The way the quantity is used in the rest of the calculation is given.
+* There is an expand shortcuts button that shows how shortcuts are expanded to a collection of actions.  You can thus get insight into how methods are implemented in PLUMED.
+
+N.B. This script uses subprocess to call PLUMED __If you use this script PLUMED must be available in your path__
+
+# Documentation
+
+You can install this script by using the command:
+
+````
+pip install plumedToHTML
+````
+
+You can then use it within a python script by using the command:
+
+````
+from PlumedToHTML import get_html, get_html_header
+````
+
+The function `get_html` takes two arguments:
+
+* The first argument is a string that contains the PLUMED input you want to get the html for.
+* The second argument is a label that is used to refer to the input.  __If you have multiple PLUMED inputs on one page they all must have different labels__
+
+This function returns a string that contains the PLUMED input html to include in your page.
+
+The function `get_html_header` returns some javascript functions and css definitions that must be included in the header of the html page.  These functions and css instructions control how the PLUMED inputs appear.
