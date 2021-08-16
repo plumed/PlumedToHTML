@@ -10,9 +10,9 @@ setuptools.setup(
      author="Gareth Tribello",
      author_email="gareth.tribello@gmail.com",
      description="A package for creating pretified HTML for PLUMED files",
-     long_description=README,
+     long_description=long_description,
      long_description_content_type="text/markdown",
-     url="https://github.com/plumed/PlumedToHTML.git",
+     url="https://github.com/plumed/PlumedToHTML",
      packages=setuptools.find_packages(),
      classifiers=[
          "Programming Language :: Python :: 3",
