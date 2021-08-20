@@ -78,6 +78,19 @@ def get_html_header() :
        inputs work
     """
     codes = '<style>\n'
+    # Style for PLUMED inputs taken from Doxygen
+    codes += 'pre.fragment {\n'
+    codes += '    border: 1px solid #C4CFE5;\n'
+    codes += '    background-color: #FBFCFD;\n'
+    codes += '    padding: 4px 6px;\n'
+    codes += '    margin: 4px 8px 4px 2px;\n'
+    codes += '    overflow: auto;\n'
+    codes += '    word-wrap: break-word;\n'
+    codes += '    font-size:  9pt;\n'
+    codes += '    line-height: 125%;\n'
+    codes += '    font-family: monospace, fixed;\n'
+    codes += '    font-size: 105%;\n'
+    codes += '}\n'
     codes += '.tooltip {\n'
     codes += '    display:inline-block;\n'
     codes += '    position:relative;\n'
