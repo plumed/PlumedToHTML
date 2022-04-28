@@ -33,6 +33,8 @@ def get_html( inpt, name ) :
        inpt -- A string containing the PLUMED input file"
        name -- The name to use for this input in the html
     """
+
+    print("IN GET HTML", name )
     nreplicas, found_load, found_fill = 1, False, False
     # Find the settinngs for running this command and check that the input is complete
     for line in inpt.splitlines() :
@@ -42,6 +44,16 @@ def get_html( inpt, name ) :
         if "LOAD" in line : found_load = True
         if "__FILL__" in line : found_fill = True
  
+    # If we find the fill command then split up to find the solution
+    incomplete = ""
+    if found_fill :
+       insolution, complete = False, ""
+       for line in inpt.splitlines() :
+           if "#SOLUTION" in line : insolution=True
+           elif insolution : complete += line + "\n"
+           elif not insolution : incomplete += line + "\n"
+       inpt = complete
+
     # Write the plumed input to a file
     iff = open( name + ".dat", "w+")
     iff.write(inpt)
@@ -49,7 +61,7 @@ def get_html( inpt, name ) :
 
     # Run plumed to test code
     broken = False
-    if not found_load and not found_fill : 
+    if not found_load : 
         cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--full-input-ofile', name + '_long.dat']
         cmd = fix_mpi( nreplicas, cmd )
         plumed_out = subprocess.run(cmd, capture_output=True, text=True )
@@ -57,20 +69,24 @@ def get_html( inpt, name ) :
 
     # Create the lexer that will generate the pretty plumed input
     plumed_lexer = load_lexer_from_file("PlumedLexer.py", "PlumedLexer" )
-    plumed_formatter = load_formatter_from_file("PlumedLexer.py", "PlumedFormatter", keyword_file="plumed_dict.json" )
+    plumed_formatter = load_formatter_from_file("PlumedLexer.py", "PlumedFormatter", keyword_file="plumed_dict.json", input_name=name )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
-    if os.path.isfile( name + '_long.dat') : 
+    if found_fill :
+       html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
+       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>show solution</button></div>\n"
+    elif os.path.isfile( name + '_long.dat') : 
        html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
        html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
     else : html += '<div style="width: 90%; float:left" id="value_details_' + "inpt" + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
     if broken : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
-    elif found_fill : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-incomplete-yellow.svg" alt="tested on 2.7" /></div>\n'
     elif found_load : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
     else : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
     html += "</div>\n"
-    if os.path.isfile( name + '_long.dat') : 
+    if found_fill : 
+       html += highlight( inpt, plumed_lexer, plumed_formatter ) 
+    elif os.path.isfile( name + '_long.dat') : 
        "<div style=\"width: 100%; float:left\" id=\"input_"<<egname<<"\"></div>\n"
        # Write an extra pre to make sure the html after the example is put in the right place on the page
        html += "<pre style=\"width: 97%;\" class=\"fragment\"></pre>\n"

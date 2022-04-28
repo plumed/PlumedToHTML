@@ -58,8 +58,8 @@ class PlumedFormatter(Formatter):
         Formatter.__init__(self, **options) 
         # Retrieve the dictionary of keywords from the json
         with open(options["keyword_file"]) as f : self.keyword_dict = json.load(f)
-        self.divname="inpt"
-        self.egname="inpt"
+        self.divname=options["input_name"]
+        self.egname=options["input_name"]
 
     def format(self, tokensource, outfile):
         action, label, all_labels, keywords = "", "", [], [] 
