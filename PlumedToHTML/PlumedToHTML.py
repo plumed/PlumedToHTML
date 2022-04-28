@@ -34,7 +34,6 @@ def get_html( inpt, name ) :
        name -- The name to use for this input in the html
     """
 
-    print("IN GET HTML", name )
     nreplicas, found_load, found_fill = 1, False, False
     # Find the settinngs for running this command and check that the input is complete
     for line in inpt.splitlines() :
@@ -75,7 +74,7 @@ def get_html( inpt, name ) :
     html = '<div style="width: 100%; float:left">\n'
     if found_fill :
        html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
-       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>show solution</button></div>\n"
+       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
     elif os.path.isfile( name + '_long.dat') : 
        html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
        html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
@@ -85,9 +84,30 @@ def get_html( inpt, name ) :
     else : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
     html += "</div>\n"
     if found_fill : 
-       html += highlight( inpt, plumed_lexer, plumed_formatter ) 
+       # Create the div that the input will go inside
+       html += "<div style=\"width: 100%; float:left\" id=\"input_" + name + "\"></div>"
+       # Write an extra pre to make sure the html after the example is put in the right place on the page
+       html += "<pre style=\"width: 97%;\" class=\"fragment\"></pre>\n"
+       html += "<script type=\"text/javascript\">\n"
+       html += "if (window.addEventListener) { // Mozilla, Netscape, Firefox\n"
+       html += "    window.addEventListener('load', "+ name + "Load, false);\n"
+       html += "} else if (window.attachEvent) { // IE\n"
+       html += "    window.attachEvent('onload', " + name + "Load);\n"
+       html += "}\n"
+       html += "function " + name + "Load(event) {\n"
+       html += "       swapInput(\"" + name + "\");\n"
+       html += "}\n"
+       html += "</script>\n"
+       html += "<div style=\"display:none;\" id=\"" + name + "short\">\n"
+       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( incomplete, plumed_lexer, plumed_formatter )
+       html += "</div>\n"
+       html += "<div style=\"display:none;\" id=\"" + name + "long\">"
+       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( inpt, plumed_lexer, plumed_formatter )
     elif os.path.isfile( name + '_long.dat') : 
-       "<div style=\"width: 100%; float:left\" id=\"input_"<<egname<<"\"></div>\n"
+       # Create the div that the input will go inside
+       html += "<div style=\"width: 100%; float:left\" id=\"input_" + name + "\"></div>"
        # Write an extra pre to make sure the html after the example is put in the right place on the page
        html += "<pre style=\"width: 97%;\" class=\"fragment\"></pre>\n"
        html += "<script type=\"text/javascript\">\n"
