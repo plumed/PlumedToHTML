@@ -6,14 +6,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='PlumedToHTML',  
-     version='0.1',
-     scripts=['PlumedToHTML'] ,
+     version='0.2',
      author="Gareth Tribello",
      author_email="gareth.tribello@gmail.com",
      description="A package for creating pretified HTML for PLUMED files",
      long_description=long_description,
      long_description_content_type="text/markdown",
-     url="https://github.com/plumed/PlumedToHTML.git",
+     url="https://github.com/plumed/PlumedToHTML",
      packages=setuptools.find_packages(),
      classifiers=[
          "Programming Language :: Python :: 3",

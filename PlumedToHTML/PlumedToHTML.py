@@ -1,5 +1,8 @@
 import subprocess 
 import os
+from pygments import highlight
+from pygments.lexers import load_lexer_from_file
+from pygments.formatters import load_formatter_from_file, HtmlFormatter
 
 def fix_mpi( nreplicas, cmd ) :
     """
@@ -47,29 +50,56 @@ def get_html( inpt, name ) :
     # Run plumed to test code
     broken = False
     if not found_load and not found_fill : 
-        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49']
+        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--full-input-ofile', name + '_long.dat']
         cmd = fix_mpi( nreplicas, cmd )
         plumed_out = subprocess.run(cmd, capture_output=True, text=True )
         if "PLUMED error" in plumed_out.stdout : broken = True
 
-    # Run plumed code to generate html
-    cmd = ['plumed', 'gen_example', '--plumed', name + '.dat', '--out', name+'.html', '--name', name, '--status']
-    if found_load : cmd.append("loads")
-    elif found_fill : cmd.append("incomplete")
-    else : 
-       if broken : cmd.append("broken")
-       else : cmd.append("working")
-    cmd = fix_mpi( nreplicas, cmd ) 
-    pout = subprocess.run(cmd, capture_output=True )
+    # Create the lexer that will generate the pretty plumed input
+    plumed_lexer = load_lexer_from_file("PlumedLexer.py", "PlumedLexer" )
+    plumed_formatter = load_formatter_from_file("PlumedLexer.py", "PlumedFormatter", keyword_file="plumed_dict.json" )
 
-    # Read the html in as a string
-    of = open( name + ".html", 'r')
-    html = of.read()
-    of.close()
+    # Now generate html of input
+    html = '<div style="width: 100%; float:left">\n'
+    if os.path.isfile( name + '_long.dat') : 
+       html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
+       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
+    else : html += '<div style="width: 90%; float:left" id="value_details_' + "inpt" + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
+    if broken : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
+    elif found_fill : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-incomplete-yellow.svg" alt="tested on 2.7" /></div>\n'
+    elif found_load : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
+    else : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
+    html += "</div>\n"
+    if os.path.isfile( name + '_long.dat') : 
+       "<div style=\"width: 100%; float:left\" id=\"input_"<<egname<<"\"></div>\n"
+       # Write an extra pre to make sure the html after the example is put in the right place on the page
+       html += "<pre style=\"width: 97%;\" class=\"fragment\"></pre>\n"
+       html += "<script type=\"text/javascript\">\n"
+       html += "if (window.addEventListener) { // Mozilla, Netscape, Firefox\n"
+       html += "    window.addEventListener('load', "+ name + "Load, false);\n"
+       html += "} else if (window.attachEvent) { // IE\n"
+       html += "    window.attachEvent('onload', " + name + "Load);\n"
+       html += "}\n"
+       html += "function " + name + "Load(event) {\n"
+       html += "       swapInput(\"" + name + "\");\n"
+       html += "}\n"
+       html += "</script>\n"
+       html += "<div style=\"display:none;\" id=\"" + name + "short\">\n"
+       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( inpt, plumed_lexer, plumed_formatter )
+       html += "</div>\n"
+       html += "<div style=\"display:none;\" id=\"" + name + "long\">"
+       if2 = open( name + '_long.dat' )
+       inpt2 = if2.read()
+       if2.close()
+       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( inpt2, plumed_lexer, plumed_formatter )
+    else : 
+       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( inpt, plumed_lexer, plumed_formatter )
  
     # Remove the tempory files that we created
     os.remove(name + ".dat")
-    os.remove(name + ".html")
     return html
  
 def get_html_header() :
@@ -78,6 +108,19 @@ def get_html_header() :
        inputs work
     """
     codes = '<style>\n'
+    # Style for PLUMED inputs taken from Doxygen
+    codes += 'pre.fragment {\n'
+    codes += '    border: 1px solid #C4CFE5;\n'
+    codes += '    background-color: #FBFCFD;\n'
+    codes += '    padding: 4px 6px;\n'
+    codes += '    margin: 4px 8px 4px 2px;\n'
+    codes += '    overflow: auto;\n'
+    codes += '    word-wrap: break-word;\n'
+    codes += '    font-size:  9pt;\n'
+    codes += '    line-height: 125%;\n'
+    codes += '    font-family: monospace, fixed;\n'
+    codes += '    font-size: 105%;\n'
+    codes += '}\n'
     codes += '.tooltip {\n'
     codes += '    display:inline-block;\n'
     codes += '    position:relative;\n'
