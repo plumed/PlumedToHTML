@@ -115,7 +115,7 @@ class PlumedFormatter(Formatter):
             elif ttype==Keyword :
                # Name of action
                action = value.strip()
-               outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value + '</a>')
+               outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a> ')
           
         # Check if there is stuff to output for the last action in the file
         if "output" in self.keyword_dict[action] :
