@@ -78,7 +78,7 @@ def get_html( inpt, name ) :
     elif os.path.isfile( name + '_long.dat') : 
        html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
        html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
-    else : html += '<div style="width: 90%; float:left" id="value_details_' + "inpt" + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
+    else : html += '<div style="width: 90%; float:left" id="value_details_' + name + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
     if broken : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
     elif found_load : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
     else : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
