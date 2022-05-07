@@ -74,32 +74,20 @@ def get_html( inpt, name ) :
     html = '<div style="width: 100%; float:left">\n'
     if found_fill :
        html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
-       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onmouseup=\'swapInput(\"" + name + "\",\"up\")\' onmousedown=\'swapInput(\"" + name + "\",\"down\")\'>show solution</button></div>\n"
+       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'>show solution</button></div>\n"
     else : html += '<div style="width: 90%; float:left" id="value_details_' + name + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
     if broken : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
     elif found_load : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
     else : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
     html += "</div>\n"
     if found_fill : 
-       # Create the div that the input will go inside
-       html += "<div style=\"width: 100%; float:left\" id=\"input_" + name + "\"></div>"
-       # Write an extra pre to make sure the html after the example is put in the right place on the page
-       html += "<pre style=\"width: 97%;\" class=\"fragment\"></pre>\n"
-       html += "<script type=\"text/javascript\">\n"
-       html += "if (window.addEventListener) { // Mozilla, Netscape, Firefox\n"
-       html += "    window.addEventListener('load', "+ name + "Load, false);\n"
-       html += "} else if (window.attachEvent) { // IE\n"
-       html += "    window.attachEvent('onload', " + name + "Load);\n"
-       html += "}\n"
-       html += "function " + name + "Load(event) {\n"
-       html += "       swapInput(\"" + name + "\",\"up\");\n"
-       html += "}\n"
-       html += "</script>\n"
-       html += "<div style=\"display:none;\" id=\"" + name + "incomplete\">\n"
+       # This creates the input with the __FILL__ 
+       html += "<div id=\"" + name + "_short\">\n"
        # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( incomplete, plumed_lexer, plumed_formatter )
        html += "</div>\n"
-       html += "<div style=\"display:none;\" id=\"" + name + "solution\">"
+       # This is the solution with the commplete input
+       html += "<div style=\"display:none;\" id=\"" + name + "_long\">"
        # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( inpt, plumed_lexer, plumed_formatter )
     else : 
@@ -188,16 +176,6 @@ def get_html_header() :
     codes += '  var valueField = document.getElementById(valid);\n'
     codes += '  var dataField = document.getElementById(name);\n'
     codes += '  valueField.innerHTML = dataField.innerHTML;\n'
-    codes += '}\n'
-    codes += 'function swapInput(name,act) {\n'
-    codes += '  var mydiv = document.getElementById("input_" + name);\n'
-    codes += '  if( act=="down" ) {\n'
-    codes += '      var dataField = document.getElementById(name + "solution");\n'
-    codes += '      mydiv.innerHTML = dataField.innerHTML;\n'
-    codes += '  } else if( act=="up" ) {\n'
-    codes += '      var dataField = document.getElementById(name + "incomplete");\n'
-    codes += '      mydiv.innerHTML = dataField.innerHTML;\n'
-    codes += '  }\n'
     codes += '}\n'
     codes += 'function toggleDisplay(name) {\n'
     codes += '  var short_div = document.getElementById(name + "_short");\n'
