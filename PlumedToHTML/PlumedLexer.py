@@ -29,11 +29,11 @@ class PlumedLexer(RegexLexer):
          ],
         'root': [
             # Find the start of shortcuts
-            (r'#SHORTCUT.*?$',Comment.Special),
+            (r'#SHORTCUT.*?\r?\n',Comment.Special),
             # Find the middle of shortcuts
-            (r'#EXPANSION.*?$',Comment.Special),
+            (r'#EXPANSION.*?\r?\n',Comment.Special),
             # Find the end of shortcuts
-            (r'#ENDEXPANSION.*?$',Comment.Special),
+            (r'#ENDEXPANSION.*?\r?\n',Comment.Special),
             include('defaults'), 
             # Find label: ACTION
             (r'(\w+)(:\s+)(\S+\s)', bygroups(String, Text, Keyword)),
