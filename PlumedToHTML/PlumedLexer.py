@@ -28,6 +28,12 @@ class PlumedLexer(RegexLexer):
             (r'(\w+)(=)(\S+\s)', bygroups(Name.Attribute, Text, Generic))
          ],
         'root': [
+            # Find the start of shortcuts
+            (r'#SHORTCUT.*?$',Comment.Special),
+            # Find the middle of shortcuts
+            (r'#EXPANSION.*?$',Comment.Special),
+            # Find the end of shortcuts
+            (r'#ENDEXPANSION.*?$',Comment.Special),
             include('defaults'), 
             # Find label: ACTION
             (r'(\w+)(:\s+)(\S+\s)', bygroups(String, Text, Keyword)),
@@ -62,7 +68,7 @@ class PlumedFormatter(Formatter):
         self.egname=options["input_name"]
 
     def format(self, tokensource, outfile):
-        action, label, all_labels, keywords = "", "", [], [] 
+        action, label, all_labels, keywords, shortcut_state, shortcut_depth = "", "", [], [], 0, 0
         outfile.write('<pre style="width=97%;" class="fragment">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
@@ -84,6 +90,27 @@ class PlumedFormatter(Formatter):
             elif ttype==Literal :
                # __FILL__ for incomplete values
                outfile.write('<span style="background-color:yellow">__FILL__</span>')
+            elif ttype==Comment.Special :
+               # This handles the mechanisms for the expandable shortcuts
+               if "#SHORTCUT" in value :
+                  if shortcut_depth==0 and shortcut_state!=0 : ValueError("Found rogue #SHORTCUT")
+                  shortcut_state, shortcut_depth = 1, shortcut_depth + 1
+                  act_label = value.replace("#SHORTCUT","").strip()
+                  outfile.write('<span id="' + self.egname + act_label + '_short">')
+               elif "#ENDEXPANSION" in value :
+                  if shortcut_state!=2 : raise ValueError("Should only find #ENDEXPANSION tag after #EXPANSION tag")
+                  shortcut_depth = shortcut_depth - 1
+                  if shortcut_depth==0 : shortcut_state=0
+                  else : shortcut_state=1
+                  act_label = value.replace("#ENDEXPANSION","").strip()
+                  # Now output the end of the expansion
+                  outfile.write('<span style="color:blue" onclick=\'toggleDisplay("' + self.egname + act_label + '")\'>Click here to revert to the shortcut and to hide this expanded input</span></span>')
+               elif "#EXPANSION" in value :
+                  if shortcut_state!=1 : raise ValueError("Should only find #EXPANSION tag after #SHORTCUT tag")
+                  shortcut_state = 2
+                  act_label = value.replace("#EXPANSION","").strip()
+                  outfile.write('</span><span id="' + self.egname + act_label + '_long" style="display:none;">')
+               else : raise ValueError("Comment.Special should only catch string that are #SHORTCUT, #EXPANSION or #ENDEXPANSION")
             elif ttype==Generic:
                # whatever in KEYWORD=whatever (notice special treatment because we want to find labels so we can show paths)
                inputs, nocomma = value.split(","), True
@@ -115,7 +142,9 @@ class PlumedFormatter(Formatter):
             elif ttype==Keyword :
                # Name of action
                action = value.strip()
-               outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a> ')
+               if shortcut_state==1 :
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This is a shortcut so you can:</br><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
+               else : outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a> ')
           
         # Check if there is stuff to output for the last action in the file
         if "output" in self.keyword_dict[action] :
