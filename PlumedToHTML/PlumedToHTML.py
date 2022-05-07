@@ -74,10 +74,7 @@ def get_html( inpt, name ) :
     html = '<div style="width: 100%; float:left">\n'
     if found_fill :
        html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
-       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
-    elif os.path.isfile( name + '_long.dat') : 
-       html += '<div style=\"width: 80%; float:left\" id=\"value_details_' + name + '\"> Click on the labels of the actions for more information on what each action computes </div>\n'
-       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onclick=\'swapInput(\"" + name + "\")\'>contract shortcuts</button></div>\n"
+       html += "<div style=\"width: 10%; float:left\"><button type=\"button\" id=\"" + name + "_button\" onmouseup=\'swapInput(\"" + name + "\",\"up\")\' onmousedown=\'swapInput(\"" + name + "\",\"down\")\'>show solution</button></div>\n"
     else : html += '<div style="width: 90%; float:left" id="value_details_' + name + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
     if broken : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
     elif found_load : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
@@ -95,41 +92,16 @@ def get_html( inpt, name ) :
        html += "    window.attachEvent('onload', " + name + "Load);\n"
        html += "}\n"
        html += "function " + name + "Load(event) {\n"
-       html += "       swapInput(\"" + name + "\");\n"
+       html += "       swapInput(\"" + name + "\",\"up\");\n"
        html += "}\n"
        html += "</script>\n"
-       html += "<div style=\"display:none;\" id=\"" + name + "short\">\n"
+       html += "<div style=\"display:none;\" id=\"" + name + "incomplete\">\n"
        # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( incomplete, plumed_lexer, plumed_formatter )
        html += "</div>\n"
-       html += "<div style=\"display:none;\" id=\"" + name + "long\">"
+       html += "<div style=\"display:none;\" id=\"" + name + "solution\">"
        # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( inpt, plumed_lexer, plumed_formatter )
-    elif os.path.isfile( name + '_long.dat') : 
-       # Create the div that the input will go inside
-       html += "<div style=\"width: 100%; float:left\" id=\"input_" + name + "\"></div>"
-       # Write an extra pre to make sure the html after the example is put in the right place on the page
-       html += "<pre style=\"width: 97%;\" class=\"fragment\"></pre>\n"
-       html += "<script type=\"text/javascript\">\n"
-       html += "if (window.addEventListener) { // Mozilla, Netscape, Firefox\n"
-       html += "    window.addEventListener('load', "+ name + "Load, false);\n"
-       html += "} else if (window.attachEvent) { // IE\n"
-       html += "    window.attachEvent('onload', " + name + "Load);\n"
-       html += "}\n"
-       html += "function " + name + "Load(event) {\n"
-       html += "       swapInput(\"" + name + "\");\n"
-       html += "}\n"
-       html += "</script>\n"
-       html += "<div style=\"display:none;\" id=\"" + name + "short\">\n"
-       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
-       html += highlight( inpt, plumed_lexer, plumed_formatter )
-       html += "</div>\n"
-       html += "<div style=\"display:none;\" id=\"" + name + "long\">"
-       if2 = open( name + '_long.dat' )
-       inpt2 = if2.read()
-       if2.close()
-       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
-       html += highlight( inpt2, plumed_lexer, plumed_formatter )
     else : 
        # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( inpt, plumed_lexer, plumed_formatter )
@@ -217,16 +189,14 @@ def get_html_header() :
     codes += '  var dataField = document.getElementById(name);\n'
     codes += '  valueField.innerHTML = dataField.innerHTML;\n'
     codes += '}\n'
-    codes += 'function swapInput(name) {\n'
+    codes += 'function swapInput(name,act) {\n'
     codes += '  var btn = document.getElementById(name + "_button");\n'
     codes += '  var mydiv = document.getElementById("input_" + name);\n'
-    codes += '  if( btn.textContent=="expand shortcuts" ) {\n'
-    codes += '      btn.textContent = "contract shortcuts";\n'
-    codes += '      var dataField = document.getElementById(name + "long");\n'
+    codes += '  if( act=="down" ) {\n'
+    codes += '      var dataField = document.getElementById(name + "solution");\n'
     codes += '      mydiv.innerHTML = dataField.innerHTML;\n'
-    codes += '  } else if( btn.textContent=="contract shortcuts" ) {\n'
-    codes += '      btn.textContent = "expand shortcuts";\n'
-    codes += '      var dataField = document.getElementById(name + "short");\n'
+    codes += '  } else if( act=="up" ) {\n'
+    codes += '      var dataField = document.getElementById(name + "incomplete");\n'
     codes += '      mydiv.innerHTML = dataField.innerHTML;\n'
     codes += '  }\n'
     codes += '}\n'

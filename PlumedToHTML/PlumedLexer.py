@@ -36,7 +36,7 @@ class PlumedLexer(RegexLexer):
             # Find ACTION at start of line
             (r'^\s*\w+\s',Keyword),
             # Find FLAG anywhere on line
-            (r'\w+\s',Name.Attribute),
+            (r'\w+\b',Name.Attribute),
             # Find any left over white space
             (r'\s+',Text)
         ],
