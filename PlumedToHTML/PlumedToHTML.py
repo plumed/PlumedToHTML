@@ -61,10 +61,38 @@ def get_html( inpt, name ) :
     # Run plumed to test code
     broken = False
     if not found_load : 
-        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--full-input-ofile', name + '_long.dat']
+        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--shortcut-ofile', name + '_long.dat']
         cmd = fix_mpi( nreplicas, cmd )
         plumed_out = subprocess.run(cmd, capture_output=True, text=True )
         if "PLUMED error" in plumed_out.stdout : broken = True
+
+    # Copy the input to the final inpt that we will use for making the input
+    final_inpt = inpt
+    # Check for shortcut file and build the modified input to read the shortcuts
+    if os.path.exists( name + '_long.dat' ) :
+       # Read shortcut file
+       sfile, elines = open( name + '_long.dat', "r" ), ""
+       for line in sfile.read().splitlines() :
+           if "#ENDEXPANSION" in line : 
+               # Find where we need to stick this expansion in the inpt
+               incontinuation, parsedinpt = False, ""
+               for line in final_inpt.splitlines() :
+                   # Empty the buffer that holds the input for this line if we are not in a continuation
+                   if not incontinuation : elines = ""
+                   # Check for start and end of continuation
+                   if "..." in line and incontinuation : incontinuation=False
+                   elif "..." in line and not incontinuation : incontinuation=True
+                   # Build up everythign that forms part of input for one action
+                   elines += line + "\n"
+                   # Just continue if we don't have the full line
+                   if incontinuation : continue
+                   # Now output what is in the buffer
+                   parsedinpt += elines
+               # Set the final input equal to the input that has been adjusted 
+               final_inpt = parsedinpt
+           elif "#EXPANSION" in line : elines = ""
+           else : elines += line + "\n"
+       sfile.close()
 
     # Create the lexer that will generate the pretty plumed input
     plumed_lexer = load_lexer_from_file("PlumedLexer.py", "PlumedLexer" )
@@ -82,16 +110,16 @@ def get_html( inpt, name ) :
     if found_fill : 
        # This creates the input with the __FILL__ 
        html += "<div id=\"" + name + "_short\">\n"
-       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
+       # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( incomplete, plumed_lexer, plumed_formatter )
        html += "</div>\n"
        # This is the solution with the commplete input
        html += "<div style=\"display:none;\" id=\"" + name + "_long\">"
-       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
-       html += highlight( inpt, plumed_lexer, plumed_formatter )
+       # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( final_inpt, plumed_lexer, plumed_formatter )
     else : 
-       # html += highlight( inpt, plumed_lexer, HtmlFormatter() )
-       html += highlight( inpt, plumed_lexer, plumed_formatter )
+       # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
+       html += highlight( final_inpt, plumed_lexer, plumed_formatter )
  
     # Remove the tempory files that we created
     os.remove(name + ".dat")
