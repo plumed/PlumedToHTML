@@ -74,25 +74,36 @@ def get_html( inpt, name ) :
        sfile, elines = open( name + '_long.dat', "r" ), ""
        for line in sfile.read().splitlines() :
            if "#ENDEXPANSION" in line : 
+               # Get the label of the action that this shortcut is dealing with
+               label = line.replace("#ENDEXPANSION","").strip()
                # Find where we need to stick this expansion in the inpt
-               incontinuation, parsedinpt = False, ""
+               incontinuation, parsedinpt, clines = False, "", ""
                for line in final_inpt.splitlines() :
                    # Empty the buffer that holds the input for this line if we are not in a continuation
-                   if not incontinuation : elines = ""
+                   if not incontinuation : clines = ""
                    # Check for start and end of continuation
                    if "..." in line and incontinuation : incontinuation=False
                    elif "..." in line and not incontinuation : incontinuation=True
                    # Build up everythign that forms part of input for one action
-                   elines += line + "\n"
+                   clines += line + "\n"
                    # Just continue if we don't have the full line
                    if incontinuation : continue
-                   # Now output what is in the buffer
-                   parsedinpt += elines
+                   # Now stick in all the shortcut stuff if we find the appropriate label
+                   if "LABEL=" + label in clines or label + ":" in clines :
+                       parsedinpt += "#SHORTCUT " + label + "\n" + clines
+                       parsedinpt += "#EXPANSION " + label + "\n# PLUMED interprets the command:\n"
+                       for gline in clines.splitlines() : parsedinpt += "# " + gline + "\n"
+                       parsedinpt += "# as follows:\n" + elines 
+                       parsedinpt += "#ENDEXPANSION " + label + "\n"
+                   # Just output what is in the buffer if not the line we are looking for
+                   else : parsedinpt += clines
                # Set the final input equal to the input that has been adjusted 
                final_inpt = parsedinpt
            elif "#EXPANSION" in line : elines = ""
            else : elines += line + "\n"
        sfile.close()
+       # Remove the tempory files that we created
+       os.remove( name + "_long.dat")
 
     # Create the lexer that will generate the pretty plumed input
     plumed_lexer = load_lexer_from_file("PlumedLexer.py", "PlumedLexer" )
