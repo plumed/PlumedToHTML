@@ -30,6 +30,12 @@ class PlumedLexer(RegexLexer):
         'root': [
             # Find the start of shortcuts
             (r'#SHORTCUT.*?\r?\n',Comment.Special),
+            # Find the start of a shortcut with a nested default
+            (r'#NODEFAULT.*?\r?\n',Comment.Special),
+            # Find the start of a default section
+            (r'#DEFAULT.*?\r?\n',Comment.Special),
+            # Find the end of a default section
+            (r'#ENDDEFAULT.*?\r?\n',Comment.Special),
             # Find the middle of shortcuts
             (r'#EXPANSION.*?\r?\n',Comment.Special),
             # Find the end of shortcuts
@@ -68,7 +74,7 @@ class PlumedFormatter(Formatter):
         self.egname=options["input_name"]
 
     def format(self, tokensource, outfile):
-        action, label, all_labels, keywords, shortcut_state, shortcut_depth = "", "", [], [], 0, 0
+        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state = "", "", [], [], 0, 0, 0
         outfile.write('<pre style="width=97%;" class="fragment">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
@@ -92,7 +98,19 @@ class PlumedFormatter(Formatter):
                outfile.write('<span style="background-color:yellow">__FILL__</span>')
             elif ttype==Comment.Special :
                # This handles the mechanisms for the expandable shortcuts
-               if "#SHORTCUT" in value :
+               if "#NODEFAULT" in value :
+                  if default_state!=0 : ValueError("Found rogue #NODEFAULT")
+                  default_state, act_label = 1, value.replace("#NODEFAULT","").strip()
+                  outfile.write('<span id="' + self.egname + "def" + act_label + '_short">')
+               elif "#ENDDEFAULT" in value :
+                  if default_state!=2 : ValueError("Found rogue #ENDDEFAULT")
+                  act_label, default_state = value.replace("#ENDDEFAULT","").strip(), 0
+                  outfile.write('</span>')
+               elif "#DEFAULT" in value :
+                  if default_state!=1 : ValueError("Found rogue #DEFAULT")
+                  act_label, default_state = value.replace("#DEFAULT","").strip(), 2
+                  outfile.write('</span><span id="' + self.egname + "def" + act_label + '_long" style="display:none;">')
+               elif "#SHORTCUT" in value :
                   if shortcut_depth==0 and shortcut_state!=0 : ValueError("Found rogue #SHORTCUT")
                   shortcut_state, shortcut_depth = 1, shortcut_depth + 1
                   act_label = value.replace("#SHORTCUT","").strip()
@@ -142,7 +160,15 @@ class PlumedFormatter(Formatter):
             elif ttype==Keyword :
                # Name of action
                action = value.strip()
-               if shortcut_state==1 :
+               if shortcut_state==1 and default_state==1 :
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >show defaults</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
+               elif shortcut_state==1 and default_state==2 :
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >hide defaults</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
+               elif default_state==1 :
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >show defaults</a><i></i></div></div> ')
+               elif default_state==2 :
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >hide defaults</a><i></i></div></div> ')
+               elif shortcut_state==1 :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This is a shortcut so you can:</br><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
                else : outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a> ')
           

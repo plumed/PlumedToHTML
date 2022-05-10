@@ -71,13 +71,13 @@ def get_html( inpt, name ) :
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '_long.dat' ) :
        # Read shortcut file
-       sfile, elines = open( name + '_long.dat', "r" ), ""
+       sfile, elines, default, indefault = open( name + '_long.dat', "r" ), "", "", False
        for line in sfile.read().splitlines() :
            if "#ENDEXPANSION" in line : 
                # Get the label of the action that this shortcut is dealing with
                label = line.replace("#ENDEXPANSION","").strip()
                # Find where we need to stick this expansion in the inpt
-               incontinuation, parsedinpt, clines = False, "", ""
+               incontinuation, parsedinpt, clines = False, "", "" 
                for line in final_inpt.splitlines() :
                    # Empty the buffer that holds the input for this line if we are not in a continuation
                    if not incontinuation : clines = ""
@@ -90,7 +90,17 @@ def get_html( inpt, name ) :
                    if incontinuation : continue
                    # Now stick in all the shortcut stuff if we find the appropriate label
                    if "LABEL=" + label in clines or label + ":" in clines :
-                       parsedinpt += "#SHORTCUT " + label + "\n" + clines
+                       # Notice that we have different strings if there is a default nested in a shortcut 
+                       parsedinpt += "#SHORTCUT " + label + "\n" 
+                       if len(default)>0 : parsedinpt += "#NODEFAULT " + label + "\n" + clines
+                       else : parsedinpt += clines
+                       # Add long version with defaults to input 
+                       if len(default)>0 and "..." in clines : 
+                          alldat, bef = clines.split("\n"), ""
+                          for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
+                          parsedipt += "#DEFAULT " + label + "\n" + bef + default + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
+                       elif len(default)>0 : parsedinpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + default + "\n#ENDDEFAULT " + label + "\n"
+                       # Add stuff for long version of input in collapsible
                        parsedinpt += "#EXPANSION " + label + "\n# PLUMED interprets the command:\n"
                        for gline in clines.splitlines() : parsedinpt += "# " + gline + "\n"
                        parsedinpt += "# as follows:\n" + elines 
@@ -99,7 +109,40 @@ def get_html( inpt, name ) :
                    else : parsedinpt += clines
                # Set the final input equal to the input that has been adjusted 
                final_inpt = parsedinpt
+               # Clear the defaults so that we don't use them again with other actions
+               default = ""
+           elif "#ENDDEFAULTS" in line :
+               # Get the label of the action that this shortcut is dealing with
+               label = line.replace("#ENDDEFAULTS","").strip()
+               # Find where we need to stick this expansion in the inpt
+               incontinuation, parsedinpt, clines = False, "", ""
+               for line in final_inpt.splitlines() :
+                   # Empty the buffer that holds the input for this line if we are not in a continuation
+                   if not incontinuation : clines = ""
+                   # Check for start and end of continuation
+                   if "..." in line and incontinuation : incontinuation=False
+                   elif "..." in line and not incontinuation : incontinuation=True
+                   # Build up everythign that forms part of input for one action
+                   clines += line + "\n"
+                   # Just continue if we don't have the full line
+                   if incontinuation : continue
+                   # Now stick in all the default stuff if we find the appropriate label
+                   if "LABEL=" + label in clines or label + ":" in clines :
+                       parsedinpt += "#NODEFAULT " + label + "\n" + clines
+                       if len(default)>0 and "..." in clines :
+                          alldat, bef = clines.split("\n"), ""
+                          for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
+                          parsedinpt += "#DEFAULT " + label + "\n" + bef + default + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
+                       else : parsedinpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + default + "\n#ENDDEFAULT " + label + "\n" 
+                   else : parsedinpt += clines
+               # Set the final input equal to the input that has been adjusted 
+               final_inpt = parsedinpt
+               # Clear the defaults so that we don't use them again with other actions
+               indefault, default = False, "" 
+           elif "#ENDSDEFAULTS" in line : indefault = False 
+           elif "#SDEFAULTS" in line or "#DEFAULTS" in line : default, indefault = "", True 
            elif "#EXPANSION" in line : elines = ""
+           elif indefault : default = line 
            else : elines += line + "\n"
        sfile.close()
        # Remove the tempory files that we created
