@@ -51,7 +51,7 @@ jobs:
         # pick newest release branch (alphabetic, will fail at v2.10)
         # CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)" repo=$PWD/plumed2.git
         # GB: in addition, we install master version as plumed_master
-        CXX="mpic++" .ci/install.plumed version=tutorial-stuff suffix=_master repo=$PWD/plumed2.git
+        CXX="mpic++" .ci/install.plumed version=tutorial-stuff repo=$PWD/plumed2.git
         ccache -s
       
     - name: Install PlumedToHTML
