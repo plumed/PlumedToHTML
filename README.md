@@ -1,3 +1,6 @@
+[![CI](https://github.com/plumed/PlumedToHTML/actions/workflows/main.yml/badge.svg)](https://github.com/plumed/PlumedToHTML/actions/workflows/main.yml)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/plumed/PlumedToHTML.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/plumed/PlumedToHTML/alerts/)
+
 # PlumedToHTML
 
 This is a Python implementation that allows you to generate pretified PLUMED input files that can be included in HTML documents.  These pretified inputs have the following features:

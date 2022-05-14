@@ -62,3 +62,11 @@ jobs:
       run: |
         python --version
         python setup.py test
+
+    - name: Coverage
+      run: | 
+        pip install coverage
+        coverage run setup.py test
+
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v2  

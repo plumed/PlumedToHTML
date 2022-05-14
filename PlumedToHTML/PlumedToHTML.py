@@ -2,7 +2,9 @@ import subprocess
 import os
 from pygments import highlight
 from pygments.lexers import load_lexer_from_file
-from pygments.formatters import load_formatter_from_file, HtmlFormatter
+from pygments.formatters import load_formatter_from_file 
+# Uncomment this line if it is required for tests  
+# from pygments.formatters import HtmlFormatter
 
 def fix_mpi( nreplicas, cmd ) :
     """

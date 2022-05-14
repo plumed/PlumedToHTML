@@ -2,7 +2,6 @@ from unittest import TestCase
 
 import json
 import PlumedToHTML
-from lxml.html.diff import htmldiff
 
 class TestPlumedToHTML(TestCase):
    def testBasicOutput(self) :
