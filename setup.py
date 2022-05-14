@@ -19,4 +19,6 @@ setuptools.setup(
          "License :: Freely Distributable",
          "Operating System :: OS Independent",
      ],
+     test_suite='nose.collector',
+     tests_require=['nose'],
  )

@@ -98,7 +98,7 @@ def get_html( inpt, name ) :
                        if len(default)>0 and "..." in clines : 
                           alldat, bef = clines.split("\n"), ""
                           for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
-                          parsedipt += "#DEFAULT " + label + "\n" + bef + default + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
+                          parsedinpt += "#DEFAULT " + label + "\n" + bef + default + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
                        elif len(default)>0 : parsedinpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + default + "\n#ENDDEFAULT " + label + "\n"
                        # Add stuff for long version of input in collapsible
                        parsedinpt += "#EXPANSION " + label + "\n# PLUMED interprets the command:\n"
@@ -149,8 +149,10 @@ def get_html( inpt, name ) :
        os.remove( name + "_long.dat")
 
     # Create the lexer that will generate the pretty plumed input
-    plumed_lexer = load_lexer_from_file("PlumedLexer.py", "PlumedLexer" )
-    plumed_formatter = load_formatter_from_file("PlumedLexer.py", "PlumedFormatter", keyword_file="plumed_dict.json", input_name=name )
+    lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
+    plumed_lexer = load_lexer_from_file(lexerfile, "PlumedLexer" )
+    keyfile = os.environ['PLUMED_VIMPATH'] + "/../json/syntax.json"
+    plumed_formatter = load_formatter_from_file(lexerfile, "PlumedFormatter", keyword_file=keyfile, input_name=name )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
