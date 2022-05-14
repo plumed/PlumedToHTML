@@ -153,7 +153,10 @@ def get_html( inpt, name ) :
     # Create the lexer that will generate the pretty plumed input
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedLexer" )
-    keyfile = os.environ['PLUMED_VIMPATH'] + "/../json/syntax.json"
+    # Get the plumed syntax file
+    cmd = ['plumed', 'info', '--root']
+    plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
+    keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     plumed_formatter = load_formatter_from_file(lexerfile, "PlumedFormatter", keyword_file=keyfile, input_name=name )
 
     # Now generate html of input
