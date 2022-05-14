@@ -12,7 +12,7 @@ This is a Python implementation that allows you to generate pretified PLUMED inp
 * When you hover over the keyword name a tooltip explains the meaning of that particular keyword.
 * If you click on the label for an action an explanation of that quantity that is stored in that label is given.  The way the quantity is used in the rest of the calculation is given.
 * If shortcuts are used and actions read in things that do not appear in the input you have the option to see what actions are read in.  You can thus get insight into how methods are implemented in PLUMED.
-* If some action parameters are set to default values you have the option to see what the default values of these parameters are 
+* If some action has parameters that are set to default values you have the option to see what the default values of these parameters are. 
 
 N.B. This script uses subprocess to call PLUMED __If you use this script PLUMED must be available in your path__
 
