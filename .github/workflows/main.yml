@@ -46,7 +46,7 @@ jobs:
         sudo ln -s ccache /usr/local/bin/mpic++
         export PATH=/usr/lib/ccache:${PATH}
         ccache -s
-        .ci/install.libtorch
+        # .ci/install.libtorch
         # version=master or version=f123f12f3 to select a specific version
         # pick newest release branch (alphabetic, will fail at v2.10)
         # CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)" repo=$PWD/plumed2.git
