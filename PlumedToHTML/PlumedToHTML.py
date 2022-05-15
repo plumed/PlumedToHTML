@@ -44,8 +44,7 @@ def test_plumed( executible, filename, shortcutfile=[] ) :
        cmd.append('--shortcut-ofile')
        cmd.append(shortcutfile)
     plumed_out = subprocess.run(cmd, capture_output=True, text=True )
-    if "PLUMED: ERROR" in plumed_out.stdout : return True
-    return False
+    return plumed_out.returncode
 
 def get_html( inpt, name ) :
     """
