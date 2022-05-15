@@ -7,21 +7,40 @@ from pygments.formatters import load_formatter_from_file
 # Uncomment this line if it is required for tests  
 # from pygments.formatters import HtmlFormatter
 
-def fix_mpi( nreplicas, cmd ) :
+def test_plumed( executible, filename, shortcutfile=[] ) :
     """
-       Take a cmd string for plumed and mpi specifications if multiple replicas are being used
- 
-       Keywords argumnets:
-       npreplicas -- the number of replicas that are being used
-       cmd - a list containing the command to call plumed
+        Test if plumed can parse this input file
+
+        This function can be used to test if PLUMED can parse an input file.  It calls plumed using subprocess
+
+        Keyword arguments:
+        executible   -- A string that contains the command for running plumed
+        filename     -- A string that contains the name of the plumed input file to parse
+        shortcutfile -- The file on which to output the json file containing the expansed shortcuts.  If not present this is not output 
     """
+    # Read in the plumed inpt
+    nreplicas, ifile = 1, open( filename )
+    for line in ifile.readlines() :
+        if "#SETTINGS" in line :
+            for word in line.split() :
+                if "NREPLICAS=" in word : nreplicas = word.replace("NREPLICAS=","")
+        if "LOAD" in line : return True 
+    ifile.close()
+    cmd = [executible, 'driver', '--plumed', filename, '--natoms', '100000', '--parse-only', '--kt', '2.49']
+    # Add everything to ensure we can run with replicas if needs be
     if int(nreplicas)>1 :
        cmd.insert(0,nreplicas)
-       cmd.insert(0,"-np"), 
+       cmd.insert(0,"-np"),
        cmd.insert(0,"mpirun")
        cmd.append("--multi")
        cmd.append(nreplicas)
-    return cmd
+    # Add the shortcutfile output if the user has asked for it
+    if len(shortcutfile)>0 :
+       cmd.append('--shortcut-ofile')
+       cmd.append(shortcutfile)
+    plumed_out = subprocess.run(cmd, capture_output=True, text=True )
+    if "PLUMED error" in plumed_out.stdout : return True
+    return False
 
 def get_html( inpt, name ) :
     """
@@ -30,25 +49,19 @@ def get_html( inpt, name ) :
        The html representation of a PLUMED input file has tooltips that 
        tell you what the keywords represent, a badge that shows whether the input
        works and clickable labels that provide information about the quantities that 
-       are calculated.  This function called plumed using subprocess.
+       are calculated.  This function uses test_plumed to check if the plumed inpt can be parsed.
 
        Keyword arguments:
-       inpt -- A string containing the PLUMED input file"
+       inpt -- A string containing the PLUMED input"
        name -- The name to use for this input in the html
     """
-
-    nreplicas, found_load, found_fill = 1, False, False
-    # Find the settinngs for running this command and check that the input is complete
-    for line in inpt.splitlines() :
-        if "#SETTINGS" in line :
-            for word in line.split() :
-                if "NREPLICAS=" in word : nreplicas = word.replace("NREPLICAS=","")
-        if "LOAD" in line : found_load = True
-        if "__FILL__" in line : found_fill = True
+    
+    # Check if there is a LOAD command in the input
+    found_load = "LOAD " in inpt
  
-    # If we find the fill command then split up to find the solution
+    # If we find the fill command then split up the input file to find the solution
     incomplete = ""
-    if found_fill :
+    if "__FILL__" in inpt :
        insolution, complete = False, ""
        for line in inpt.splitlines() :
            if "#SOLUTION" in line : insolution=True
@@ -62,12 +75,7 @@ def get_html( inpt, name ) :
     iff.close()
 
     # Run plumed to test code
-    broken = False
-    if not found_load : 
-        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--shortcut-ofile', name + '.json']
-        cmd = fix_mpi( nreplicas, cmd )
-        plumed_out = subprocess.run(cmd, capture_output=True, text=True )
-        if "PLUMED error" in plumed_out.stdout : broken = True
+    if not found_load : broken = test_plumed( "plumed", name + ".dat", shortcutfile=name + '.json' )
 
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
@@ -95,11 +103,11 @@ def get_html( inpt, name ) :
     html += '<div style="width: 90%; float:left" id="value_details_' + name + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
     if broken : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
     elif found_load : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
-    elif found_fill : 
+    elif len(incomplete)>0 : 
       html += "<button style=\"width: 10%; float:left\" type=\"button\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'><img src=\"https://img.shields.io/badge/2.7-passing-green.svg\" alt=\"tested on 2.7\"/></button>\n"
     else : html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
     html += "</div>\n"
-    if found_fill : 
+    if len(incomplete)>0 : 
        # This creates the input with the __FILL__ 
        html += "<div id=\"" + name + "_short\">\n"
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
