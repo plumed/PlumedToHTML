@@ -59,6 +59,16 @@
          "input": "DISTANCE ATOMS=1,2 LABEL=d1",
          "index": 11,
          "output": "<div style=\"width: 100%; float:left\">\n<div style=\"width: 90%; float:left\" id=\"value_details_plinp11\"> Click on the labels of the actions for more information on what each action computes </div>\n<div style=\"width: 10%; float:left\"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg\" alt=\"tested on 2.7\" /></div>\n</div>\n<pre style=\"width=97%;\" class=\"fragment\">\n<a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">DISTANCE</a> <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=1,2 <div class=\"tooltip\">LABEL<div class=\"right\">a label for the action so that its output can be referenced in the input to other actions<i></i></div></div>=<b name=\"plinp11d1\" onclick='showPath(\"plinp11\",\"plinp11d1\")'>d1\n</b><span style=\"display:none;\" id=\"plinp11d1\">The DISTANCE action with label <b>d1</b> calculates a scalar quantity</span></pre></div>"
+      },
+      {
+         "input": "d1: DISTANCE",
+         "index": 12,
+         "output": "<div style=\"width: 100%; float:left\">\n<div style=\"width: 90%; float:left\" id=\"value_details_plinp12\"> Click on the labels of the actions for more information on what each action computes </div>\n<div style=\"width: 10%; float:left\"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg\" alt=\"tested on 2.7\" /></div>\n</div>\n<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"plinp12d1\" onclick='showPath(\"plinp12\",\"plinp12d1\")'>d1</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">DISTANCE</a> <span style=\"display:none;\" id=\"plinp12d1\">The DISTANCE action with label <b>d1</b> calculates a scalar quantity</span></pre></div>"
+      },
+      {
+         "input": "LOAD FILE=Distance2.cpp",
+         "index": 13,
+         "output": "<div style=\"width: 100%; float:left\">\n<div style=\"width: 90%; float:left\" id=\"value_details_plinp13\"> Click on the labels of the actions for more information on what each action computes </div>\n<div style=\"width: 10%; float:left\"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg\" alt=\"tested on 2.7\" /></div>\n</div>\n<pre style=\"width=97%;\" class=\"fragment\">\n<a href=\"https://www.plumed.org/doc-master/user-doc/html/_l_o_a_d.html\" style=\"color:green\">LOAD</a> <div class=\"tooltip\">FILE<div class=\"right\">file to be loaded<i></i></div></div>=Distance2.cpp\n</pre></div>"
       }
    ]
 }
