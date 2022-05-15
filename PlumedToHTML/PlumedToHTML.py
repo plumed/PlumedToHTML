@@ -1,5 +1,6 @@
 import subprocess 
 import os
+import json
 from pygments import highlight
 from pygments.lexers import load_lexer_from_file
 from pygments.formatters import load_formatter_from_file 
@@ -63,92 +64,22 @@ def get_html( inpt, name ) :
     # Run plumed to test code
     broken = False
     if not found_load : 
-        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--shortcut-ofile', name + '_long.dat']
+        cmd = ['plumed', 'driver', '--plumed', name + '.dat', '--natoms', '100000', '--parse-only', '--kt', '2.49','--shortcut-ofile', name + '.json']
         cmd = fix_mpi( nreplicas, cmd )
         plumed_out = subprocess.run(cmd, capture_output=True, text=True )
         if "PLUMED error" in plumed_out.stdout : broken = True
 
-    # Copy the input to the final inpt that we will use for making the input
-    final_inpt = inpt
     # Check for shortcut file and build the modified input to read the shortcuts
-    if os.path.exists( name + '_long.dat' ) :
-       # Read shortcut file
-       sfile, elines, default, indefault = open( name + '_long.dat', "r" ), "", "", False
-       for line in sfile.read().splitlines() :
-           if "#ENDEXPANSION" in line : 
-               # Get the label of the action that this shortcut is dealing with
-               label = line.replace("#ENDEXPANSION","").strip()
-               # Find where we need to stick this expansion in the inpt
-               incontinuation, parsedinpt, clines = False, "", "" 
-               for line in final_inpt.splitlines() :
-                   # Empty the buffer that holds the input for this line if we are not in a continuation
-                   if not incontinuation : clines = ""
-                   # Check for start and end of continuation
-                   if "..." in line and incontinuation : incontinuation=False
-                   elif "..." in line and not incontinuation : incontinuation=True
-                   # Build up everythign that forms part of input for one action
-                   clines += line + "\n"
-                   # Just continue if we don't have the full line
-                   if incontinuation : continue
-                   # Now stick in all the shortcut stuff if we find the appropriate label
-                   if "LABEL=" + label in clines or label + ":" in clines :
-                       # Notice that we have different strings if there is a default nested in a shortcut 
-                       parsedinpt += "#SHORTCUT " + label + "\n" 
-                       if len(default)>0 : parsedinpt += "#NODEFAULT " + label + "\n" + clines
-                       else : parsedinpt += clines
-                       # Add long version with defaults to input 
-                       if len(default)>0 and "..." in clines : 
-                          alldat, bef = clines.split("\n"), ""
-                          for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
-                          parsedinpt += "#DEFAULT " + label + "\n" + bef + default + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
-                       elif len(default)>0 : parsedinpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + default + "\n#ENDDEFAULT " + label + "\n"
-                       # Add stuff for long version of input in collapsible
-                       parsedinpt += "#EXPANSION " + label + "\n# PLUMED interprets the command:\n"
-                       for gline in clines.splitlines() : parsedinpt += "# " + gline + "\n"
-                       parsedinpt += "# as follows:\n" + elines 
-                       parsedinpt += "#ENDEXPANSION " + label + "\n"
-                   # Just output what is in the buffer if not the line we are looking for
-                   else : parsedinpt += clines
-               # Set the final input equal to the input that has been adjusted 
-               final_inpt = parsedinpt
-               # Clear the defaults so that we don't use them again with other actions
-               default = ""
-           elif "#ENDDEFAULTS" in line :
-               # Get the label of the action that this shortcut is dealing with
-               label = line.replace("#ENDDEFAULTS","").strip()
-               # Find where we need to stick this expansion in the inpt
-               incontinuation, parsedinpt, clines = False, "", ""
-               for line in final_inpt.splitlines() :
-                   # Empty the buffer that holds the input for this line if we are not in a continuation
-                   if not incontinuation : clines = ""
-                   # Check for start and end of continuation
-                   if "..." in line and incontinuation : incontinuation=False
-                   elif "..." in line and not incontinuation : incontinuation=True
-                   # Build up everythign that forms part of input for one action
-                   clines += line + "\n"
-                   # Just continue if we don't have the full line
-                   if incontinuation : continue
-                   # Now stick in all the default stuff if we find the appropriate label
-                   if "LABEL=" + label in clines or label + ":" in clines :
-                       parsedinpt += "#NODEFAULT " + label + "\n" + clines
-                       if len(default)>0 and "..." in clines :
-                          alldat, bef = clines.split("\n"), ""
-                          for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
-                          parsedinpt += "#DEFAULT " + label + "\n" + bef + default + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
-                       else : parsedinpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + default + "\n#ENDDEFAULT " + label + "\n" 
-                   else : parsedinpt += clines
-               # Set the final input equal to the input that has been adjusted 
-               final_inpt = parsedinpt
-               # Clear the defaults so that we don't use them again with other actions
-               indefault, default = False, "" 
-           elif "#ENDSDEFAULTS" in line : indefault = False 
-           elif "#SDEFAULTS" in line or "#DEFAULTS" in line : default, indefault = "", True 
-           elif "#EXPANSION" in line : elines = ""
-           elif indefault : default = line 
-           else : elines += line + "\n"
-       sfile.close()
+    if os.path.exists( name + '.json' ) :
+       # Read json file containing shortcuts
+       f = open( name + '.json' )
+       shortcutdata = json.load(f)
+       f.close()
+       # Put everything in to resolve the expansions.  We call this function recursively just in case there are shortcuts in shortcuts
+       final_inpt = resolve_expansions( inpt, shortcutdata )
        # Remove the tempory files that we created
-       os.remove( name + "_long.dat")
+       os.remove( name + ".json") 
+    else : final_inpt = inpt   
 
     # Create the lexer that will generate the pretty plumed input
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
@@ -186,6 +117,55 @@ def get_html( inpt, name ) :
     os.remove(name + ".dat")
     return html
  
+def resolve_expansions( inpt, jsondata ) :
+    # Stop expanding if we have reached the bottom 
+    if len(jsondata.keys())==0 : return inpt
+
+    incontinuation, final_inpt, clines = False, "", ""
+    for line in inpt.splitlines() :        
+        # Empty the buffer that holds the input for this line if we are not in a continuation
+        if not incontinuation : clines = ""
+        # Check for start and end of continuation
+        if "..." in line and incontinuation : incontinuation=False
+        elif "..." in line and not incontinuation : incontinuation=True
+        # Build up everythign that forms part of input for one action
+        clines += line + "\n"
+        # Just continue if we don't have the full line
+        if incontinuation : continue
+        # Find the label of this line if it has one
+        label = ""
+        if clines.find(":") : label = clines.split(":")[0]
+        elif clines.find("LABEL=") :
+           afterlab = clines[clines.index("LABEL=") + len("LABEL="):]
+           label = afterlab.split()[0]
+        if len(label)>0 and label in jsondata :
+           if "expansion" in jsondata[label] :
+              final_inpt += "#SHORTCUT " + label + "\n"
+              if "defaults" in jsondata[label] : final_inpt += "#NODEFAULT " + label + "\n" + clines
+              else : final_inpt += clines
+              # Add long version with defaults to input 
+              if "defaults" in jsondata[label] and "..." in clines :
+                 alldat, bef = clines.split("\n"), ""
+                 for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
+                 final_inpt += "#DEFAULT " + label + "\n" + bef + jsondata[label]["defaults"] + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
+              elif "defaults" in jsondata[label]  : final_inpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + jstondata[label]["defaults"] + "\n#ENDDEFAULT " + label + "\n"
+              # Add stuff for long version of input in collapsible
+              final_inpt += "#EXPANSION " + label + "\n# PLUMED interprets the command:\n"
+              for gline in clines.splitlines() : final_inpt += "# " + gline + "\n"
+              local_json = dict(jsondata[label]) 
+              local_json.pop("expansion", "defaults" )
+              final_inpt += "# as follows:\n" + resolve_expansions( jsondata[label]["expansion"], local_json )
+              final_inpt += "#ENDEXPANSION " + label + "\n"
+           elif "defaults" in jsondata[label] :
+              final_inpt += "#NODEFAULT " + label + "\n" + clines
+              if "defaults" in jsondata[label] and "..." in clines :
+                 alldat, bef = clines.split("\n"), ""
+                 for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
+                 final_inpt += "#DEFAULT " + label + "\n" + bef + jsondata[label]["defaults"] + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
+              elif "defaults" in jsondata[label]  : final_inpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + jsondata[label]["defaults"] + "\n#ENDDEFAULT " + label + "\n"
+        else : final_inpt += clines
+    return final_inpt
+
 def get_html_header() :
     """
        Get the information that needs to go in the header of the html file to make the interactive PLUMED
