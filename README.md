@@ -6,7 +6,7 @@
 # PlumedToHTML
 
 This is a Python implementation that allows you to generate pretified PLUMED input files that can be included in HTML documents.  These pretified inputs have the following features:
-
+ 
 * There is a badge that shows whether PLUMED is able to parse the input or not.
 * The names of actions are links to the corresponding pages in the PLUMED documentation.
 * When you hover over the keyword name a tooltip explains the meaning of that particular keyword.
