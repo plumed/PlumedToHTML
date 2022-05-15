@@ -17,6 +17,7 @@ class TestPlumedToHTML(TestCase):
                 out = PlumedToHTML.get_html( item["input"], "plinp" + str(item["index"]) )
                 print( "PARSING" )
                 print( item["input"] )
+                print( out )
                 self.assertTrue( out==item["output"] )
 
    def testHeader(self) :
