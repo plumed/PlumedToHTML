@@ -150,7 +150,7 @@ def resolve_expansions( inpt, jsondata ) :
         if "LABEL=" in clines :
            afterlab = clines[clines.index("LABEL=") + len("LABEL="):]
            label = afterlab.split()[0]
-        elif clines.find(":") : label = clines.split(":")[0]
+        elif clines.find(":") : label = clines.split(":")[0].strip()
         if len(label)>0 and label in jsondata :
            if "expansion" in jsondata[label] :
               final_inpt += "#SHORTCUT " + label + "\n"
@@ -161,7 +161,7 @@ def resolve_expansions( inpt, jsondata ) :
                  alldat, bef = clines.split("\n"), ""
                  for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
                  final_inpt += "#DEFAULT " + label + "\n" + bef + jsondata[label]["defaults"] + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
-              elif "defaults" in jsondata[label]  : final_inpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + jstondata[label]["defaults"] + "\n#ENDDEFAULT " + label + "\n"
+              elif "defaults" in jsondata[label]  : final_inpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + jsondata[label]["defaults"] + "\n#ENDDEFAULT " + label + "\n"
               # Add stuff for long version of input in collapsible
               final_inpt += "#EXPANSION " + label + "\n# PLUMED interprets the command:\n"
               for gline in clines.splitlines() : final_inpt += "# " + gline + "\n"
