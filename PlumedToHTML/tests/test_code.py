@@ -16,7 +16,7 @@ class TestPlumedToHTML(TestCase):
            with self.subTest(item=item):
                 out = PlumedToHTML.get_html( item["input"], "plinp" + str(item["index"]) )
                 print( item["input"] )
-                print( item["output"] )
+                print( out )
                 self.assertTrue( out==item["output"] )
 
    def testHeader(self) :
