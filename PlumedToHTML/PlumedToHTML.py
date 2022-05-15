@@ -71,7 +71,7 @@ def get_html( inpt, name ) :
 
     # Write the plumed input to a file
     iff = open( name + ".dat", "w+")
-    iff.write(inpt)
+    iff.write(inpt + "\n")
     iff.close()
 
     # Run plumed to test code
@@ -142,10 +142,10 @@ def resolve_expansions( inpt, jsondata ) :
         if incontinuation : continue
         # Find the label of this line if it has one
         label = ""
-        if clines.find(":") : label = clines.split(":")[0]
-        elif clines.find("LABEL=") :
+        if "LABEL=" in clines :
            afterlab = clines[clines.index("LABEL=") + len("LABEL="):]
            label = afterlab.split()[0]
+        elif clines.find(":") : label = clines.split(":")[0]
         if len(label)>0 and label in jsondata :
            if "expansion" in jsondata[label] :
               final_inpt += "#SHORTCUT " + label + "\n"
@@ -166,11 +166,11 @@ def resolve_expansions( inpt, jsondata ) :
               final_inpt += "#ENDEXPANSION " + label + "\n"
            elif "defaults" in jsondata[label] :
               final_inpt += "#NODEFAULT " + label + "\n" + clines
-              if "defaults" in jsondata[label] and "..." in clines :
+              if "..." in clines :
                  alldat, bef = clines.split("\n"), ""
                  for i in range(len(alldat)-2) : bef += alldat[i] + "\n"
                  final_inpt += "#DEFAULT " + label + "\n" + bef + jsondata[label]["defaults"] + "\n" + alldat[-2] + "\n#ENDDEFAULT " + label + "\n"
-              elif "defaults" in jsondata[label]  : final_inpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + jsondata[label]["defaults"] + "\n#ENDDEFAULT " + label + "\n"
+              else : final_inpt += "#DEFAULT " + label + "\n" + clines.strip() + " " + jsondata[label]["defaults"] + "\n#ENDDEFAULT " + label + "\n"
         else : final_inpt += clines
     return final_inpt
 
