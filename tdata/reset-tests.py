@@ -2,7 +2,7 @@ from PlumedToHTML import get_html
 import json
 
 # Open the json file and read it in
-f = open("tests/tests.json")
+f = open("tdata/tests.json")
 tests = json.load(f)
 f.close()
 
@@ -14,6 +14,6 @@ for item in tests["regtests"] :
     i = i + 1
 
 # Now output the json
-f = open("tests/tests.json", "w+")
+f = open("tdata/tests.json", "w+")
 f.write( json.dumps( tests, indent=3 ) )
 f.close()
