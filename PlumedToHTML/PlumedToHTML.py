@@ -45,8 +45,8 @@ def test_plumed( executible, filename, shortcutfile=[] ) :
        cmd.append(shortcutfile)
     print("BEFORE RUNN OF PLUMED WITH MPI POTENTIALLY")
     plumed_out = subprocess.run(cmd, capture_output=True, text=True )
-    print("STDOUT", plumed_out.stdout.decode() )
-    print("STDERR", plumed_out.stderr.decode() )
+    print("STDOUT", plumed_out.stdout )
+    print("STDERR", plumed_out.stderr )
     return plumed_out.returncode
 
 def get_html( inpt, name ) :
