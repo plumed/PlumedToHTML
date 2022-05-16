@@ -19,6 +19,18 @@
        {
           "input": "#SHORTCUT \n # The shortcut \n #EXPANSION \n # The expanded input \n #ENDEXPANSION\n",
           "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<span id=\"testout_short\"> <span style=\"color:blue\"># The shortcut </span>\n </span><span id=\"testout_long\" style=\"display:none;\"> <span style=\"color:blue\"># The expanded input </span>\n <span style=\"color:blue\" onclick='toggleDisplay(\"testout\")'>Click here to revert to the shortcut and to hide this expanded input</span></span></pre></div>"
+       },
+       {
+          "input": "__FILL__",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<span style=\"background-color:yellow\">__FILL__</span>\n</pre></div>"
+       },
+       {
+          "input": "d1: DISTANCE ATOMS=1,2 \nPRINT ARG=d1",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutd1\" onclick='showPath(\"testout\",\"testoutd1\")'>d1</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">DISTANCE</a> <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=1,2 \n<span style=\"display:none;\" id=\"testoutd1\">The DISTANCE action with label <b>d1</b> calculates a scalar quantity</span><a href=\"https://www.plumed.org/doc-master/user-doc/html/_p_r_i_n_t.html\" style=\"color:green\">PRINT</a> <div class=\"tooltip\">ARG<div class=\"right\">the input for this action is the scalar output from one or more other actions<i></i></div></div>=<b name=\"testoutd1\">d1\n</b></pre></div>"
+       },
+       {
+          "input": "p: POSITION ATOM=@replicas:{1,2}",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutp\" onclick='showPath(\"testout\",\"testoutp\")'>p</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_p_o_s_i_t_i_o_n.html\" style=\"color:green\">POSITION</a> <div class=\"tooltip\">ATOM<div class=\"right\">the atom number<i></i></div></div>=<div class=\"tooltip\">@replicas:<div class=\"right\">This flag is used in simulations with multiple replicas. The first replica uses the first value provided.  The second uses the second and so on.<i></i></div></div>{1,2}\n<span style=\"display:none;\" id=\"testoutp\">The POSITION action with label <b>p</b> calculates the following quantities:<table  align=\"center\" frame=\"void\" width=\"95%\" cellpadding=\"5%\"><tr><td width=\"5%\"><b> Quantity </b>  </td><td><b> Description </b> </td></tr><tr><td width=\"5%\">p.x</td><td>the x-component of the atom position</td></tr><tr><td width=\"5%\">p.y</td><td>the y-component of the atom position</td></tr><tr><td width=\"5%\">p.z</td><td>the z-component of the atom position</td></tr></table></span></pre></div>"
        }
    ]
 }
