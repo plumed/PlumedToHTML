@@ -22,10 +22,8 @@ class PlumedFormatter(Formatter):
                   # Reset everything for the new action
                   action, label, keywords = "", "", []
                # Check that a label has been given to actions that have output
-               elif len(label)==0 and ttype==Keyword :
-                  if "output" in self.keyword_dict[action] : raise Exception("action " + action + " has output but does not have label")
-                  # Reset everything as we are at the start of a new action that does not have any output
-                  else : action, label, keywords = "", "", [] 
+               elif len(label)==0 and ttype==Keyword and "output" in self.keyword_dict[action] : 
+                  raise Exception("action " + action + " has output but does not have label")
 
             if ttype==Text :
                # Non PLUMED stuff
