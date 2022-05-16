@@ -95,7 +95,8 @@ def get_html( inpt, name ) :
     cmd = ['plumed', 'info', '--root']
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
-    plumed_formatter = load_formatter_from_file(lexerfile, "PlumedFormatter", keyword_file=keyfile, input_name=name )
+    formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
