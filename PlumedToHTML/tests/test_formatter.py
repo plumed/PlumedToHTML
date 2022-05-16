@@ -28,5 +28,7 @@ class TestPlumedFormatter(TestCase):
                tokensource = list(PlumedLexer().get_tokens(item["input"]))
                output = StringIO() 
                f.format( tokensource, output )
-               print( output.getvalue() )
+               data = {}
+               data["out"] = output.getvalue()
+               print( json.dumps( data, indent=3 ) )
                self.assertTrue( output.getvalue()==item["output"] )
