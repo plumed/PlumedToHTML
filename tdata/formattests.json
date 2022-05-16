@@ -11,6 +11,14 @@
        {
           "input": "d1: DISTANCE ATOMS=1,2 COMPONENTS\n",
           "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutd1\" onclick='showPath(\"testout\",\"testoutd1\")'>d1</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">DISTANCE</a> <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=1,2 <div class=\"tooltip\">COMPONENTS<div class=\"right\"> calculate the x, y and z components of the distance separately and store them as label<i></i></div></div>\n<span style=\"display:none;\" id=\"testoutd1\">The DISTANCE action with label <b>d1</b> calculates the following quantities:<table  align=\"center\" frame=\"void\" width=\"95%\" cellpadding=\"5%\"><tr><td width=\"5%\"><b> Quantity </b>  </td><td><b> Description </b> </td></tr><tr><td width=\"5%\">d1.x</td><td>the x-component of the vector connecting the two atoms</td></tr><tr><td width=\"5%\">d1.y</td><td>the y-component of the vector connecting the two atoms</td></tr><tr><td width=\"5%\">d1.z</td><td>the z-component of the vector connecting the two atoms</td></tr></table></span></pre></div>"
+       },
+       {
+          "input": "#NODEFAULT \n # Without default \n #DEFAULT \n # With default \n #ENDDEFAULT\n",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<span id=\"testoutdef_short\"> <span style=\"color:blue\"># Without default </span>\n </span><span id=\"testoutdef_long\" style=\"display:none;\"> <span style=\"color:blue\"># With default </span>\n </span></pre></div>"
+       },
+       {
+          "input": "#SHORTCUT \n # The shortcut \n #EXPANSION \n # The expanded input \n #ENDEXPANSION\n",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<span id=\"testout_short\"> <span style=\"color:blue\"># The shortcut </span>\n </span><span id=\"testout_long\" style=\"display:none;\"> <span style=\"color:blue\"># The expanded input </span>\n <span style=\"color:blue\" onclick='toggleDisplay(\"testout\")'>Click here to revert to the shortcut and to hide this expanded input</span></span></pre></div>"
        }
    ]
 }
