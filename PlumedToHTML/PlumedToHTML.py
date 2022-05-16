@@ -29,24 +29,16 @@ def test_plumed( executible, filename, shortcutfile=[] ) :
     cmd = [executible, 'driver', '--plumed', filename, '--natoms', '100000', '--parse-only', '--kt', '2.49']
     # Add everything to ensure we can run with replicas if needs be
     if int(nreplicas)>1 :
-       # This is a crappy fudge to hopefully get tests with replicas -- I think PLUMED is not outputting the json file when it is run in parallel
-       if len(shortcutfile)>0 :
-          serialcmd = [executible, 'driver', '--plumed', filename, '--natoms', '100000', '--parse-only', '--kt', '2.49', '--shortcut-ofile', shortcutfile] 
-          plumed_out = subprocess.run(serialcmd, capture_output=True, text=True ) 
-       # This is the end of my crappy fudge
        cmd.insert(0,nreplicas)
        cmd.insert(0,"-np"),
        cmd.insert(0,"mpirun")
        cmd.append("--multi")
        cmd.append(nreplicas)
     # Add the shortcutfile output if the user has asked for it
-    elif len(shortcutfile)>0 :
+    if len(shortcutfile)>0 :
        cmd.append('--shortcut-ofile')
        cmd.append(shortcutfile)
-    print("BEFORE RUNN OF PLUMED WITH MPI POTENTIALLY")
     plumed_out = subprocess.run(cmd, capture_output=True, text=True )
-    print("STDOUT", plumed_out.stdout )
-    print("STDERR", plumed_out.stderr )
     return plumed_out.returncode
 
 def get_html( inpt, name ) :
