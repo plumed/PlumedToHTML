@@ -1,6 +1,6 @@
 from pygments.lexer import RegexLexer, bygroups, include
 from pygments.formatter import Formatter
-from pygments.token import *
+from pygments.token import Text, Comment, Literal, Keyword, Name, Generic, String
 import json
 
 class PlumedLexer(RegexLexer):
@@ -99,19 +99,19 @@ class PlumedFormatter(Formatter):
             elif ttype==Comment.Special :
                # This handles the mechanisms for the expandable shortcuts
                if "#NODEFAULT" in value :
-                  if default_state!=0 : ValueError("Found rogue #NODEFAULT")
+                  if default_state!=0 : raise ValueError("Found rogue #NODEFAULT")
                   default_state, act_label = 1, value.replace("#NODEFAULT","").strip()
                   outfile.write('<span id="' + self.egname + "def" + act_label + '_short">')
                elif "#ENDDEFAULT" in value :
-                  if default_state!=2 : ValueError("Found rogue #ENDDEFAULT")
+                  if default_state!=2 : raise ValueError("Found rogue #ENDDEFAULT")
                   act_label, default_state = value.replace("#ENDDEFAULT","").strip(), 0
                   outfile.write('</span>')
                elif "#DEFAULT" in value :
-                  if default_state!=1 : ValueError("Found rogue #DEFAULT")
+                  if default_state!=1 : raise ValueError("Found rogue #DEFAULT")
                   act_label, default_state = value.replace("#DEFAULT","").strip(), 2
                   outfile.write('</span><span id="' + self.egname + "def" + act_label + '_long" style="display:none;">')
                elif "#SHORTCUT" in value :
-                  if shortcut_depth==0 and shortcut_state!=0 : ValueError("Found rogue #SHORTCUT")
+                  if shortcut_depth==0 and shortcut_state!=0 : raise ValueError("Found rogue #SHORTCUT")
                   shortcut_state, shortcut_depth = 1, shortcut_depth + 1
                   act_label = value.replace("#SHORTCUT","").strip()
                   outfile.write('<span id="' + self.egname + act_label + '_short">')
