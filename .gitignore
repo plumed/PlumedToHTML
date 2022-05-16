@@ -1,3 +1,8 @@
 dist
 build
 *.egg-info
+.coverage
+.eggs
+.tox
+__pycache__
+coverage.xml
