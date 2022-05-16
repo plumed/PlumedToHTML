@@ -43,10 +43,10 @@ def test_plumed( executible, filename, shortcutfile=[] ) :
     elif len(shortcutfile)>0 :
        cmd.append('--shortcut-ofile')
        cmd.append(shortcutfile)
+    print("BEFORE RUNN OF PLUMED WITH MPI POTENTIALLY")
     plumed_out = subprocess.run(cmd, capture_output=True, text=True )
-    if int(nreplicas)>1 :
-       print("STDOUT", plumed_out.stdout.decode() )
-       print("STDERR", plumed_out.stderr.decode() )
+    print("STDOUT", plumed_out.stdout.decode() )
+    print("STDERR", plumed_out.stderr.decode() )
     return plumed_out.returncode
 
 def get_html( inpt, name ) :
