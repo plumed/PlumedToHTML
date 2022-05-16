@@ -1,0 +1,8 @@
+{
+   "regtests": [
+       {
+          "input": "# This is a comment\n",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<span style=\"color:blue\"># This is a comment</span>\n</pre></div>"
+       }
+   ]
+}

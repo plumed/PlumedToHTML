@@ -110,7 +110,7 @@ class PlumedFormatter(Formatter):
                else : outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a> ')
           
         # Check if there is stuff to output for the last action in the file
-        if "output" in self.keyword_dict[action] :
+        if action in self.keyword_dict and "output" in self.keyword_dict[action] :
            if len(label)==0 : raise Exception("action " + action + " has output but does not have label") 
            self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["output"] )
         outfile.write('</pre></div>')
