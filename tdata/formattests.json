@@ -3,6 +3,14 @@
        {
           "input": "# This is a comment\n",
           "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<span style=\"color:blue\"># This is a comment</span>\n</pre></div>"
+       },
+       {
+          "input": "d1: DISTANCE ATOMS=1,2\n",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutd1\" onclick='showPath(\"testout\",\"testoutd1\")'>d1</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">DISTANCE</a> <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=1,2\n<span style=\"display:none;\" id=\"testoutd1\">The DISTANCE action with label <b>d1</b> calculates a scalar quantity</span></pre></div>"
+       },
+       {
+          "input": "d1: DISTANCE ATOMS=1,2 COMPONENTS\n",
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutd1\" onclick='showPath(\"testout\",\"testoutd1\")'>d1</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">DISTANCE</a> <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=1,2 <div class=\"tooltip\">COMPONENTS<div class=\"right\"> calculate the x, y and z components of the distance separately and store them as label<i></i></div></div>\n<span style=\"display:none;\" id=\"testoutd1\">The DISTANCE action with label <b>d1</b> calculates the following quantities:<table  align=\"center\" frame=\"void\" width=\"95%\" cellpadding=\"5%\"><tr><td width=\"5%\"><b> Quantity </b>  </td><td><b> Description </b> </td></tr><tr><td width=\"5%\">d1.x</td><td>the x-component of the vector connecting the two atoms</td></tr><tr><td width=\"5%\">d1.y</td><td>the y-component of the vector connecting the two atoms</td></tr><tr><td width=\"5%\">d1.z</td><td>the z-component of the vector connecting the two atoms</td></tr></table></span></pre></div>"
        }
    ]
 }

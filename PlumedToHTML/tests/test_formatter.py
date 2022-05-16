@@ -28,4 +28,5 @@ class TestPlumedFormatter(TestCase):
                tokensource = list(PlumedLexer().get_tokens(item["input"]))
                output = StringIO() 
                f.format( tokensource, output )
+               print( output.getvalue() )
                self.assertTrue( output.getvalue()==item["output"] )
