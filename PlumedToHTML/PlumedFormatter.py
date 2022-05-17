@@ -30,7 +30,12 @@ class PlumedFormatter(Formatter):
                outfile.write( value )
             elif ttype==Literal :
                # __FILL__ for incomplete values
-               outfile.write('<span style="background-color:yellow">__FILL__</span>')
+               if( value=="__FILL__" ) : 
+                   outfile.write('<span style="background-color:yellow">__FILL__</span>')
+               # This is for vim syntax expression
+               elif "vim:" in value :
+                   outfile.write('<div class="tooltip" style="color:blue">' + value + '<div class="right">Enables syntax highlighting for PLUMED files in vim. See <a href="' + self.keyword_dict["vimlink"] + '"> here for more details. </a><i></i></div></div>')
+               else : raise ValueError("found invalid Literal in input " + value)
             elif ttype==Comment.Special :
                # This handles the mechanisms for the expandable shortcuts
                if "#NODEFAULT" in value :

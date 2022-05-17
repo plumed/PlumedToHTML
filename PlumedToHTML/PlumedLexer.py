@@ -38,6 +38,9 @@ class PlumedLexer(RegexLexer):
             (r'#EXPANSION.*?\r?\n',Comment.Special),
             # Find the end of shortcuts
             (r'#ENDEXPANSION.*?\r?\n',Comment.Special),
+            # Find vimsyntax expression
+            (r'#\s*vim:\s*ft=plumed',Literal),
+            # Include all the default stuff
             include('defaults'), 
             # Find label: ACTION
             (r'(\w+)(:\s+)(\S+\s)', bygroups(String, Text, Keyword)),
