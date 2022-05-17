@@ -34,7 +34,7 @@ class PlumedFormatter(Formatter):
                    outfile.write('<span style="background-color:yellow">__FILL__</span>')
                # This is for vim syntax expression
                elif "vim:" in value :
-                   outfile.write('<div class="tooltip" style="color:blue">' + value + '<div class="right">Enables syntax highlighting for PLUMED files in vim. See <a href="' + self.keyword_dict["vimlink"] + '"> here for more details. </a><i></i></div></div>')
+                   outfile.write('<div class="tooltip" style="color:blue">' + value + '<div class="right">Enables syntax highlighting for PLUMED files in vim. See <a href="' + self.keyword_dict["vimlink"] + '">here for more details. </a><i></i></div></div>')
                else : raise ValueError("found invalid Literal in input " + value)
             elif ttype==Comment.Special :
                # This handles the mechanisms for the expandable shortcuts
@@ -96,7 +96,7 @@ class PlumedFormatter(Formatter):
                outfile.write('<div class="tooltip">' + value + '<div class="right">' + self.keyword_dict[action][value.strip()].split('.')[0] + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
-               outfile.write('<div class="tooltip">' + value + '<div class="right">This flag is used in simulations with multiple replicas. The first replica uses the first value provided.  The second uses the second and so on.<i></i></div></div>')
+               outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
             elif ttype==Keyword :
                # Name of action
                action = value.strip()

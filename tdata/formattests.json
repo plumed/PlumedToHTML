@@ -30,7 +30,7 @@
        },
        {
           "input": "p: POSITION ATOM=@replicas:{1,2}",
-          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutp\" onclick='showPath(\"testout\",\"testoutp\")'>p</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_p_o_s_i_t_i_o_n.html\" style=\"color:green\">POSITION</a> <div class=\"tooltip\">ATOM<div class=\"right\">the atom number<i></i></div></div>=<div class=\"tooltip\">@replicas:<div class=\"right\">This flag is used in simulations with multiple replicas. The first replica uses the first value provided.  The second uses the second and so on.<i></i></div></div>{1,2}\n<span style=\"display:none;\" id=\"testoutp\">The POSITION action with label <b>p</b> calculates the following quantities:<table  align=\"center\" frame=\"void\" width=\"95%\" cellpadding=\"5%\"><tr><td width=\"5%\"><b> Quantity </b>  </td><td><b> Description </b> </td></tr><tr><td width=\"5%\">p.x</td><td>the x-component of the atom position</td></tr><tr><td width=\"5%\">p.y</td><td>the y-component of the atom position</td></tr><tr><td width=\"5%\">p.z</td><td>the z-component of the atom position</td></tr></table></span></pre></div>"
+          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutp\" onclick='showPath(\"testout\",\"testoutp\")'>p</b>: <a href=\"https://www.plumed.org/doc-master/user-doc/html/_p_o_s_i_t_i_o_n.html\" style=\"color:green\">POSITION</a> <div class=\"tooltip\">ATOM<div class=\"right\">the atom number<i></i></div></div>=<div class=\"tooltip\">@replicas:<div class=\"right\">This keyword specifies that different replicas have different values for this quantity.  See <a href=\"https://www.plumed.org/doc-master/user-doc/html/special-replica-syntax.html\">here for more details.</a><i></i></div></div>{1,2}\n<span style=\"display:none;\" id=\"testoutp\">The POSITION action with label <b>p</b> calculates the following quantities:<table  align=\"center\" frame=\"void\" width=\"95%\" cellpadding=\"5%\"><tr><td width=\"5%\"><b> Quantity </b>  </td><td><b> Description </b> </td></tr><tr><td width=\"5%\">p.x</td><td>the x-component of the atom position</td></tr><tr><td width=\"5%\">p.y</td><td>the y-component of the atom position</td></tr><tr><td width=\"5%\">p.z</td><td>the z-component of the atom position</td></tr></table></span></pre></div>"
        },
        {
          "input": "d1: DISTANCE ATOMS=1,2\n PRINT ARG=d1\n b: BIASVALUE ARG=d1 \n",
@@ -42,7 +42,7 @@
        },
        {
          "input": "# vim:ft=plumed",
-         "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<div class=\"tooltip\" style=\"color:blue\"># vim:ft=plumed<div class=\"right\">Enables syntax highlighting for PLUMED files in vim. See <a href=\"https://www.plumed.org/doc-master/user-doc/html/_vim_syntax.html\"> here for more details. </a><i></i></div></div>\n</pre></div>"
+         "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<div class=\"tooltip\" style=\"color:blue\"># vim:ft=plumed<div class=\"right\">Enables syntax highlighting for PLUMED files in vim. See <a href=\"https://www.plumed.org/doc-master/user-doc/html/_vim_syntax.html\">here for more details. </a><i></i></div></div>\n</pre></div>"
        }
    ]
 }
