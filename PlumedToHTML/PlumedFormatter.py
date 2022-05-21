@@ -80,6 +80,27 @@ class PlumedFormatter(Formatter):
                           break
                    if not nocomma : outfile.write(',')
                    if islab : outfile.write('<b name="' + self.egname + inpt.split('.')[0] + '">' + inp + '</b>')
+                   # Deal with atom selections
+                   elif "@" in inp :
+                     tooltip = "" 
+                     # Deal with residue
+                     if "-" in inp : 
+                         select, defs, residue = "", inp.split("-"), "" 
+                         if "_" in defs[1] : 
+                             resp = defs[1].split("_")
+                             residue = "residue " + resp[1] + " in chain " + resp[0]
+                         else : residue = "residue " + defs[1]  
+                         select = defs[0] + "-"
+                         tooltip = self.keyword_dict["groups"][select]["description"] + " " + residue
+                     # Deal with external libraries doing atom selections
+                     elif ":" in inp : 
+                         defs = inp.split(":")
+                         select = defs[0]+":"
+                         tooltip = self.keyword_dict["groups"][select]["description"]
+                     else : 
+                         select = inp.strip()
+                         tooltip = self.keyword_dict["groups"][select]["description"]
+                     outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + self.keyword_dict["groups"][select]["link"] + '">Click here</a> for more information. <i></i></div></div>') 
                    else : outfile.write( inp )
                    nocomma = False 
             elif ttype==String :
@@ -101,16 +122,16 @@ class PlumedFormatter(Formatter):
                # Name of action
                action = value.strip()
                if shortcut_state==1 and default_state==1 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >show defaults</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >show defaults</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div>')
                elif shortcut_state==1 and default_state==2 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >hide defaults</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >hide defaults</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div>')
                elif default_state==1 :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >show defaults</a><i></i></div></div> ')
                elif default_state==2 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >hide defaults</a><i></i></div></div> ')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right"><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\' >hide defaults</a><i></i></div></div>')
                elif shortcut_state==1 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This is a shortcut so you can:</br><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div> ')
-               else : outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a> ')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This is a shortcut so you can:</br><a href="' + self.keyword_dict[action]["hyperlink"] + '">open documentation</a></br><a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>expand shortcut</a><i></i></div></div>')
+               else : outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a>')
           
         # Check if there is stuff to output for the last action in the file
         if action in self.keyword_dict and "output" in self.keyword_dict[action] :

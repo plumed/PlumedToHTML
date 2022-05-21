@@ -15,7 +15,7 @@ class PlumedLexer(RegexLexer):
             # Deals with incomplete inputs 
             (r'__FILL__', Literal),  
             # Find LABEL=lab
-            (r'(LABEL)(=)(\S+\s)', bygroups(Name.Attribute, Text, String)),
+            (r'(LABEL)(=)(\S+\b)', bygroups(Name.Attribute, Text, String)),
             # Find special replica syntax with brackets
             (r'(\w+)(=)(@replicas:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
@@ -23,7 +23,7 @@ class PlumedLexer(RegexLexer):
             # Find KEYWORD with brackets around value
             (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever 
-            (r'(\w+)(=)(\S+\s)', bygroups(Name.Attribute, Text, Generic))
+            (r'(\w+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Generic))
          ],
         'root': [
             # Find the start of shortcuts
@@ -43,11 +43,11 @@ class PlumedLexer(RegexLexer):
             # Include all the default stuff
             include('defaults'), 
             # Find label: ACTION
-            (r'(\w+)(:\s+)(\S+\s)', bygroups(String, Text, Keyword)),
+            (r'(^\s*\w+)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Find ... for start of continuation
             (r'\.\.\.', Text, 'continuation'),
             # Find ACTION at start of line
-            (r'^\s*\w+\s',Keyword),
+            (r'^\s*\w+\b',Keyword),
             # Find FLAG anywhere on line
             (r'\w+\b',Name.Attribute),
             # Find any left over white space
