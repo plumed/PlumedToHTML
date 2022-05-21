@@ -17,7 +17,7 @@ class TestPlumedToHTML(TestCase):
                 out = PlumedToHTML.get_html( item["input"], "plinp" + str(item["index"]) )
                 print( item["input"] )
                 data = {}
-                data["out"] = output.getvalue()
+                data["out"] = out.getvalue()
                 print( json.dumps( data, indent=3 ) )
                 self.assertTrue( out==item["output"] )
 
