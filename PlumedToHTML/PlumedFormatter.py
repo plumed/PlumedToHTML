@@ -60,7 +60,6 @@ class PlumedFormatter(Formatter):
                   if shortcut_state!=2 : raise ValueError("Should only find #ENDEXPANSION tag after #EXPANSION tag")
                   shortcut_depth = shortcut_depth - 1
                   if shortcut_depth==0 : shortcut_state=0
-                  else : shortcut_state=1
                   act_label = value.replace("#ENDEXPANSION","").strip()
                   # Now output the end of the expansion
                   outfile.write('<span style="color:blue" onclick=\'toggleDisplay("' + self.egname + act_label + '")\'>Click here to revert to the shortcut and to hide this expanded input</span></span>')
