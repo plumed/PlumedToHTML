@@ -19,7 +19,7 @@ def test_plumed( executible, filename, shortcutfile=[] ) :
         shortcutfile -- The file on which to output the json file containing the expansed shortcuts.  If not present this is not output 
     """
     # Read in the plumed inpt
-    nreplicas, ifile = 1, open( filename )
+    nreplicas, ifile = 1, open( filename ) 
     for line in ifile.readlines() :
         if "#SETTINGS" in line :
             for word in line.split() :
@@ -57,6 +57,13 @@ def get_html( inpt, name ) :
     
     # Check if there is a LOAD command in the input
     found_load = "LOAD " in inpt
+
+    # Check for filename in settings.  Named files are used when we include files
+    filename, keepfile = name + ".dat", False
+    for line in inpt.splitlines() :
+        if "#SETTINGS" in line :
+           for word in line.split() : 
+               if "FILENAME=" in word : filename, keepfile = word.replace("FILENAME=",""), True
  
     # If we find the fill command then split up the input file to find the solution
     incomplete = ""
@@ -69,12 +76,18 @@ def get_html( inpt, name ) :
        inpt = complete
 
     # Write the plumed input to a file
-    iff = open( name + ".dat", "w+")
+    iff = open( filename, "w+")
     iff.write(inpt + "\n")
     iff.close()
 
+    # Check for include files
+    foundincludedfiles = True
+    if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( inpt, foundincludedfiles )
+
     # Run plumed to test code
-    if not found_load : broken = test_plumed( "plumed", name + ".dat", shortcutfile=name + '.json' )
+    if not found_load : 
+       if not foundincludedfiles : broken = True
+       else : broken = test_plumed( "plumed", filename, shortcutfile=name + '.json' )
 
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
@@ -125,9 +138,44 @@ def get_html( inpt, name ) :
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
  
     # Remove the tempory files that we created
-    os.remove(name + ".dat")
+    if not keepfile : os.remove(filename)
     return html
  
+def resolve_includes( inpt, foundfiles ) :
+    if not foundfiles or "INCLUDE" not in inpt : return foundfiles, inpt
+
+    incontinuation, final_inpt, clines = False, "", "" 
+    for line in inpt.splitlines() :
+        # Empty the buffer that holds the input for this line if we are not in a continuation
+        if not incontinuation : clines = ""
+        # Check for start and end of continuation
+        if "..." in line and incontinuation : incontinuation=False
+        elif "..." in line and not incontinuation : incontinuation=True
+        # Build up everythign that forms part of input for one action
+        clines += line + "\n"
+        # Just continue if we don't have the full line
+        if incontinuation : continue
+
+        # Now check if there is an include
+        if "INCLUDE" in clines :
+           # Split up the line 
+           filename = ""
+           for w in clines.split():
+               if "FILE=" in w : filename = w.replace("FILE=","") 
+           if filename=="" : raise Exception("could not find name of file to include")
+           if not os.path.exists(filename) : foundfiles = False 
+           f = open(filename, "r" )
+           include_contents = f.read()
+           f.close()
+           final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
+           final_inpt += "# " + clines+ "# ensures plumed loads the contents of the file called " + filename + "\n"
+           final_inpt += "# This file contains the following commands:\n" 
+           foundfiles, parsed_inpt = resolve_includes( include_contents, foundfiles )
+           final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
+        else : final_inpt += clines         
+    return foundfiles, final_inpt
+
+
 def resolve_expansions( inpt, jsondata ) :
     # Stop expanding if we have reached the bottom 
     if len(jsondata.keys())==0 : return inpt

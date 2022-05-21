@@ -27,7 +27,7 @@ class PlumedLexer(RegexLexer):
          ],
         'root': [
             # Find the start of shortcuts
-            (r'#SHORTCUT.*?\r?\n',Comment.Special),
+            (r'#SHORTCUT.*?\r?\n',Comment.Preproc),
             # Find the start of a shortcut with a nested default
             (r'#NODEFAULT.*?\r?\n',Comment.Special),
             # Find the start of a default section

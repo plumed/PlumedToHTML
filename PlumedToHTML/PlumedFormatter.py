@@ -15,7 +15,7 @@ class PlumedFormatter(Formatter):
         outfile.write('<pre style="width=97%;" class="fragment">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
-            if len(action)>0 and (ttype==String or ttype==Keyword) :
+            if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
                if ("output" not in self.keyword_dict[action] or len(label)>0) :  
                   # This outputs information on the values computed in the previous action for the header
                   if "output" in self.keyword_dict[action] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["output"] )
@@ -36,15 +36,16 @@ class PlumedFormatter(Formatter):
                elif "vim:" in value :
                    outfile.write('<div class="tooltip" style="color:blue">' + value + '<div class="right">Enables syntax highlighting for PLUMED files in vim. See <a href="' + self.keyword_dict["vimlink"] + '">here for more details. </a><i></i></div></div>')
                else : raise ValueError("found invalid Literal in input " + value)
-            elif ttype==Comment.Special :
+            elif ttype==Comment.Special or ttype==Comment.Preproc :
                # This handles the mechanisms for the expandable shortcuts
+               act_label=""
                if "#NODEFAULT" in value :
                   if default_state!=0 : raise ValueError("Found rogue #NODEFAULT")
                   default_state, act_label = 1, value.replace("#NODEFAULT","").strip()
                   outfile.write('<span id="' + self.egname + "def" + act_label + '_short">')
                elif "#ENDDEFAULT" in value :
                   if default_state!=2 : raise ValueError("Found rogue #ENDDEFAULT")
-                  act_label, default_state = value.replace("#ENDDEFAULT","").strip(), 0
+                  default_state = 0
                   outfile.write('</span>')
                elif "#DEFAULT" in value :
                   if default_state!=1 : raise ValueError("Found rogue #DEFAULT")
@@ -69,6 +70,10 @@ class PlumedFormatter(Formatter):
                   act_label = value.replace("#EXPANSION","").strip()
                   outfile.write('</span><span id="' + self.egname + act_label + '_long" style="display:none;">')
                else : raise ValueError("Comment.Special should only catch string that are #SHORTCUT, #EXPANSION or #ENDEXPANSION")
+               # This sets up the label at the start of a new block with NODEFAULT or SHORTCUT
+               if ttype==Comment.Preproc :
+                  if label!="" and label!=act_label : raise Exception("label for shortcut (" + act_label + ") doesn't match action label (" + label + ")")
+                  elif label=="" : label = act_label 
             elif ttype==Generic:
                # whatever in KEYWORD=whatever (notice special treatment because we want to find labels so we can show paths)
                inputs, nocomma = value.split(","), True
@@ -105,7 +110,8 @@ class PlumedFormatter(Formatter):
                    nocomma = False 
             elif ttype==String :
                # Labels of actions
-               label = value.strip() 
+               if label!="" and label!=value.strip() : raise Exception("label for is not what is expected")
+               elif label=="" : label = value.strip() 
                all_labels.append( label )
                outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '")\'>' + value + '</b>')
             elif ttype==Comment :
