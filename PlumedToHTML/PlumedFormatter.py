@@ -16,13 +16,13 @@ class PlumedFormatter(Formatter):
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
-               if ("output" not in self.keyword_dict[action] or len(label)>0) :  
+               if ("output" not in self.keyword_dict[action]["syntax"] or len(label)>0) :  
                   # This outputs information on the values computed in the previous action for the header
-                  if "output" in self.keyword_dict[action] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["output"] )
+                  if "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
                   # Reset everything for the new action
                   action, label, keywords = "", "", []
                # Check that a label has been given to actions that have output
-               elif len(label)==0 and ttype==Keyword and "output" in self.keyword_dict[action] : 
+               elif len(label)==0 and ttype==Keyword and "output" in self.keyword_dict[action]["syntax"] : 
                   raise Exception("action " + action + " has output but does not have label")
 
             if ttype==Text :
@@ -119,7 +119,7 @@ class PlumedFormatter(Formatter):
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
                keywords.append( value.strip() )
-               outfile.write('<div class="tooltip">' + value + '<div class="right">' + self.keyword_dict[action][value.strip()].split('.')[0] + '<i></i></div></div>')
+               outfile.write('<div class="tooltip">' + value + '<div class="right">' + self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0] + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
                outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
@@ -139,9 +139,9 @@ class PlumedFormatter(Formatter):
                else : outfile.write('<a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">' + value.strip() + '</a>')
           
         # Check if there is stuff to output for the last action in the file
-        if action in self.keyword_dict and "output" in self.keyword_dict[action] :
+        if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] :
            if len(label)==0 : raise Exception("action " + action + " has output but does not have label") 
-           self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["output"] )
+           self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
         outfile.write('</pre></div>')
 
     def writeValuesData( self, outfile, action, label, keywords, outdict ) :
