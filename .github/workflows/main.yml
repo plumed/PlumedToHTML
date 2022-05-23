@@ -58,7 +58,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
          name: json-syntax
-         path: plumed2/json
+         path: opt/lib/plumed/json
   
     - name: Install PlumedToHTML
       # And install the package
