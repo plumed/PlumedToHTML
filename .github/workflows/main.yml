@@ -54,6 +54,12 @@ jobs:
         CXX="mpic++" .ci/install.plumed version=tutorial-stuff repo=$PWD/plumed2.git
         ccache -s
       
+    - name: Copy json file so it can be downloaded
+      uses: actions/upload-artifact@v2
+      with:
+         name: json-syntax
+         path: $HOME/opt/lib/plumed/json
+  
     - name: Install PlumedToHTML
       # And install the package
       run: python setup.py install 
