@@ -8,7 +8,7 @@
 This is a Python implementation that allows you to generate pretified PLUMED input files that can be included in HTML documents.  These pretified inputs have the following features:
  
 * There is a badge that shows whether PLUMED is able to parse the input or not.
-* The names of actions are links to the corresponding pages in the PLUMED documentation.
+* When you hover over the names of actions tooltips appear to describe them that contain links to the corresponding pages in the PLUMED documentation.
 * When you hover over the keyword name a tooltip explains the meaning of that particular keyword.
 * If you click on the label for an action an explanation of that quantity that is stored in that label is given.  The way the quantity is used in the rest of the calculation is given.
 * If shortcuts are used and actions read in things that do not appear in the input you have the option to see what actions are read in by PLUMED.  You can thus get insight into how methods are implemented in PLUMED.
