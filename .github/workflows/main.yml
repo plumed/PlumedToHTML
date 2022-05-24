@@ -53,12 +53,17 @@ jobs:
         # GB: in addition, we install master version as plumed_master
         CXX="mpic++" .ci/install.plumed version=tutorial-stuff repo=$PWD/plumed2.git
         ccache -s
+
+    - name: Copy json syntax to directory to upload
+      run: |
+        mkdir json 
+        cp opt/lib/plumed/json/syntax.json json
       
-    - name: Copy json file so it can be downloaded
+    - name: Put json file so it can be downloaded
       uses: actions/upload-artifact@v2
       with:
          name: json-syntax
-         path: opt/lib/plumed/json
+         path: json
   
     - name: Install PlumedToHTML
       # And install the package
