@@ -57,7 +57,7 @@ jobs:
     - name: Copy json syntax to directory to upload
       run: |
         mkdir json 
-        cp opt/lib/plumed/json/syntax.json json
+        cp /home/runner/opt/lib/plumed/json/syntax.json json
       
     - name: Put json file so it can be downloaded
       uses: actions/upload-artifact@v2
