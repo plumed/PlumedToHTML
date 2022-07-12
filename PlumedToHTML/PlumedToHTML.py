@@ -1,13 +1,26 @@
 import subprocess 
 import os
+import re
 import json
+import pathlib
+import zipfile
+from contextlib import contextmanager
 from pygments import highlight
 from pygments.lexers import load_lexer_from_file
 from pygments.formatters import load_formatter_from_file 
 # Uncomment this line if it is required for tests  
 # from pygments.formatters import HtmlFormatter
 
-def test_plumed( executible, filename, shortcutfile=[] ) :
+@contextmanager
+def cd(newdir):
+    prevdir = os.getcwd()
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(prevdir)
+
+def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
     """
         Test if plumed can parse this input file
 
@@ -16,29 +29,62 @@ def test_plumed( executible, filename, shortcutfile=[] ) :
         Keyword arguments:
         executible   -- A string that contains the command for running plumed
         filename     -- A string that contains the name of the plumed input file to parse
+        header       -- A string to put at the top of the error page that is output
         shortcutfile -- The file on which to output the json file containing the expansed shortcuts.  If not present this is not output 
     """
+    # Get the information for running the code
+    run_folder = str(pathlib.PurePosixPath(filename).parent)
+    plumed_file = os.path.basename(filename)
     # Read in the plumed inpt
-    nreplicas, ifile = 1, open( filename ) 
+    nreplicas, natoms, ifile = 1, 10000, open( filename ) 
     for line in ifile.readlines() :
         if "#SETTINGS" in line :
             for word in line.split() :
                 if "NREPLICAS=" in word : nreplicas = word.replace("NREPLICAS=","")
+                elif "NATOMS=" in word : natoms = word.replace("NATOMS=","")
         if "LOAD" in line : return True 
     ifile.close()
-    cmd = [executible, 'driver', '--plumed', filename, '--natoms', '100000', '--parse-only', '--kt', '2.49']
+    cmd = [executible, 'driver', '--plumed', filename, '--natoms', str(natoms), '--parse-only', '--kt', '2.49']
     # Add everything to ensure we can run with replicas if needs be
-    if int(nreplicas)>1 :
-       cmd.insert(0,nreplicas)
-       cmd.insert(0,"-np"),
-       cmd.insert(0,"mpirun")
-       cmd.append("--multi")
-       cmd.append(nreplicas)
+    if int(nreplicas)>1 : cmd = ['mpirun', '-np', str(nreplicas)] + cmd + ['--multi', str(nreplicas)]
     # Add the shortcutfile output if the user has asked for it
-    if len(shortcutfile)>0 :
-       cmd.append('--shortcut-ofile')
-       cmd.append(shortcutfile)
-    plumed_out = subprocess.run(cmd, capture_output=True, text=True )
+    if len(shortcutfile)>0 : cmd = cmd + ['--shortcut-ofile', shortcutfile]
+    # raw std output - to be zipped
+    outfile=filename + "." + executible + ".stdout.txt"
+    # raw std error - to be zipped
+    errtxtfile=filename + "." + executible + ".stderr.txt"
+    # std error markdown page (with only the first 1000 lines of stderr.txt)
+    errfile=filename + "." + executible + ".stderr.md"
+    with open(outfile,"w") as stdout:
+        with open(errtxtfile,"w") as stderr:
+             with cd(run_folder):
+                 plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr )
+    # write header and preamble to errfile
+    with open(errfile,"w") as stderr:
+        if len(header)>0 : print(header,file=stderr)
+        print("Stderr for source: ",re.sub("^data/","",filename),"  ",file=stderr)
+        print("Download: [zipped raw stdout](" + plumed_file + "." + executible + ".stdout.txt.zip) - [zipped raw stderr](" + plumed_file + "." + executible + ".stderr.txt.zip) ",file=stderr)
+        print("{% raw %}\n<pre>",file=stderr)
+        # now we print the first 1000 lines of errtxtfile to errfile
+        with open(errtxtfile, "r") as stdtxterr:
+          # line counter
+          lc = 0
+          # print comment
+          print("#! Only the first 1000 rows of the error file are shown below", file=stderr)
+          print("#! To inspect the full error file, please download the zipped raw stderr file above", file=stderr)
+          while True:
+            lc += 1
+            # read line by line
+            line = stdtxterr.readline()
+            # if end of file or max number of lines reached, break
+            if(not line or lc>1000): break
+            # print line to stderr
+            print(line.strip(), file=stderr)
+          # close stderr
+          print("</pre>\n{% endraw %}",file=stderr)
+    # compress both outfile and errtxtfile
+    zip(outfile)
+    zip(errtxtfile)
     return plumed_out.returncode
 
 def get_html( inpt, name ) :
@@ -87,7 +133,7 @@ def get_html( inpt, name ) :
     # Run plumed to test code
     if not found_load : 
        if not foundincludedfiles : broken = True
-       else : broken = test_plumed( "plumed", filename, shortcutfile=name + '.json' )
+       else : broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
 
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
