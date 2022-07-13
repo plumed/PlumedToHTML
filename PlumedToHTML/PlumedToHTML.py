@@ -20,6 +20,40 @@ def cd(newdir):
     finally:
         os.chdir(prevdir)
 
+def test_and_get_html( inpt, name ) :
+    """
+        Test if the plumed input is broken and generate the html syntax
+
+        This function wraps test_plumed and get_html
+
+        Keyword arguments:
+        inpt -- A string containing the PLUMED input
+        name -- The name to use for this input in the html
+    """
+    # Check for LOAD command 
+    found_load = "LOAD " in inpt
+    # Check if this is to be included by another input
+    filename, keepfile = name + ".dat", False
+    for line in inpt.splitlines() :
+        if "#SETTINGS" in line :
+           for word in line.split() :
+               if "FILENAME=" in word : filename, keepfile = word.replace("FILENAME=",""), True
+    # Manage incomplete inputs
+    test_inpt, incomplete = manage_incomplete_inputs( inpt )
+    # Write the plumed input to a file
+    iff = open( filename, "w+")
+    iff.write(test_inpt + "\n")
+    iff.close()
+    # Now do the test
+    broken=False
+    if not found_load : broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
+    # Retrieve the html that is output by plumed
+    html = get_html( inpt, name, broken, "plumed" )
+    # Remove the tempory files that we created
+    if not keepfile : os.remove(filename)
+
+    return html
+
 def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
     """
         Test if plumed can parse this input file
@@ -87,7 +121,29 @@ def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
     zip(errtxtfile)
     return plumed_out.returncode
 
-def get_html( inpt, name ) :
+def manage_incomplete_inputs( inpt ) :
+   """
+      Managet the PLUMED input files for tutorials that should contain solution
+
+      In a tutorial you can create PLUMED input files with the instruction __FILL__
+      This tells the tutees they need to add something to that input in order to make the 
+      calculation work.  When you add these you should add a corrected input after the version
+      with __FILL__ and after the instruction #SOLUTION.  It is this completed input that will be 
+      tested
+
+      Keyword arguments:
+      inpt -- A string containing the incomplete and complete PLUMED inputs
+   """
+   if "__FILL__" in inpt :
+       insolution, complete, incomplete = False, "", ""
+       for line in inpt.splitlines() :
+           if "#SOLUTION" in line : insolution=True
+           elif insolution : complete += line + "\n"
+           elif not insolution : incomplete += line + "\n"
+       return complete, incomplete
+   return inpt, ""
+
+def get_html( inpt, name, broken, plumedexe ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -97,43 +153,21 @@ def get_html( inpt, name ) :
        are calculated.  This function uses test_plumed to check if the plumed inpt can be parsed.
 
        Keyword arguments:
-       inpt -- A string containing the PLUMED input"
+       inpt -- A string containing the PLUMED input
        name -- The name to use for this input in the html
+       broken -- The outcome of running test plumed on the input
+       plumedexe -- The plumed executible that should be used to create the input file annotations
     """
     
     # Check if there is a LOAD command in the input
     found_load = "LOAD " in inpt
-
-    # Check for filename in settings.  Named files are used when we include files
-    filename, keepfile = name + ".dat", False
-    for line in inpt.splitlines() :
-        if "#SETTINGS" in line :
-           for word in line.split() : 
-               if "FILENAME=" in word : filename, keepfile = word.replace("FILENAME=",""), True
  
     # If we find the fill command then split up the input file to find the solution
-    incomplete = ""
-    if "__FILL__" in inpt :
-       insolution, complete = False, ""
-       for line in inpt.splitlines() :
-           if "#SOLUTION" in line : insolution=True
-           elif insolution : complete += line + "\n"
-           elif not insolution : incomplete += line + "\n"
-       inpt = complete
-
-    # Write the plumed input to a file
-    iff = open( filename, "w+")
-    iff.write(inpt + "\n")
-    iff.close()
+    inpt, incomplete = manage_incomplete_inputs( inpt )
 
     # Check for include files
     foundincludedfiles = True
     if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( inpt, foundincludedfiles )
-
-    # Run plumed to test code
-    if not found_load : 
-       if not foundincludedfiles : broken = True
-       else : broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
 
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
@@ -151,7 +185,7 @@ def get_html( inpt, name ) :
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedLexer" )
     # Get the plumed syntax file
-    cmd = ['plumed', 'info', '--root']
+    cmd = [plumedexe, 'info', '--root']
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
@@ -182,9 +216,7 @@ def get_html( inpt, name ) :
     else : 
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
- 
-    # Remove the tempory files that we created
-    if not keepfile : os.remove(filename)
+
     return html
  
 def resolve_includes( inpt, foundfiles ) :
