@@ -36,7 +36,7 @@ def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
     run_folder = str(pathlib.PurePosixPath(filename).parent)
     plumed_file = os.path.basename(filename)
     # Read in the plumed inpt
-    nreplicas, natoms, ifile = 1, 10000, open( filename ) 
+    nreplicas, natoms, ifile = 1, 100000, open( filename ) 
     for line in ifile.readlines() :
         if "#SETTINGS" in line :
             for word in line.split() :
