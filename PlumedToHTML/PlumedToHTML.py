@@ -11,6 +11,12 @@ from pygments.formatters import load_formatter_from_file
 # Uncomment this line if it is required for tests  
 # from pygments.formatters import HtmlFormatter
 
+def zip(path):
+    """ Zip a path removing the original file """
+    with zipfile.ZipFile(path + ".zip", "w") as f_out:
+        f_out.write(path)
+    os.remove(path)
+
 @contextmanager
 def cd(newdir):
     prevdir = os.getcwd()
