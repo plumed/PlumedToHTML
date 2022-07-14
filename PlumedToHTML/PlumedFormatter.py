@@ -152,7 +152,7 @@ class PlumedFormatter(Formatter):
         if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] :
            if len(label)==0 : raise Exception("action " + action + " has output but does not have label") 
            self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
-        outfile.write('</pre></div>')
+        outfile.write('</pre>')
 
     def writeValuesData( self, outfile, action, label, keywords, outdict ) :
         # Some header stuff 

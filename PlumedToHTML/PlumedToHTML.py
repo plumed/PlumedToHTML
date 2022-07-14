@@ -219,6 +219,7 @@ def get_html( inpt, name, broken, plumedexe ) :
        html += "<div style=\"display:none;\" id=\"" + name + "_long\">"
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
+       html += '</div>\n'
     else : 
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
