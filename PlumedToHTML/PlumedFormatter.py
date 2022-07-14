@@ -119,7 +119,15 @@ class PlumedFormatter(Formatter):
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
                keywords.append( value.strip() )
-               outfile.write('<div class="tooltip">' + value + '<div class="right">' + self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0] + '<i></i></div></div>')
+               if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0]
+               else :
+                  # This deals with numbered keywords
+                  foundkey=False
+                  for kkkk in self.keyword_dict[action]["syntax"] :
+                      if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
+                      if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk]["description"].split('.')[0]
+                  if not foundkey : raise Exception("keyword " + value.strip() + " is not in syntax for action " + action )
+               outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
                outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
