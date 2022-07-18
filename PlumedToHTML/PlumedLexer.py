@@ -26,6 +26,7 @@ class PlumedLexer(RegexLexer):
             (r'(\w+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Generic))
          ],
         'root': [
+            (r'(^\s*ENDPLUMED)((?s).*\Z)', bygroups(Keyword, Comment)),
             # Find the start of shortcuts
             (r'#SHORTCUT.*?\r?\n',Comment.Preproc),
             # Find the start of a shortcut with a nested default
