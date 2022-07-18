@@ -43,7 +43,7 @@ class PlumedLexer(RegexLexer):
             # Include all the default stuff
             include('defaults'), 
             # Find label: ACTION
-            (r'(^.*\w+)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
+            (r'(^\s*.+)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Find ... for start of continuation
             (r'\.\.\.', Text, 'continuation'),
             # Find ACTION at start of line
