@@ -86,7 +86,7 @@ class PlumedFormatter(Formatter):
                    if islab : outfile.write('<b name="' + self.egname + inpt.split('.')[0] + '">' + inp + '</b>')
                    # Deal with atom selections
                    elif "@" in inp :
-                     tooltip = "" 
+                     tooltip, link = "", "" 
                      # Deal with residue
                      if "-" in inp : 
                          select, defs, residue = "", inp.split("-"), "" 
@@ -95,19 +95,19 @@ class PlumedFormatter(Formatter):
                              residue = "residue " + resp[1] + " in chain " + resp[0]
                          else : residue = "residue " + defs[1]  
                          select = defs[0] + "-"
-                         if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                         tooltip = self.keyword_dict["groups"][select]["description"] + " " + residue
+                         if select not in self.keyword_dict["groups"] : tooltip, link = "the " + defs[0] + " atom in " + residue, self.keyword_dict["groups"]["@protein"]["link"]
+                         else : tooltip, link = self.keyword_dict["groups"][select]["description"] + " " + residue, self.keyword_dict["groups"][select]["link"]
                      # Deal with external libraries doing atom selections
                      elif ":" in inp : 
                          defs = inp.split(":")
                          select = defs[0]+":"
                          if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                         tooltip = self.keyword_dict["groups"][select]["description"]
+                         tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
                      else : 
                          select = inp.strip()
                          if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                         tooltip = self.keyword_dict["groups"][select]["description"]
-                     outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + self.keyword_dict["groups"][select]["link"] + '">Click here</a> for more information. <i></i></div></div>') 
+                         tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
+                     outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
                    else : outfile.write( inp )
                    nocomma = False 
             elif ttype==String :
