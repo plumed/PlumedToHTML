@@ -9,14 +9,18 @@ class PlumedFormatter(Formatter):
         with open(options["keyword_file"]) as f : self.keyword_dict = json.load(f)
         self.divname=options["input_name"]
         self.egname=options["input_name"]
+        self.hasload=options["hasload"]
 
     def format(self, tokensource, outfile):
-        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state = "", "", [], [], 0, 0, 0
+        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips = "", "", [], [], 0, 0, 0, False
         outfile.write('<pre style="width=97%;" class="fragment">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
-               if ("output" not in self.keyword_dict[action]["syntax"] or len(label)>0) :  
+               if notooltips : 
+                  # Reset everything for the new action
+                  action, label, keywords, notooltips = "", "", [], False
+               elif ("output" not in self.keyword_dict[action]["syntax"] or len(label)>0) :  
                   # This outputs information on the values computed in the previous action for the header
                   if "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
                   # Reset everything for the new action
@@ -95,7 +99,7 @@ class PlumedFormatter(Formatter):
                              residue = "residue " + resp[1] + " in chain " + resp[0]
                          else : residue = "residue " + defs[1]  
                          select = defs[0] + "-"
-                         if select not in self.keyword_dict["groups"] : tooltip, link = "the " + defs[0] + " atom in " + residue, self.keyword_dict["groups"]["@protein"]["link"]
+                         if select not in self.keyword_dict["groups"] : tooltip, link = "the " + defs[0][1:] + " atom in " + residue, self.keyword_dict["groups"]["@protein"]["link"]
                          else : tooltip, link = self.keyword_dict["groups"][select]["description"] + " " + residue, self.keyword_dict["groups"][select]["link"]
                      # Deal with external libraries doing atom selections
                      elif ":" in inp : 
@@ -122,23 +126,30 @@ class PlumedFormatter(Formatter):
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
                keywords.append( value.strip() )
-               if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0]
+               if notooltips :
+                  outfile.write( value.strip() )
                else :
-                  # This deals with numbered keywords
-                  foundkey=False
-                  for kkkk in self.keyword_dict[action]["syntax"] :
-                      if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
-                      if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk]["description"].split('.')[0]
-                  if not foundkey : raise Exception("keyword " + value.strip() + " is not in syntax for action " + action )
-               outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
+                  if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0]
+                  else :
+                     # This deals with numbered keywords
+                     foundkey=False
+                     for kkkk in self.keyword_dict[action]["syntax"] :
+                         if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
+                         if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk]["description"].split('.')[0]
+                     if not notooltips and not foundkey : raise Exception("keyword " + value.strip() + " is not in syntax for action " + action )
+                  outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
                outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
             elif ttype==Keyword :
                # Name of action
-               action = value.strip()
-               if action not in self.keyword_dict : raise Exception("no action " + action + " in dictionary")
-               if shortcut_state==1 and default_state==1 :
+               action, notooltips = value.strip(), False
+               if action not in self.keyword_dict : 
+                  if self.hasload : notooltips = True
+                  else : raise Exception("no action " + action + " in dictionary")
+               if notooltips :
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This action is not part of PLUMED and was included by using a LOAD command <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>') 
+               elif shortcut_state==1 and default_state==1 :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and it has <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>hidden defaults</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>') 
                elif shortcut_state==1 and default_state==2 :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and uses the <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>defaults shown here</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
@@ -151,7 +162,6 @@ class PlumedFormatter(Formatter):
                     else : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                else :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>')
-          
         # Check if there is stuff to output for the last action in the file
         if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] :
            if len(label)==0 : raise Exception("action " + action + " has output but does not have label") 

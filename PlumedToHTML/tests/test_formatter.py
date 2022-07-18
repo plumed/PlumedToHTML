@@ -20,7 +20,7 @@ class TestPlumedFormatter(TestCase):
        keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
 
        # Setup a plumed formatter
-       f = PlumedFormatter( keyword_file=keyfile, input_name="testout" )
+       f = PlumedFormatter( keyword_file=keyfile, input_name="testout", hasload=False )
 
        # Now run over all the inputs in the json
        for item in tests["regtests"] :
