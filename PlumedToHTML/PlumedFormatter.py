@@ -95,14 +95,17 @@ class PlumedFormatter(Formatter):
                              residue = "residue " + resp[1] + " in chain " + resp[0]
                          else : residue = "residue " + defs[1]  
                          select = defs[0] + "-"
+                         if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
                          tooltip = self.keyword_dict["groups"][select]["description"] + " " + residue
                      # Deal with external libraries doing atom selections
                      elif ":" in inp : 
                          defs = inp.split(":")
                          select = defs[0]+":"
+                         if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
                          tooltip = self.keyword_dict["groups"][select]["description"]
                      else : 
                          select = inp.strip()
+                         if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
                          tooltip = self.keyword_dict["groups"][select]["description"]
                      outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + self.keyword_dict["groups"][select]["link"] + '">Click here</a> for more information. <i></i></div></div>') 
                    else : outfile.write( inp )
@@ -134,6 +137,7 @@ class PlumedFormatter(Formatter):
             elif ttype==Keyword :
                # Name of action
                action = value.strip()
+               if action not in self.keyword_dict : raise Exception("no action " + action + " in dictionary")
                if shortcut_state==1 and default_state==1 :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and it has <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>hidden defaults</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>') 
                elif shortcut_state==1 and default_state==2 :

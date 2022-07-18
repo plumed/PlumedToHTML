@@ -9,7 +9,7 @@ from pygments import highlight
 from pygments.lexers import load_lexer_from_file
 from pygments.formatters import load_formatter_from_file 
 # Uncomment this line if it is required for tests  
-# from pygments.formatters import HtmlFormatter
+#from pygments.formatters import HtmlFormatter
 
 def zip(path):
     """ Zip a path removing the original file """
@@ -149,7 +149,7 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
-def get_html( inpt, name, broken, plumedexe ) :
+def get_html( inpt, name, broken, plumedexe, srcdir="./" ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -163,6 +163,7 @@ def get_html( inpt, name, broken, plumedexe ) :
        name -- The name to use for this input in the html
        broken -- The outcome of running test plumed on the input
        plumedexe -- The plumed executible that should be used to create the input file annotations
+       srcdir -- The directory in which the plumed source file is contained
     """
     
     # Check if there is a LOAD command in the input
@@ -173,7 +174,7 @@ def get_html( inpt, name, broken, plumedexe ) :
 
     # Check for include files
     foundincludedfiles = True
-    if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( inpt, foundincludedfiles )
+    if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
 
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
@@ -226,7 +227,7 @@ def get_html( inpt, name, broken, plumedexe ) :
 
     return html
  
-def resolve_includes( inpt, foundfiles ) :
+def resolve_includes( srcdir, inpt, foundfiles ) :
     if not foundfiles or "INCLUDE" not in inpt : return foundfiles, inpt
 
     incontinuation, final_inpt, clines = False, "", "" 
@@ -249,13 +250,13 @@ def resolve_includes( inpt, foundfiles ) :
                if "FILE=" in w : filename = w.replace("FILE=","") 
            if filename=="" : raise Exception("could not find name of file to include")
            if not os.path.exists(filename) : foundfiles = False 
-           f = open(filename, "r" )
+           f = open( srcdir + filename, "r" )
            include_contents = f.read()
            f.close()
            final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
            final_inpt += "# " + clines+ "# ensures plumed loads the contents of the file called " + filename + "\n"
            final_inpt += "# This file contains the following commands:\n" 
-           foundfiles, parsed_inpt = resolve_includes( include_contents, foundfiles )
+           foundfiles, parsed_inpt = resolve_includes( srcdir, include_contents, foundfiles )
            final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
         else : final_inpt += clines         
     return foundfiles, final_inpt
