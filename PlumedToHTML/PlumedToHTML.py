@@ -149,7 +149,7 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
-def get_html( inpt, name, broken, plumedexe, srcdir="./" ) :
+def get_html( inpt, name, broken, plumedexe ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -163,7 +163,6 @@ def get_html( inpt, name, broken, plumedexe, srcdir="./" ) :
        name -- The name to use for this input in the html
        broken -- The outcome of running test plumed on the input
        plumedexe -- The plumed executible that should be used to create the input file annotations
-       srcdir -- The directory in which the plumed source file is contained
     """
     
     # Check if there is a LOAD command in the input
@@ -173,7 +172,7 @@ def get_html( inpt, name, broken, plumedexe, srcdir="./" ) :
     inpt, incomplete = manage_incomplete_inputs( inpt )
 
     # Check for include files
-    foundincludedfiles = True
+    foundincludedfiles, srcdir = True, str(pathlib.PurePosixPath(name).parent)
     if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
 
     # Check for shortcut file and build the modified input to read the shortcuts
@@ -250,7 +249,7 @@ def resolve_includes( srcdir, inpt, foundfiles ) :
                if "FILE=" in w : filename = w.replace("FILE=","") 
            if filename=="" : raise Exception("could not find name of file to include")
            if not os.path.exists(filename) : foundfiles = False 
-           f = open( srcdir + filename, "r" )
+           f = open( srcdir + "/" + filename, "r" )
            include_contents = f.read()
            f.close()
            final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
