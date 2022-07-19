@@ -36,8 +36,6 @@ def test_and_get_html( inpt, name ) :
         inpt -- A string containing the PLUMED input
         name -- The name to use for this input in the html
     """
-    # Check for LOAD command 
-    found_load = "LOAD " in inpt
     # Check if this is to be included by another input
     filename, keepfile = name + ".dat", False
     for line in inpt.splitlines() :
@@ -51,8 +49,7 @@ def test_and_get_html( inpt, name ) :
     iff.write(test_inpt + "\n")
     iff.close()
     # Now do the test
-    broken=False
-    if not found_load : broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
+    broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
     # Retrieve the html that is output by plumed
     html = get_html( inpt, name, broken, "plumed" )
     # Remove the tempory files that we created
@@ -82,7 +79,6 @@ def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
             for word in line.split() :
                 if "NREPLICAS=" in word : nreplicas = word.replace("NREPLICAS=","")
                 elif "NATOMS=" in word : natoms = word.replace("NATOMS=","")
-        if "LOAD" in line : return True 
     ifile.close()
     cmd = [executible, 'driver', '--plumed', plumed_file, '--natoms', str(natoms), '--parse-only', '--kt', '2.49']
     # Add everything to ensure we can run with replicas if needs be
