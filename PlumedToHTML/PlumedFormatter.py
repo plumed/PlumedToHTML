@@ -29,7 +29,10 @@ class PlumedFormatter(Formatter):
                elif len(label)==0 and ttype==Keyword and "output" in self.keyword_dict[action]["syntax"] : 
                   raise Exception("action " + action + " has output but does not have label")
 
-            if ttype==Text :
+            if ttype==Text.Whitespace :
+               # Blank lines
+               outfile.write( '<br/>' )
+            elif ttype==Text :
                # Non PLUMED stuff
                outfile.write( value )
             elif ttype==Literal :

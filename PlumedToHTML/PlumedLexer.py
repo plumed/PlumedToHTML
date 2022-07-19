@@ -8,7 +8,7 @@ class PlumedLexer(RegexLexer):
 
     tokens = {
         'defaults' : [
-            # Deals with blank lines
+            # Deals with blank space
             (r'\s+$', Text),
             # Deals with all comments
             (r'#.*?$', Comment),
@@ -19,13 +19,16 @@ class PlumedLexer(RegexLexer):
             # Find special replica syntax with brackets
             (r'(\w+)(=)(@replicas:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
-            (r'(\w+)(=)(@replicas:)(\S+\s)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
+            (r'(\w+)(=)(@replicas:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
             # Find KEYWORD with brackets around value
             (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever 
             (r'(\w+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Generic))
          ],
         'root': [
+            # Deals with blank lines
+            (r'^\n', Text.Whitespace),
+            # Find ENDPLUMED and set everything after it to a comment
             (r'(^\s*ENDPLUMED)((?s).*\Z)', bygroups(Keyword, Comment)),
             # Find the start of shortcuts
             (r'#SHORTCUT.*?\r?\n',Comment.Preproc),
@@ -57,7 +60,7 @@ class PlumedLexer(RegexLexer):
         'continuation' : [
             include('defaults'),
             # Find FLAG which can now be anywhere on line or at start of line in continuation
-            (r'\w+\s', Name.Attribute),
+            (r'\w+\b', Name.Attribute),
             # Find any left over white space 
             (r'\s+', Text),
             # Find ... ACTION as end of continuation
