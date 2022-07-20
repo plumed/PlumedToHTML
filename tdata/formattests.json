@@ -55,6 +55,10 @@
        {
          "input": "d1: DISTANCE ATOMS=1,2 \nENDPLUMED \n DISTANCE BOND=1,2",
          "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutd1\" onclick='showPath(\"testout\",\"testoutd1\")'>d1</b>: <div class=\"tooltip\" style=\"color:green\">DISTANCE<div class=\"right\">Calculate the distance between a pair of atoms. <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">More details</a><i></i></div></div> <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=1,2 \n<span style=\"display:none;\" id=\"testoutd1\">The DISTANCE action with label <b>d1</b> calculates a scalar quantity</span><div class=\"tooltip\" style=\"color:green\">ENDPLUMED<div class=\"right\">Terminate plumed input. <a href=\"https://www.plumed.org/doc-master/user-doc/html/_e_n_d_p_l_u_m_e_d.html\" style=\"color:green\">More details</a><i></i></div></div><span style=\"color:blue\"> \n DISTANCE BOND=1,2\n</span></pre>"
+       },
+       {
+         "input": "d1_lp1: ... \n  DISTANCE\n  ATOMS=17,1311\n ...",
+         "output": "<pre style=\"width=97%;\" class=\"fragment\">\n<b name=\"testoutd1_lp1\" onclick='showPath(\"testout\",\"testoutd1_lp1\")'>d1_lp1</b>: ... \n  <div class=\"tooltip\" style=\"color:green\">DISTANCE<div class=\"right\">Calculate the distance between a pair of atoms. <a href=\"https://www.plumed.org/doc-master/user-doc/html/_d_i_s_t_a_n_c_e.html\" style=\"color:green\">More details</a><i></i></div></div>\n  <div class=\"tooltip\">ATOMS<div class=\"right\">the pair of atom that we are calculating the distance between<i></i></div></div>=17,1311\n ...\n<span style=\"display:none;\" id=\"testoutd1_lp1\">The DISTANCE action with label <b>d1_lp1</b> calculates a scalar quantity</span></pre>"
        }
    ]
 }
