@@ -20,14 +20,11 @@ class PlumedFormatter(Formatter):
                if notooltips : 
                   # Reset everything for the new action
                   action, label, keywords, notooltips = "", "", [], False
-               elif ("output" not in self.keyword_dict[action]["syntax"] or len(label)>0) :  
+               else :
                   # This outputs information on the values computed in the previous action for the header
                   if "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
                   # Reset everything for the new action
                   action, label, keywords = "", "", []
-               # Check that a label has been given to actions that have output
-               elif len(label)==0 and ttype==Keyword and "output" in self.keyword_dict[action]["syntax"] : 
-                  raise Exception("action " + action + " has output but does not have label")
 
             if ttype==Text.Whitespace :
                # Blank lines
@@ -117,7 +114,7 @@ class PlumedFormatter(Formatter):
                      outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
                    else : outfile.write( inp )
                    nocomma = False 
-            elif ttype==String :
+            elif ttype==String or ttype==String.Double :
                # Labels of actions
                if label!="" and label!=value.strip() : raise Exception("label for is not what is expected")
                elif label=="" : label = value.strip() 
