@@ -90,7 +90,6 @@ class PlumedFormatter(Formatter):
                    if islab : outfile.write('<b name="' + self.egname + inpt.split('.')[0] + '">' + inp + '</b>')
                    # Deal with atom selections
                    elif "@" in inp :
-                     tooltip, link = "", "" 
                      # Deal with residue
                      if "-" in inp : 
                          select, defs, residue = "", inp.split("-"), "" 
