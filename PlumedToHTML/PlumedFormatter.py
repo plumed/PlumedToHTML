@@ -10,6 +10,7 @@ class PlumedFormatter(Formatter):
         self.divname=options["input_name"]
         self.egname=options["input_name"]
         self.hasload=options["hasload"]
+        self.broken=options["broken"]
 
     def format(self, tokensource, outfile):
         action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips = "", "", [], [], 0, 0, 0, False
@@ -128,6 +129,7 @@ class PlumedFormatter(Formatter):
                if notooltips :
                   outfile.write( value.strip() )
                else :
+                  desc = ""
                   if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
@@ -135,8 +137,9 @@ class PlumedFormatter(Formatter):
                      for kkkk in self.keyword_dict[action]["syntax"] :
                          if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
                          if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk]["description"].split('.')[0]
-                     if not notooltips and not foundkey : raise Exception("keyword " + value.strip() + " is not in syntax for action " + action )
-                  outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
+                     if not self.broken and not notooltips and not foundkey : raise Exception("keyword " + value.strip() + " is not in syntax for action " + action )
+                  if desc=="" and self.broken : outfile.write( value )
+                  else : outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
                outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
@@ -144,7 +147,7 @@ class PlumedFormatter(Formatter):
                # Name of action
                action, notooltips = value.strip(), False
                if action not in self.keyword_dict : 
-                  if self.hasload : notooltips = True
+                  if self.hasload or self.broken : notooltips = True
                   else : raise Exception("no action " + action + " in dictionary")
                if notooltips :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This action is not part of PLUMED and was included by using a LOAD command <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>') 
