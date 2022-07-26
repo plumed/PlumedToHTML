@@ -160,9 +160,6 @@ def get_html( inpt, name, broken, plumedexe ) :
        broken -- The outcome of running test plumed on the input
        plumedexe -- The plumed executible that should be used to create the input file annotations
     """
-    
-    # Check if there is a LOAD command in the input
-    found_load = "LOAD " in inpt
  
     # If we find the fill command then split up the input file to find the solution
     inpt, incomplete = manage_incomplete_inputs( inpt )
@@ -170,6 +167,9 @@ def get_html( inpt, name, broken, plumedexe ) :
     # Check for include files
     foundincludedfiles, srcdir = True, str(pathlib.PurePosixPath(name).parent)
     if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
+
+    # Check if there is a LOAD command in the input
+    found_load = "LOAD " in inpt
 
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
