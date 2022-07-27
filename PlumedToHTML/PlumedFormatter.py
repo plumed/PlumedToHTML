@@ -116,7 +116,7 @@ class PlumedFormatter(Formatter):
                    nocomma = False 
             elif ttype==String or ttype==String.Double :
                # Labels of actions
-               if label!="" and label!=value.strip() : raise Exception("label for is not what is expected")
+               if label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
                elif label=="" : label = value.strip() 
                all_labels.append( label )
                outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '")\'>' + value + '</b>')
