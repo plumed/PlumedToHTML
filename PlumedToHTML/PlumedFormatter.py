@@ -116,7 +116,7 @@ class PlumedFormatter(Formatter):
                    nocomma = False 
             elif ttype==String or ttype==String.Double :
                # Labels of actions
-               if label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
+               if not self.broken and label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
                elif label=="" : label = value.strip() 
                all_labels.append( label )
                outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '")\'>' + value + '</b>')
@@ -130,14 +130,14 @@ class PlumedFormatter(Formatter):
                   outfile.write( value.strip() )
                else :
                   desc = ""
-                  if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip()]["description"].split('.')[0]
+                  if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip().upper()]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
                      foundkey=False
                      for kkkk in self.keyword_dict[action]["syntax"] :
                          if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
-                         if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk]["description"].split('.')[0]
-                     if not self.broken and not notooltips and not foundkey : raise Exception("keyword " + value.strip() + " is not in syntax for action " + action )
+                         if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk.upper()]["description"].split('.')[0]
+                     if not self.broken and not notooltips and not foundkey : raise Exception("keyword " + value.strip().upper() + " is not in syntax for action " + action )
                   if desc=="" and self.broken : outfile.write( value )
                   else : outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
             elif ttype==Name.Constant :
@@ -145,7 +145,7 @@ class PlumedFormatter(Formatter):
                outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
             elif ttype==Keyword :
                # Name of action
-               action, notooltips = value.strip(), False
+               action, notooltips = value.strip().upper(), False
                if action not in self.keyword_dict : 
                   if self.hasload or self.broken : notooltips = True
                   else : raise Exception("no action " + action + " in dictionary")
