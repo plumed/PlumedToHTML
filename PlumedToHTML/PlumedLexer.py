@@ -66,7 +66,7 @@ class PlumedLexer(RegexLexer):
             # Find any left over white space 
             (r'\s+', Text),
             # Find ... ACTION as end of continuation
-            (r'(\.\.\.\s+)(\S+$)', bygroups(Text, Text), '#pop'),
+            (r'(\.\.\.\s+)(.+$)', bygroups(Text, Text), '#pop'),
             # Find ... as end of continuation
             (r'\.\.\.', Text, '#pop')
         ]

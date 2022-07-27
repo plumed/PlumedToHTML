@@ -9,7 +9,7 @@ from pygments import highlight
 from pygments.lexers import load_lexer_from_file
 from pygments.formatters import load_formatter_from_file 
 # Uncomment this line if it is required for tests  
-from pygments.formatters import HtmlFormatter
+# from pygments.formatters import HtmlFormatter
 
 def zip(path):
     """ Zip a path removing the original file """
@@ -218,7 +218,6 @@ def get_html( inpt, name, broken, plumedexe ) :
        html += '</div>\n'
     else : 
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
-       print( highlight( final_inpt, plumed_lexer, HtmlFormatter() ) )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
 
     return html
