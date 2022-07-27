@@ -125,12 +125,12 @@ class PlumedFormatter(Formatter):
                outfile.write('<span style="color:blue">' + value + '</span>' )
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
-               keywords.append( value.strip() )
+               keywords.append( value.strip().upper() )
                if notooltips :
                   outfile.write( value.strip() )
                else :
                   desc = ""
-                  if value.strip() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip().upper()]["description"].split('.')[0]
+                  if value.strip().upper() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip().upper()]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
                      foundkey=False
