@@ -240,9 +240,13 @@ def resolve_includes( srcdir, inpt, foundfiles ) :
         # Now check if there is an include
         if "INCLUDE" in clines :
            # Split up the line 
-           filename = ""
+           iscomment, filename = False, ""
            for w in clines.split():
-               if "FILE=" in w : filename = w.replace("FILE=","") 
+               if "#" in w and filename=="" : iscomment=True
+               elif "FILE=" in w : filename = w.replace("FILE=","") 
+           if iscomment : 
+              final_inpt += clines 
+              continue
            if filename=="" : raise Exception("could not find name of file to include")
            if not os.path.exists(filename) : foundfiles = False 
            f = open( srcdir + "/" + filename, "r" )
