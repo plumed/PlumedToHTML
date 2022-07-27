@@ -16,6 +16,7 @@ class PlumedLexer(RegexLexer):
             (r'__FILL__', Literal),  
             # Find LABEL=lab
             (r'(LABEL)(=)(\S+\b)', bygroups(Name.Attribute, Text, String.Double)),
+            (r'(LABEl)(=)(\S+\b)', bygroups(Name.Attribute, Text, String.Double)),
             # Find special replica syntax with brackets
             (r'(\w+)(=)(@replicas:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
