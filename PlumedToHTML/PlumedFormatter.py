@@ -14,7 +14,7 @@ class PlumedFormatter(Formatter):
 
     def format(self, tokensource, outfile):
         action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips = "", "", [], [], 0, 0, 0, False
-        outfile.write('<pre style="width=97%;" class="fragment">\n')
+        outfile.write('<pre style="width=97%;">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
@@ -67,7 +67,7 @@ class PlumedFormatter(Formatter):
                   if shortcut_depth==0 : shortcut_state=0
                   act_label = value.replace("#ENDEXPANSION","").strip()
                   # Now output the end of the expansion
-                  outfile.write('<span style="color:blue" onclick=\'toggleDisplay("' + self.egname + act_label + '")\'>Click here to revert to the shortcut and to hide this expanded input</span></span>')
+                  outfile.write('<span style="color:blue" onclick=\'toggleDisplay("' + self.egname + act_label + '")\'>Click here to revert to the shorter version of this input</span></span>')
                elif "#EXPANSION" in value :
                   if shortcut_state!=1 : raise ValueError("Should only find #EXPANSION tag after #SHORTCUT tag")
                   shortcut_state = 2
