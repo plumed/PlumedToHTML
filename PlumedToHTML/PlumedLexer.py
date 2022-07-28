@@ -28,6 +28,10 @@ class PlumedLexer(RegexLexer):
         'root': [
             # Deals with blank lines
             (r'^\n', Text.Whitespace),
+            # Find comment reversion stuff
+            (r'(^# The command:\n)(#.+\n)(# ensures PLUMED loads the contents of the file called .+$)',bygroups(Comment, Comment.Hashbang, Comment)),
+            # And stuff for long versions of shortcuts
+            (r'(^# PLUMED interprets the command:\n)(#.+$)', bygroups(Comment, Comment.Hashbang)),
             # Find ENDPLUMED and set everything after it to a comment
             (r'(^\s*ENDPLUMED)((?s).*\Z)', bygroups(Keyword, Comment)),
             # Find the start of shortcuts

@@ -13,7 +13,7 @@ class PlumedFormatter(Formatter):
         self.broken=options["broken"]
 
     def format(self, tokensource, outfile):
-        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips = "", "", [], [], 0, 0, 0, False
+        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label = "", "", [], [], 0, 0, 0, False, ""
         outfile.write('<pre style="width=97%;">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
@@ -41,6 +41,10 @@ class PlumedFormatter(Formatter):
                elif "vim:" in value :
                    outfile.write('<div class="tooltip" style="color:blue">' + value + '<div class="right">Enables syntax highlighting for PLUMED files in vim. See <a href="' + self.keyword_dict["vimlink"] + '">here for more details. </a><i></i></div></div>')
                else : raise ValueError("found invalid Literal in input " + value)
+            elif ttype==Comment.Hashbang :
+               # This handles the mechanism for closing the expanding shortcut
+               if shortcut_state!=2 : raise ValueError("Should only find line to close shortcut between #EXPANSION and #ENDEXPANSION tags")
+               outfile.write('<span style="color:red" onclick=\'toggleDisplay("' + self.egname + expansion_label + '")\'>' + value + '</span>')
             elif ttype==Comment.Special or ttype==Comment.Preproc :
                # This handles the mechanisms for the expandable shortcuts
                act_label=""
@@ -67,11 +71,11 @@ class PlumedFormatter(Formatter):
                   if shortcut_depth==0 : shortcut_state=0
                   act_label = value.replace("#ENDEXPANSION","").strip()
                   # Now output the end of the expansion
-                  outfile.write('<span style="color:red" onclick=\'toggleDisplay("' + self.egname + act_label + '")\'>Click here to revert to the shorter version of this input</span></span>')
+                  outfile.write('<span style="color:blue")\'># --- End of included input --- </span></span>')
                elif "#EXPANSION" in value :
                   if shortcut_state!=1 : raise ValueError("Should only find #EXPANSION tag after #SHORTCUT tag")
                   shortcut_state = 2
-                  act_label = value.replace("#EXPANSION","").strip()
+                  act_label, expansion_label = value.replace("#EXPANSION","").strip(), value.replace("#EXPANSION","").strip()
                   outfile.write('</span><span id="' + self.egname + act_label + '_long" style="display:none;">')
                else : raise ValueError("Comment.Special should only catch string that are #SHORTCUT, #EXPANSION or #ENDEXPANSION")
                # This sets up the label at the start of a new block with NODEFAULT or SHORTCUT

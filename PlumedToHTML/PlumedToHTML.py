@@ -9,7 +9,7 @@ from pygments import highlight
 from pygments.lexers import load_lexer_from_file
 from pygments.formatters import load_formatter_from_file 
 # Uncomment this line if it is required for tests  
-# from pygments.formatters import HtmlFormatter
+#from pygments.formatters import HtmlFormatter
 
 def zip(path):
     """ Zip a path removing the original file """
@@ -253,8 +253,8 @@ def resolve_includes( srcdir, inpt, foundfiles ) :
            include_contents = f.read()
            f.close()
            final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
-           final_inpt += "# " + clines+ "# ensures plumed loads the contents of the file called " + filename + "\n"
-           final_inpt += "# This file contains the following commands:\n" 
+           final_inpt += "# " + clines+ "# ensures PLUMED loads the contents of the file called " + filename + "\n"
+           final_inpt += "# The contents of this file are shown below (click the red comment to hide them).\n" 
            foundfiles, parsed_inpt = resolve_includes( srcdir, include_contents, foundfiles )
            final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
         else : final_inpt += clines         
@@ -298,7 +298,7 @@ def resolve_expansions( inpt, jsondata ) :
               for gline in clines.splitlines() : final_inpt += "# " + gline + "\n"
               local_json = dict(jsondata[label]) 
               local_json.pop("expansion", "defaults" )
-              final_inpt += "# as follows:\n" + resolve_expansions( jsondata[label]["expansion"], local_json )
+              final_inpt += "# as follows (Click the red comment above to revert to the short version of the input):\n" + resolve_expansions( jsondata[label]["expansion"], local_json )
               final_inpt += "#ENDEXPANSION " + label + "\n"
            elif "defaults" in jsondata[label] :
               final_inpt += "#NODEFAULT " + label + "\n" + clines
