@@ -79,41 +79,46 @@ class PlumedFormatter(Formatter):
                   if label!="" and label!=act_label : raise Exception("label for shortcut (" + act_label + ") doesn't match action label (" + label + ")")
                   elif label=="" : label = act_label 
             elif ttype==Generic:
-               # whatever in KEYWORD=whatever (notice special treatment because we want to find labels so we can show paths)
-               inputs, nocomma = value.split(","), True
-               for inp in inputs : 
-                   islab, inpt = False, inp.strip()
-                   for lab in all_labels : 
-                       if inpt.split('.')[0]==lab : 
-                          islab=True
-                          break
-                   if not nocomma : outfile.write(',')
-                   if islab : outfile.write('<b name="' + self.egname + inpt.split('.')[0] + '">' + inp + '</b>')
-                   # Deal with atom selections
-                   elif "@" in inp :
-                     # Deal with residue
-                     if "-" in inp : 
-                         select, defs, residue = "", inp.split("-"), "" 
-                         if "_" in defs[1] : 
-                             resp = defs[1].split("_")
-                             residue = "residue " + resp[1] + " in chain " + resp[0]
-                         else : residue = "residue " + defs[1]  
-                         select = defs[0] + "-"
-                         if select not in self.keyword_dict["groups"] : tooltip, link = "the " + defs[0][1:] + " atom in " + residue, self.keyword_dict["groups"]["@protein"]["link"]
-                         else : tooltip, link = self.keyword_dict["groups"][select]["description"] + " " + residue, self.keyword_dict["groups"][select]["link"]
-                     # Deal with external libraries doing atom selections
-                     elif ":" in inp : 
-                         defs = inp.split(":")
-                         select = defs[0]+":"
-                         if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                         tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
-                     else : 
-                         select = inp.strip()
-                         if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                         tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
-                     outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
-                   else : outfile.write( inp )
-                   nocomma = False 
+               # whatever in KEYWORD=whatever 
+               if action=="INCLUDE" and shortcut_state==1 : 
+                  # special treatment for filename in INCLUDE FILE=filename
+                  outfile.write('<a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>' + value + '</a>') 
+               else :
+                  # notice special treatment here because we want to find labels so we can show paths
+                  inputs, nocomma = value.split(","), True
+                  for inp in inputs : 
+                      islab, inpt = False, inp.strip()
+                      for lab in all_labels : 
+                          if inpt.split('.')[0]==lab : 
+                             islab=True
+                             break
+                      if not nocomma : outfile.write(',')
+                      if islab : outfile.write('<b name="' + self.egname + inpt.split('.')[0] + '">' + inp + '</b>')
+                      # Deal with atom selections
+                      elif "@" in inp :
+                        # Deal with residue
+                        if "-" in inp : 
+                            select, defs, residue = "", inp.split("-"), "" 
+                            if "_" in defs[1] : 
+                                resp = defs[1].split("_")
+                                residue = "residue " + resp[1] + " in chain " + resp[0]
+                            else : residue = "residue " + defs[1]  
+                            select = defs[0] + "-"
+                            if select not in self.keyword_dict["groups"] : tooltip, link = "the " + defs[0][1:] + " atom in " + residue, self.keyword_dict["groups"]["@protein"]["link"]
+                            else : tooltip, link = self.keyword_dict["groups"][select]["description"] + " " + residue, self.keyword_dict["groups"][select]["link"]
+                        # Deal with external libraries doing atom selections
+                        elif ":" in inp : 
+                            defs = inp.split(":")
+                            select = defs[0]+":"
+                            if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
+                            tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
+                        else : 
+                            select = inp.strip()
+                            if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
+                            tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
+                        outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
+                      else : outfile.write( inp )
+                      nocomma = False 
             elif ttype==String or ttype==String.Double :
                # Labels of actions
                if not self.broken and label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
@@ -160,7 +165,7 @@ class PlumedFormatter(Formatter):
                elif default_state==2 :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action uses the <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>defaults shown here</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                elif shortcut_state==1 :
-                    if value.strip()=="INCLUDE" : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a>. Show <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>included file</a><i></i></div></div>')
+                    if action=="INCLUDE" : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a>. Show <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>included file</a><i></i></div></div>')
                     else : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                else :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>')
