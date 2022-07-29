@@ -201,7 +201,7 @@ def get_html( inpt, name, tested, broken, plumedexe ) :
     for i in range(len(tested)) :
         btype = 'passing-green.svg'
         if broken[i] : btype = 'failed-red.svg' 
-        html += '<tr><td style="padding:1px"><a href="' + tested[i] + '.' +  plumedexe[i] + '.stderr"><img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
+        html += '<tr><td style="padding:1px"><a href="' + name + '.' +  plumedexe[i] + '.stderr"><img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
     if found_load :
        html += '<tr><td style="padding:1px"><div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></div></td></tr>\n'
     if len(incomplete)>0 : 
