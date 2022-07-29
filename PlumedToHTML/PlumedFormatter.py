@@ -71,7 +71,7 @@ class PlumedFormatter(Formatter):
                   if shortcut_depth==0 : shortcut_state=0
                   act_label = value.replace("#ENDEXPANSION","").strip()
                   # Now output the end of the expansion
-                  outfile.write('<span style="color:blue")\'># --- End of included input --- </span></span>')
+                  outfile.write('<span style="color:blue"># --- End of included input --- </span></span>')
                elif "#EXPANSION" in value :
                   if shortcut_state!=1 : raise ValueError("Should only find #EXPANSION tag after #SHORTCUT tag")
                   shortcut_state = 2
