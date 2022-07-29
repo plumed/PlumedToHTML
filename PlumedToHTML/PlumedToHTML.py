@@ -51,7 +51,7 @@ def test_and_get_html( inpt, name ) :
     # Now do the test
     broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
     # Retrieve the html that is output by plumed
-    html = get_html( inpt, name, broken, "plumed" )
+    html = get_html( inpt, name, ("master",), (broken,), ("plumed",) )
     # Remove the tempory files that we created
     if not keepfile : os.remove(filename)
 
@@ -145,7 +145,7 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
-def get_html( inpt, name, broken, plumedexe ) :
+def get_html( inpt, name, tested, broken, plumedexe ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -157,10 +157,11 @@ def get_html( inpt, name, broken, plumedexe ) :
        Keyword arguments:
        inpt -- A string containing the PLUMED input
        name -- The name to use for this input in the html
+       tested -- The versions of plumed that were testd
        broken -- The outcome of running test plumed on the input
-       plumedexe -- The plumed executible that should be used to create the input file annotations
+       plumedexe -- The plumed executibles that were used.  The first one is the one that should be used to create the input file annotations
     """
- 
+    
     # If we find the fill command then split up the input file to find the solution
     inpt, incomplete = manage_incomplete_inputs( inpt )
 
@@ -187,24 +188,25 @@ def get_html( inpt, name, broken, plumedexe ) :
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedLexer" )
     # Get the plumed syntax file
-    cmd = [plumedexe, 'info', '--root']
+    cmd = [plumedexe[-1], 'info', '--root']
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=broken )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=broken[0] )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
     html += '<div style="width: 90%; float:left" id="value_details_' + name + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
+    html += '<div style="width: 10%; float:left"><table>'
+    for i in range(len(tested)) :
+        btype = 'passing-green.svg'
+        if broken[i] : btype = 'failed-red.svg' 
+        html += '<tr><td style="padding:1px"><a href="' + tested[i] + '.' +  plumedexe[i] + '.stderr"><img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
     if found_load :
-       html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on 2.7" /></div>\n'
-    elif broken :
-       html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-failed-red.svg" alt="tested on 2.7" /></div>\n'
-    elif len(incomplete)>0 : 
-       html += "<button style=\"width: 10%; float:left\" type=\"button\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'><img src=\"https://img.shields.io/badge/2.7-passing-green.svg\" alt=\"tested on 2.7\"/></button>\n"
-    else : 
-       html += '<div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/2.7-passing-green.svg" alt="tested on 2.7" /></div>\n'
-    html += "</div>\n"
+       html += '<tr><td style="padding:1px"><div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></div></td></tr>\n'
+    if len(incomplete)>0 : 
+       html += "<tr><td style=\"padding:0px\"><img src=\"https://img.shields.io/badge/" + tested[-1] + "-incomplete-yellow.svg\" alt=\"tested on " + tested[-1] + "\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'/></td></tr>\n" 
+    html += '</table></div></div>\n' 
     if len(incomplete)>0 : 
        # This creates the input with the __FILL__ 
        html += "<div id=\"" + name + "_short\">\n"
