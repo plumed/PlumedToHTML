@@ -193,6 +193,7 @@ def get_html( inpt, name, tested, broken, plumedexe ) :
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=broken[0] )
+    plumed_file = os.path.basename(name)
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
@@ -201,9 +202,9 @@ def get_html( inpt, name, tested, broken, plumedexe ) :
     for i in range(len(tested)) :
         btype = 'passing-green.svg'
         if broken[i] : btype = 'failed-red.svg' 
-        html += '<tr><td style="padding:1px"><a href="' + name + '.' +  plumedexe[i] + '.stderr"><img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
+        html += '<tr><td style="padding:1px"><a href="' + plumed_file + '.' +  plumedexe[i] + '.stderr"><img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
     if found_load :
-       html += '<tr><td style="padding:1px"><div style="width: 10%; float:left"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></div></td></tr>\n'
+       html += '<tr><td style="padding:1px"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></td></tr>\n'
     if len(incomplete)>0 : 
        html += "<tr><td style=\"padding:0px\"><img src=\"https://img.shields.io/badge/" + tested[-1] + "-incomplete-yellow.svg\" alt=\"tested on " + tested[-1] + "\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'/></td></tr>\n" 
     html += '</table></div></div>\n' 
