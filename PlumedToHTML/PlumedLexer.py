@@ -13,6 +13,8 @@ class PlumedLexer(RegexLexer):
             # Deals with all comments
             (r'#.*?$', Comment),
             # Deals with incomplete inputs 
+            (r'(__FILL__)(=)(\S+\b)', bygroups(Literal, Text, Generic)),
+            (r'(\w+)(=)(__FILL__)', bygroups(Name.Attribute, Text, Literal)),
             (r'__FILL__', Literal),  
             # Find LABEL=lab
             (r'((?i)LABEL)(=)(\S+\b)', bygroups(Name.Attribute, Text, String.Double)),
