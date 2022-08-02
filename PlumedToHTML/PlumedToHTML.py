@@ -194,6 +194,7 @@ def get_html( inpt, name, tested, broken, plumedexe ) :
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=broken[0] )
     plumed_file = os.path.basename(name)
+    if not os.path.exists(plumed_file) : plumed_file=name
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
