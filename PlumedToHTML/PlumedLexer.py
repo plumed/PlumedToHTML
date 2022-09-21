@@ -52,6 +52,8 @@ class PlumedLexer(RegexLexer):
             (r'#\s*vim:\s*ft=plumed',Literal),
             # Include all the default stuff
             include('defaults'), 
+            # Find label: __FILL__
+            (r'(.+)(:\s+)(__FILL__)', bygroups(String, Text, Literal)),
             # Find label: ACTION
             (r'(.+)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Find label: ... \n ACTION  
