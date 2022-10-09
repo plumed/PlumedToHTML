@@ -110,12 +110,6 @@ class PlumedFormatter(Formatter):
                             select = defs[0] + "-"
                             if select not in self.keyword_dict["groups"] : tooltip, link = "the " + defs[0][1:] + " atom in " + residue, self.keyword_dict["groups"]["@protein"]["link"]
                             else : tooltip, link = self.keyword_dict["groups"][select]["description"] + " " + residue, self.keyword_dict["groups"][select]["link"]
-                        # Deal with external libraries doing atom selections
-                        elif ":" in inp : 
-                            defs = inp.split(":")
-                            select = defs[0]+":"
-                            if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                            tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
                         else : 
                             select = inp.strip()
                             if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
@@ -151,7 +145,12 @@ class PlumedFormatter(Formatter):
                   else : outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
-               outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
+               if value=="@replicas:" : 
+                  outfile.write('<div class="tooltip">' + value + '<div class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></div></div>')
+               # Deal with external libraries doing atom selections
+               else :
+                  if value not in self.keyword_dict["groups"] : raise Exception("special group " + value + " not in special group dictionary")
+                  outfile.write('<div class="tooltip">' + value + '<div class="right">' + self.keyword_dict["groups"][value]["description"] + '.  <a href="' + self.keyword_dict["groups"][value]["link"] + '">Click here</a> for more information. <i></i></div></div>');
             elif ttype==Keyword :
                # Name of action
                action, notooltips = value.strip().upper(), False

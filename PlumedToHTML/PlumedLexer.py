@@ -19,11 +19,13 @@ class PlumedLexer(RegexLexer):
             # Find LABEL=lab
             (r'((?i)LABEL)(=)(\S+\b)', bygroups(Name.Attribute, Text, String.Double)),
             # Find special replica syntax with fill
-            (r'(\w+)(=)(@replicas:)(__FILL__)', bygroups(Name.Attribute, Text, Name.Constant, Literal)), 
+            (r'(\w+)(=)(@\S+:)(__FILL__)', bygroups(Name.Attribute, Text, Name.Constant, Literal)), 
+            # Find special replica syntax with brackets around replica command
+            (r'(\w+)(=\{)(@\S+:)((?s)\{.*?\})(\})', bygroups(Name.Attribute, Text, Name.Constant, Generic, Text)),
             # Find special replica syntax with brackets
-            (r'(\w+)(=)(@replicas:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
+            (r'(\w+)(=)(@\S+:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
-            (r'(\w+)(=)(@replicas:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
+            (r'(\w+)(=)(@\S+:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
             # Find KEYWORD with brackets around value
             (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever 
