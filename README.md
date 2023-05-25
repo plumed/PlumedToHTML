@@ -15,7 +15,7 @@ This is a Python implementation that allows you to generate pretified PLUMED inp
 * If shortcuts are used and actions read in things that do not appear in the input you have the option to see what actions are read in by PLUMED.  You can thus get insight into how methods are implemented in PLUMED.
 * If some action has parameters that are set to default values you have the option to see what the default values of these parameters are. 
 
-N.B. This script uses subprocess to call PLUMED __If you use this script PLUMED must be available in your path__
+N.B. This script uses subprocess to call PLUMED __If you use this script PLUMED must be available in your path__ 
 
 # Documentation
 
