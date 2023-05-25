@@ -1,12 +1,17 @@
 from pygments.formatter import Formatter
 from pygments.token import Text, Comment, Literal, Keyword, Name, Generic, String
+from requests.exceptions import InvalidJSONError
 import json
 
 class PlumedFormatter(Formatter):
     def __init__(self, **options) :
         Formatter.__init__(self, **options) 
         # Retrieve the dictionary of keywords from the json
-        with open(options["keyword_file"]) as f : self.keyword_dict = json.load(f)
+        with open(options["keyword_file"]) as f :
+           try:
+              self.keyword_dict = json.load(f)
+           except ValueError as ve:
+              raise InvalidJSONError(ve) 
         self.divname=options["input_name"]
         self.egname=options["input_name"]
         self.hasload=options["hasload"]
