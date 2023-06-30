@@ -32,6 +32,10 @@ class PlumedFormatter(Formatter):
                   # Reset everything for the new action
                   action, label, keywords = "", "", []
 
+            # Check users inputs for rogue # symbols that have been lexed into the wrong place
+            if "#" in value and ttype!=Comment and ttype!=Comment.Hashbang and ttype!=Comment.Special and ttype!=Comment.Preproc and ttype!=Literal : 
+                raise ValueError("found # in " + value + " but this has not been identified as a comment.  If you have colons in your comments they are known to cause this error.  If you remove the colons from the comments the input may parse.")
+
             if ttype==Text.Whitespace :
                # Blank lines
                outfile.write( '<br/>' )
