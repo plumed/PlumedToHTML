@@ -11,7 +11,7 @@ class PlumedLexer(RegexLexer):
             # Deals with blank space
             (r'\s+$', Text),
             # Deals with all comments
-            (r'#.*?$', Comment),
+            (r'#.*$', Comment),
             # Deals with incomplete inputs 
             (r'(__FILL__)(=)(\S+\b)', bygroups(Literal, Text, Generic)),
             (r'(\w+)(=)(__FILL__)', bygroups(Name.Attribute, Text, Literal)),
@@ -59,7 +59,7 @@ class PlumedLexer(RegexLexer):
             # Find label: __FILL__
             (r'(.+)(:\s+)(__FILL__)', bygroups(String, Text, Literal)),
             # Find label: ACTION
-            (r'(.+)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
+            (r'(.+?)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Find label: ... \n ACTION  
             (r'(.+)(:\s+\.\.\.\s*$\s*)(\S+\b)', bygroups(String, Text, Keyword), 'continuation'),
             # Find ... for start of continuation
