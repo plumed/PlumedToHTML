@@ -1,0 +1,80 @@
+{
+   "regtests": [
+       {
+          "input": "# This is a comment\n",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"c\"># This is a comment</span>\n</pre></div>\n"
+       },
+       {
+          "input": "d1: DISTANCE ATOMS=1,2\n",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span>\n</pre></div>\n"
+       },
+       {
+          "input": "d1: DISTANCE ATOMS=1,2 COMPONENTS\n",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> <span class=\"na\">COMPONENTS</span>\n</pre></div>\n"
+       },
+       {
+          "input": "#NODEFAULT \nd1: DISTANCE ATOMS=1,2\n#DEFAULT \nd1: DISTANCE ATOMS=1,2 COMPONENTS\n#ENDDEFAULT\n",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"cs\">#NODEFAULT </span>\n<span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span>\n<span class=\"cs\">#DEFAULT </span>\n<span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> <span class=\"na\">COMPONENTS</span>\n<span class=\"cs\">#ENDDEFAULT</span>\n</pre></div>\n"
+       },
+       {
+          "input": "#SHORTCUT \nd1: DISTANCE ATOMS=1,2\n \n #EXPANSION \nd1: DISTANCE ATOMS=1,2 COMPONENTS\n#ENDEXPANSION\n",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"cp\">#SHORTCUT </span>\n<span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span>\n \n <span class=\"cs\">#EXPANSION </span>\n<span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> <span class=\"na\">COMPONENTS</span>\n<span class=\"cs\">#ENDEXPANSION</span>\n</pre></div>\n"
+       },
+       {
+          "input": "__FILL__",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"l\">__FILL__</span>\n</pre></div>\n"
+       },
+       {
+          "input": "d1: DISTANCE ATOMS=1,2 \nPRINT ARG=d1",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> \n<span class=\"k\">PRINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1</span>\n</pre></div>\n"
+       },
+       {
+          "input": "p: POSITION ATOM=@replicas:{1,2}",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">p</span>: <span class=\"k\">POSITION</span> <span class=\"na\">ATOM</span>=<span class=\"no\">@replicas:</span><span class=\"g\">{1,2}</span>\n</pre></div>\n"
+       },
+       {
+         "input": "d1: DISTANCE ATOMS=1,2 \nPRINT ARG=d1\nb: BIASVALUE ARG=d1 \n",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> \n<span class=\"k\">PRINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1</span>\n<span class=\"s\">b</span>: <span class=\"k\">BIASVALUE</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1</span> \n</pre></div>\n"
+       },
+       {
+         "input": "#SHORTCUT \n #NODEFAULT \n d1: DISTANCE ATOMS=1,2\n #DEFAULT \n d1: DISTANCE ATOMS=1,2\n #ENDDEFAULT \n #EXPANSION \n d1: DISTANCE ATOMS=1,2\n #ENDEXPANSION\n",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"cp\">#SHORTCUT </span>\n <span class=\"cs\">#NODEFAULT </span>\n<span class=\"s\"> d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span>\n <span class=\"cs\">#DEFAULT </span>\n<span class=\"s\"> d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span>\n <span class=\"cs\">#ENDDEFAULT </span>\n <span class=\"cs\">#EXPANSION </span>\n<span class=\"s\"> d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span>\n <span class=\"cs\">#ENDEXPANSION</span>\n</pre></div>\n"
+       },
+       {
+         "input": "# vim:ft=plumed",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"l\"># vim:ft=plumed</span>\n</pre></div>\n"
+       },
+       {
+         "input": "d1: GROUP ATOMS=@mdatoms \nt1: TORSION ATOMS=@phi-3\nt2: TORSION ATOMS=@psi-4_3\ng1: GROUP ATOMS=@mda:backbone",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">GROUP</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">@mdatoms</span> \n<span class=\"s\">t1</span>: <span class=\"k\">TORSION</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">@phi-3</span>\n<span class=\"s\">t2</span>: <span class=\"k\">TORSION</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">@psi-4_3</span>\n<span class=\"s\">g1</span>: <span class=\"k\">GROUP</span> <span class=\"na\">ATOMS</span>=<span class=\"no\">@mda:</span><span class=\"g\">backbone</span>\n</pre></div>\n"
+       },
+       {
+         "input": "COMMITTOR ... \n ARG=t1,t2 \n #C2 basin \n BASIN_LL1=-2.7,-1.3 BASIN_UL1=-1.9,-1.0 \n #C3 basin \n BASIN_LL2=-2.7,0.9 BASIN_UL2=-2.3,1.2 \n ...",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"k\">COMMITTOR</span> ... \n <span class=\"na\">ARG</span>=<span class=\"g\">t1,t2</span> \n <span class=\"c\">#C2 basin </span>\n <span class=\"na\">BASIN_LL1</span>=<span class=\"g\">-2.7,-1.3</span> <span class=\"na\">BASIN_UL1</span>=<span class=\"g\">-1.9,-1.0</span> \n <span class=\"c\">#C3 basin </span>\n <span class=\"na\">BASIN_LL2</span>=<span class=\"g\">-2.7,0.9</span> <span class=\"na\">BASIN_UL2</span>=<span class=\"g\">-2.3,1.2</span> \n ...\n</pre></div>\n"
+       },
+       {
+         "input": "d1: DISTANCE ATOMS=1,2 \nENDPLUMED \n DISTANCE BOND=1,2",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> \n<span class=\"k\">ENDPLUMED</span><span class=\"c\"> </span>\n<span class=\"c\"> DISTANCE BOND=1,2</span>\n</pre></div>\n"
+       },
+       {
+         "input": "d1_lp1: ... \n  DISTANCE\n  ATOMS=17,1311\n ...",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1_lp1</span>: ... \n  <span class=\"k\">DISTANCE</span>\n  <span class=\"na\">ATOMS</span>=<span class=\"g\">17,1311</span>\n ...\n</pre></div>\n"
+       },
+       {
+         "input": "d1: DISTANCE ATOMS=1,2 \nDISTANCE ... #fff\n LABEL=d2 #ttt\n ATOMS=3,4\n ...",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> \n<span class=\"k\">DISTANCE</span> ... <span class=\"c\">#fff</span>\n <span class=\"na\">LABEL</span>=<span class=\"s2\">d2</span> <span class=\"c\">#ttt</span>\n <span class=\"na\">ATOMS</span>=<span class=\"g\">3,4</span>\n ...\n</pre></div>\n"
+       },
+       {
+         "input": "d1: distance atoms=1,2 \ndistance ... #fff\n label=d2 #ttt\n atoms=3,4\n ...",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">d1</span>: <span class=\"k\">distance</span> <span class=\"na\">atoms</span>=<span class=\"g\">1,2</span> \n<span class=\"k\">distance</span> ... <span class=\"c\">#fff</span>\n <span class=\"na\">label</span>=<span class=\"s2\">d2</span> <span class=\"c\">#ttt</span>\n <span class=\"na\">atoms</span>=<span class=\"g\">3,4</span>\n ...\n</pre></div>\n"
+       },
+       {
+         "input": "r1: GYRATION ATOMS=@mda:{resid 1:40 and name CA}\n r2: GYRATION ATOMS={@mda:{resid 1:40 and name CA}}",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">r1</span>: <span class=\"k\">GYRATION</span> <span class=\"na\">ATOMS</span>=<span class=\"no\">@mda:</span><span class=\"g\">{resid 1:40 and name CA}</span>\n <span class=\"s\">r2</span>: <span class=\"k\">GYRATION</span> <span class=\"na\">ATOMS</span>={<span class=\"no\">@mda:</span><span class=\"g\">{resid 1:40 and name CA}</span>}\n</pre></div>\n"
+       },
+       {
+         "input": "phi: TORSION ATOMS=1,2,3,4\n bb: RESTRAINT ARG=phi KAPPA=200.0 AT=@replicas:__FILL__",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">phi</span>: <span class=\"k\">TORSION</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2,3,4</span>\n <span class=\"s\">bb</span>: <span class=\"k\">RESTRAINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">phi</span> <span class=\"na\">KAPPA</span>=<span class=\"g\">200.0</span> <span class=\"na\">AT</span>=<span class=\"no\">@replicas:</span><span class=\"l\">__FILL__</span>\n</pre></div>\n"
+       }
+   ]
+}
