@@ -59,7 +59,7 @@ class PlumedLexer(RegexLexer):
             # Find label: __FILL__
             (r'(.+)(:\s+)(__FILL__)', bygroups(String, Text, Literal)),
             # Find label: ACTION
-            (r'(.+?)(:\s+)(\S+\b)', bygroups(String, Text, Keyword)),
+            (r'([^#^\n]+?)(:\s+)([^\s#]+\b)', bygroups(String, Text, Keyword)),
             # Find label: ... \n ACTION  
             (r'(.+)(:\s+\.\.\.\s*$\s*)(\S+\b)', bygroups(String, Text, Keyword), 'continuation'),
             # Find ... for start of continuation

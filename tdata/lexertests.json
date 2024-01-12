@@ -75,6 +75,10 @@
        {
          "input": "phi: TORSION ATOMS=1,2,3,4\n bb: RESTRAINT ARG=phi KAPPA=200.0 AT=@replicas:__FILL__",
          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">phi</span>: <span class=\"k\">TORSION</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2,3,4</span>\n <span class=\"s\">bb</span>: <span class=\"k\">RESTRAINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">phi</span> <span class=\"na\">KAPPA</span>=<span class=\"g\">200.0</span> <span class=\"na\">AT</span>=<span class=\"no\">@replicas:</span><span class=\"l\">__FILL__</span>\n</pre></div>\n"
+       },
+       {
+         "input": "# This is a comment \n phi: TORSION ATOMS=1,2,3,4 # This is also a comment with : a colon",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"c\"># This is a comment </span>\n <span class=\"s\">phi</span>: <span class=\"k\">TORSION</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2,3,4</span> <span class=\"c\"># This is also a comment with : a colon</span>\n</pre></div>\n"
        }
    ]
 }
