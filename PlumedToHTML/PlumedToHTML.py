@@ -26,7 +26,7 @@ def cd(newdir):
     finally:
         os.chdir(prevdir)
 
-def test_and_get_html( inpt, name ) :
+def test_and_get_html( inpt, name, actions=set({}) ) :
     """
         Test if the plumed input is broken and generate the html syntax
 
@@ -51,7 +51,7 @@ def test_and_get_html( inpt, name ) :
     # Now do the test
     broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
     # Retrieve the html that is output by plumed
-    html = get_html( inpt, name, name, ("master",), (broken,), ("plumed",) )
+    html = get_html( inpt, name, name, ("master",), (broken,), ("plumed",), actions )
     # Remove the tempory files that we created
     if not keepfile : os.remove(filename)
 
@@ -145,7 +145,7 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
-def get_html( inpt, name, outloc, tested, broken, plumedexe ) :
+def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -161,6 +161,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe ) :
        tested -- The versions of plumed that were testd
        broken -- The outcome of running test plumed on the input
        plumedexe -- The plumed executibles that were used.  The first one is the one that should be used to create the input file annotations
+       actions -- Set to store all the actions that have been used in the input
     """
     
     # If we find the fill command then split up the input file to find the solution
@@ -193,7 +194,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe ) :
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken) )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), actions=actions )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'

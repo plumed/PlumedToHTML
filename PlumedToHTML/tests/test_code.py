@@ -14,12 +14,14 @@ class TestPlumedToHTML(TestCase):
        # Now run over all the inputs in the json
        for item in tests["regtests"] :
            with self.subTest(item=item):
-                out = PlumedToHTML.test_and_get_html( item["input"], "plinp" + str(item["index"]) )
+                actions = set({})
+                out = PlumedToHTML.test_and_get_html( item["input"], "plinp" + str(item["index"]), actions=actions )
                 print( item["input"] )
+                print( actions, item["actions"] )
                 data = {}
                 data["out"] = out
                 print( json.dumps( data, indent=3 ) )
-                self.assertTrue( out==item["output"] )
+                self.assertTrue( out==item["output"] and actions==set(item["actions"]) )
 
    def testHeader(self) :
        headerfilename = os.path.join(os.path.dirname(__file__),"../assets/header.html")

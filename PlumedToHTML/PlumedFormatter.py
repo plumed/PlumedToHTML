@@ -16,6 +16,7 @@ class PlumedFormatter(Formatter):
         self.egname=options["input_name"]
         self.hasload=options["hasload"]
         self.broken=options["broken"]
+        self.actions=options["actions"]
 
     def format(self, tokensource, outfile):
         action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label = "", "", [], [], 0, 0, 0, False, ""
@@ -163,6 +164,8 @@ class PlumedFormatter(Formatter):
             elif ttype==Keyword :
                # Name of action
                action, notooltips = value.strip().upper(), False
+               # Store name of action in set that contains all action names
+               self.actions.add(action)
                if action not in self.keyword_dict : 
                   if self.hasload or self.broken : notooltips = True
                   else : raise Exception("no action " + action + " in dictionary")
