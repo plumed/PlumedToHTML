@@ -260,7 +260,8 @@ def resolve_includes( srcdir, inpt, foundfiles ) :
            final_inpt += "# " + clines+ "# ensures PLUMED loads the contents of the file called " + filename + "\n"
            final_inpt += "# The contents of this file are shown below (click the red comment to hide them).\n" 
            foundfiles, parsed_inpt = resolve_includes( srcdir, include_contents, foundfiles )
-           final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
+           if parsed_inpt.endswith("\n") : final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
+           else : final_inpt += parsed_inpt + "\n#ENDEXPANSION " + filename + "\n"
         else : final_inpt += clines         
     return foundfiles, final_inpt
 
