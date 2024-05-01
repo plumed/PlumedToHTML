@@ -52,7 +52,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
     iff.write(test_inpt + "\n")
     iff.close()
     # Now do the test
-    broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' )
+    broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' ) #, valuefile='values_' + name + '.json' )
     # Retrieve the html that is output by plumed
     html = get_html( inpt, name, name, ("master",), (broken,), ("plumed",), actions )
     # Remove the tempory files that we created
@@ -60,7 +60,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
 
     return html
 
-def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
+def test_plumed( executible, filename, header=[], shortcutfile=[], valuefile=[] ) :
     """
         Test if plumed can parse this input file
 
@@ -71,6 +71,7 @@ def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
         filename     -- A string that contains the name of the plumed input file to parse
         header       -- A string to put at the top of the error page that is output
         shortcutfile -- The file on which to output the json file containing the expansed shortcuts.  If not present this is not output 
+        valuefile -- The file on which to output the dictionary explaining what each value represents.  If not present this is not output
     """
     # Get the information for running the code
     run_folder = str(pathlib.PurePosixPath(filename).parent)
@@ -88,6 +89,8 @@ def test_plumed( executible, filename, header=[], shortcutfile=[] ) :
     if int(nreplicas)>1 : cmd = ['mpirun', '-np', str(nreplicas)] + cmd + ['--multi', str(nreplicas)]
     # Add the shortcutfile output if the user has asked for it
     if len(shortcutfile)>0 : cmd = cmd + ['--shortcut-ofile', shortcutfile]
+    # Add the value dictionary if the user has asked for it
+    if len(valuefile)>0 : cmd = cmd + ['--valuedict-ofile', valuefile] 
     # raw std output - to be zipped
     outfile=filename + "." + executible + ".stdout.txt"
     # raw std error - to be zipped
@@ -189,6 +192,15 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
        os.remove( name + ".json") 
     else : final_inpt = inpt   
 
+    # Check for value dictionary to use to create labels
+    if os.path.exists( 'values_' + name + '.json') :
+       with open('values_' + name + '.json') as f :
+           try:
+              valuedict = json.load(f)
+           except ValueError as ve:
+              raise InvalidJSONError(ve)
+    else : valuedict = {}
+
     # Create the lexer that will generate the pretty plumed input
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedLexer" )
@@ -197,7 +209,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), actions=actions )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), valuedict=valuedict, actions=actions )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
@@ -239,8 +251,8 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     for val in soup.find_all("b") :
         if "onclick" in val.attrs.keys() :
            vallabels = val.attrs["onclick"].split("\"")
-           if not soup.find("span", {"id": vallabels[3]}) : raise Exception("Generated html is invalid as label hidden box for label " + vallabel + " is missing")
-           if not soup.find("div", {"id": "value_details_" + vallabels[1]}) : raise Exception("Generated html is invalid as there is no place to show data for " + vallabel)
+           if not soup.find("span", {"id": vallabels[3]}) : raise Exception("Generated html is invalid as label hidden box for label " + vallabels[3] + " is missing")
+           if not soup.find("div", {"id": "value_details_" + vallabels[1]}) : raise Exception("Generated html is invalid as there is no place to show data for " + vallabell[1])
 
     # Now check the togglers
     for val in soup.find_all(attrs={'class': 'toggler'}) :

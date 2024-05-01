@@ -16,7 +16,16 @@ class PlumedFormatter(Formatter):
         self.egname=options["input_name"]
         self.hasload=options["hasload"]
         self.broken=options["broken"]
+        self.valuedict=options["valuedict"]
         self.actions=options["actions"]
+        self.valcolors = { 
+           "scalar": "black", 
+           "atoms": "violet", 
+           "vector": "blue", 
+           "matrix": "red", 
+           "grid": "green", 
+           "mix": "brown" 
+        }
 
     def format(self, tokensource, outfile):
         action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label = "", "", set(), [], 0, 0, 0, False, ""
@@ -31,7 +40,8 @@ class PlumedFormatter(Formatter):
                   # This outputs information on the values computed in the previous action for the header
                   if label not in all_labels : 
                      all_labels.add(label)
-                     if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+                     if label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict[label] )
+                     elif action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
                      else : 
                         outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
                         outfile.write('The ' + action + ' action with label <b>' + label + '</b> calculates something') 
@@ -137,7 +147,13 @@ class PlumedFormatter(Formatter):
                # Labels of actions
                if not self.broken and action!="" and label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
                elif label=="" : label = value.strip() 
-               outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '")\'>' + value + '</b>')
+               valtype = "mix"
+               if label in self.valuedict.keys() :
+                  valtype = "unset"
+                  for key, ddd in self.valuedict[label].items() :
+                      if valtype=="unset" : valtype = ddd["type"]
+                      elif valtype!=ddd["type"] : valtype = "mix" 
+               outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '","' + self.valcolors[valtype] + '")\'>' + value + '</b>')
             elif ttype==Comment :
                # Comments
                outfile.write('<span style="color:blue" class="comment">' + value + '</span>' )
@@ -194,7 +210,8 @@ class PlumedFormatter(Formatter):
         # Check if there is stuff to output for the last action in the file
         if len(label)>0 and label not in all_labels :
            all_labels.add( label )
-           if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+           if label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict[label] )
+           elif action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
            else : 
               outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
               outfile.write('The ' + action + ' action with label <b>' + label + '</b> calculates something')
@@ -224,6 +241,17 @@ class PlumedFormatter(Formatter):
                     if flag==value["flag"] : present=True
                 if present or value["flag"]=="default" : outfile.write('<tr><td width="5%">' + label + "." + key + '</td><td>' + value["description"] + '</td></tr>')
             outfile.write('</table>')
+        outfile.write('</span>')
 
+    def writeValueInfo( self, outfile, action, label, valinfo ) :
+        # Some header stuff 
+        outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
+        outfile.write('The ' + action + ' action with label <b>' + label + '</b>')
+        outfile.write(' calculates the following quantities:')
+        outfile.write('<table  align="center" frame="void" width="95%" cellpadding="5%">')
+        outfile.write('<tr><td width="5%"><b> Quantity </b>  </td><td width="5%"><b> Type </b>  </td><td><b> Description </b> </td></tr>')
+        for key, value in valinfo.items() :
+            outfile.write('<tr><td width="5%">' + key + '</td><td width="5%"><font color="' + self.valcolors[value["type"]] +'">' + value["type"] + '</font></td><td>' + value["description"] + '</td></tr>')
+        outfile.write('</table>') 
         outfile.write('</span>')
  
