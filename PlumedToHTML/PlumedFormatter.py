@@ -60,7 +60,7 @@ class PlumedFormatter(Formatter):
             elif ttype==Comment.Hashbang :
                # This handles the mechanism for closing the expanding shortcut
                if shortcut_state!=2 : raise ValueError("Should only find line to close shortcut between #EXPANSION and #ENDEXPANSION tags")
-               outfile.write('<span style="color:red" onclick=\'toggleDisplay("' + self.egname + expansion_label + '")\'>' + value + '</span>')
+               outfile.write('<span class="toggler" style="color:red" onclick=\'toggleDisplay("' + self.egname + expansion_label + '")\'>' + value + '</span>')
             elif ttype==Comment.Special or ttype==Comment.Preproc :
                # This handles the mechanisms for the expandable shortcuts
                act_label=""
@@ -102,7 +102,7 @@ class PlumedFormatter(Formatter):
                # whatever in KEYWORD=whatever 
                if action=="INCLUDE" and shortcut_state==1 : 
                   # special treatment for filename in INCLUDE FILE=filename
-                  outfile.write('<a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>' + value + '</a>') 
+                  outfile.write('<a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>' + value + '</a>') 
                else :
                   # notice special treatment here because we want to find labels so we can show paths
                   inputs, nocomma = value.split(","), True
@@ -177,16 +177,16 @@ class PlumedFormatter(Formatter):
                if notooltips :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">This action is not part of PLUMED and was included by using a LOAD command <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>') 
                elif shortcut_state==1 and default_state==1 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and it has <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>hidden defaults</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>') 
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and it has <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>hidden defaults</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>') 
                elif shortcut_state==1 and default_state==2 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and uses the <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>defaults shown here</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a> and uses the <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>defaults shown here</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                elif default_state==1 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action has <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>hidden defaults</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action has <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>hidden defaults</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                elif default_state==2 :
-                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action uses the <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>defaults shown here</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
+                    outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action uses the <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + "def" + label + '");\'>defaults shown here</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                elif shortcut_state==1 :
-                    if action=="INCLUDE" : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a>. Show <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>included file</a><i></i></div></div>')
-                    else : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
+                    if action=="INCLUDE" : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a>. Show <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>included file</a><i></i></div></div>')
+                    else : outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">' + self.keyword_dict[action]["description"] + ' This action is <a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>a shortcut</a>. <a href="' + self.keyword_dict[action]["hyperlink"] + '">More details</a><i></i></div></div>')
                else :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>')
         # Check if there is stuff to output for the last action in the file
