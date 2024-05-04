@@ -6,6 +6,7 @@ import pathlib
 import zipfile
 from lxml import etree
 from io import StringIO
+from bs4 import BeautifulSoup
 from contextlib import contextmanager
 from pygments import highlight
 from pygments.lexers import load_lexer_from_file
@@ -333,3 +334,18 @@ def get_html_header() :
     codes = hfile.read()
     hfile.close()
     return codes
+
+def compare_to_reference( output, reference ) :
+    """
+      Compare the html that is output by PlumedFormatter with the reference data.  This function is used for 
+      testing PlumedToHMTL
+    """
+    soup = BeautifulSoup( output, "html.parser" ) 
+    # Check that comments in PLUMED input have been detected correctly
+    if "comment" in reference.keys() :
+       soup_comments = soup.find(attrs={'class': 'comment'})
+       if len(soup_comments)!=len(reference["comments"]) : return False
+       for i in range(len(soup_comments)) :
+           if soup_comments[i]!=reference["comments"][i] : return False
+
+    return True

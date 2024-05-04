@@ -136,7 +136,7 @@ class PlumedFormatter(Formatter):
                outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '")\'>' + value + '</b>')
             elif ttype==Comment :
                # Comments
-               outfile.write('<span style="color:blue">' + value + '</span>' )
+               outfile.write('<span style="color:blue" class="comment">' + value + '</span>' )
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
                keywords.append( value.strip().upper() )

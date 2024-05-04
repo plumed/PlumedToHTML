@@ -6,6 +6,7 @@ from io import StringIO
 import subprocess
 from PlumedToHTML.PlumedLexer import PlumedLexer
 from PlumedToHTML.PlumedFormatter import PlumedFormatter
+from PlumedToHTML import compare_to_reference
 
 class TestPlumedFormatter(TestCase):
    def testSimple(self) :
@@ -28,9 +29,4 @@ class TestPlumedFormatter(TestCase):
                tokensource = list(PlumedLexer().get_tokens(item["input"]))
                output = StringIO() 
                f.format( tokensource, output )
-               data = {}
-               data["out"] = output.getvalue()
-               print( item["input"] )
-               print( json.dumps( data, indent=3 ) )
-               self.assertTrue( True )
-               #self.assertTrue( output.getvalue()==item["output"] )
+               self.assertTrue( compare_to_reference( output, item ) )

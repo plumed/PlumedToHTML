@@ -16,13 +16,8 @@ class TestPlumedToHTML(TestCase):
            with self.subTest(item=item):
                 actions = set({})
                 out = PlumedToHTML.test_and_get_html( item["input"], "plinp" + str(item["index"]), actions=actions )
-                print( item["input"] )
-                print( actions, item["actions"] )
-                data = {}
-                data["out"] = out
-                print( json.dumps( data, indent=3 ) )
                 self.assertTrue( actions==set(item["actions"]) ) 
-                #self.assertTrue( out==item["output"] and actions==set(item["actions"]) )
+                self.assertTrue( PlumedToHTML.compare_to_reference( out, item ) )
 
    def testHeader(self) :
        headerfilename = os.path.join(os.path.dirname(__file__),"../assets/header.html")
