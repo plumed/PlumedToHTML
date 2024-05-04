@@ -4,113 +4,131 @@
          "input": "d1: DISTANCE ATOMS=1,2",
          "index": 0,
          "actions": ["DISTANCE"],
-         "tooltips": ["DISTANCE", "ATOMS"]
+         "tooltips": ["DISTANCE", "ATOMS"],
+         "badges": ["pass"]
       },
       {
          "input": "# This is a comment \nd1: DISTANCE ATOMS=1,2",
          "index": 1,
          "actions": ["DISTANCE"],
          "comments": ["# This is a comment \n"],
-         "tooltips": ["DISTANCE", "ATOMS"]
+         "tooltips": ["DISTANCE", "ATOMS"],
+         "badges": ["pass"]
       },
       {
          "input": "d1: DISTANCE ATOMS=1,2  # This is a comment\n",
          "index": 2,
          "actions": ["DISTANCE"],   
          "comments": ["# This is a comment\n"],
-         "tooltips": ["DISTANCE", "ATOMS"]
+         "tooltips": ["DISTANCE", "ATOMS"],
+         "badges": ["pass"]
       },
       {
          "input": "d1: DISTANCE ... \n ATOMS=1,2 COMPONENTS \n ...",
          "index": 3,
          "actions": ["DISTANCE"],
-         "tooltips": ["DISTANCE", "ATOMS", "COMPONENTS"] 
+         "tooltips": ["DISTANCE", "ATOMS", "COMPONENTS"],
+         "badges": ["pass"] 
       },
       {
          "input": "DISTANCE ATOMS=1,2 LABEL=d1 \nPRINT ARG=d1 FILE=colvar",
          "index": 4,
          "actions": ["DISTANCE", "PRINT"],
-         "tooltips": ["DISTANCE", "ATOMS", "LABEL", "PRINT", "ARG", "FILE"] 
+         "tooltips": ["DISTANCE", "ATOMS", "LABEL", "PRINT", "ARG", "FILE"],
+         "badges": ["pass"]
       },
       {
          "input": "d1: DISTANCE ATOMS=1,2 \nrp: RESTRAINT ARG=d1 KAPPA=1 AT=1",
          "index": 5,
          "actions": ["RESTRAINT", "DISTANCE"],
-         "tooltips": ["DISTANCE", "ATOMS", "RESTRAINT", "ARG", "KAPPA", "AT", "RESTRAINT", "ARG", "KAPPA", "AT", "SLOPE"]
+         "tooltips": ["DISTANCE", "ATOMS", "RESTRAINT", "ARG", "KAPPA", "AT", "RESTRAINT", "ARG", "KAPPA", "AT", "SLOPE"],
+         "badges": ["pass"]
       },
       {
          "input": "d1: DISTANCE ATOMS=1,2 \nRESTRAINT ... \n ARG=d1 KAPPA=1 AT=1 LABEL=rp \n ...",
          "index": 6,
          "actions": ["DISTANCE", "RESTRAINT"],
-         "tooltips": ["DISTANCE", "ATOMS", "RESTRAINT", "ARG", "KAPPA", "AT", "LABEL", "RESTRAINT", "ARG", "KAPPA", "AT", "LABEL", "SLOPE"] 
+         "tooltips": ["DISTANCE", "ATOMS", "RESTRAINT", "ARG", "KAPPA", "AT", "LABEL", "RESTRAINT", "ARG", "KAPPA", "AT", "LABEL", "SLOPE"],
+         "badges": ["pass"] 
       },
       {
          "input": "phi: TORSION ATOMS=1,2,3,4 \nrp: RESTRAINT ARG=phi AT=1 KAPPA=50.0 \n hh: WHAM_HISTOGRAM ARG=phi BIAS=rp.bias TEMP=300 GRID_MIN=-pi GRID_MAX=pi GRID_BIN=50",
          "index": 7,
          "actions": ["WHAM_HISTOGRAM", "TORSION", "COLLECT_FRAMES", "HISTOGRAM", "RESTRAINT", "REWEIGHT_WHAM"],
-         "tooltips": ["TORSION", "ATOMS", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA", "SLOPE", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "STRIDE", "REWEIGHT_WHAM", "ARG", "TEMP", "COLLECT_FRAMES", "LOGWEIGHTS", "STRIDE", "ARG", "HISTOGRAM", "ARG", "GRID_MIN", "GRID_MAX", "GRID_BIN", "KERNEL"]
+         "tooltips": ["TORSION", "ATOMS", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA", "SLOPE", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "STRIDE", "REWEIGHT_WHAM", "ARG", "TEMP", "COLLECT_FRAMES", "LOGWEIGHTS", "STRIDE", "ARG", "HISTOGRAM", "ARG", "GRID_MIN", "GRID_MAX", "GRID_BIN", "KERNEL"],
+         "badges": ["pass"]
       },
       {
          "input": "phi: TORSION ATOMS=1,2,3,4 \nrp: RESTRAINT ARG=phi AT=1 KAPPA=50.0 \n hh: WHAM_HISTOGRAM ... \n ARG=phi BIAS=rp.bias TEMP=300 GRID_MIN=-pi GRID_MAX=pi GRID_BIN=50 \n ...",
          "index": 8,
          "actions": ["WHAM_HISTOGRAM", "TORSION", "COLLECT_FRAMES", "HISTOGRAM", "RESTRAINT", "REWEIGHT_WHAM"],
-         "tooltips": ["TORSION", "ATOMS", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA", "SLOPE", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "STRIDE", "REWEIGHT_WHAM", "ARG", "TEMP", "COLLECT_FRAMES", "LOGWEIGHTS", "STRIDE", "ARG", "HISTOGRAM", "ARG", "GRID_MIN", "GRID_MAX", "GRID_BIN", "KERNEL"]
+         "tooltips": ["TORSION", "ATOMS", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA", "SLOPE", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "STRIDE", "REWEIGHT_WHAM", "ARG", "TEMP", "COLLECT_FRAMES", "LOGWEIGHTS", "STRIDE", "ARG", "HISTOGRAM", "ARG", "GRID_MIN", "GRID_MAX", "GRID_BIN", "KERNEL"],
+         "badges": ["pass"]
       },
       {
          "input": "phi: TORSION __FILL__ \nd: DISTANCE ATOMS=1,2 __FILL__ \nPRINT ARG=__FILL__ FILE=colvar \n#SOLUTION \nphi: TORSION ATOMS=1,2,3,4 \nd: DISTANCE ATOMS=1,2 COMPONENTS \nPRINT ARG=phi,d.z FILE=colvar",
          "index": 9,
          "actions": ["TORSION", "DISTANCE", "PRINT"],
-         "tooltips": ["TORSION", "DISTANCE", "ATOMS", "PRINT", "ARG", "FILE", "TORSION", "ATOMS", "DISTANCE", "ATOMS", "COMPONENTS", "PRINT", "ARG", "FILE"] 
+         "tooltips": ["TORSION", "DISTANCE", "ATOMS", "PRINT", "ARG", "FILE", "TORSION", "ATOMS", "DISTANCE", "ATOMS", "COMPONENTS", "PRINT", "ARG", "FILE"],
+         "badges": ["pass", "incomplete"] 
       },
       {
          "input": "DISTANCE ATOMS=1,2 LABEL=d1",
          "index": 10,
          "actions": ["DISTANCE"],
-         "tooltips": ["DISTANCE", "ATOMS", "LABEL"]
+         "tooltips": ["DISTANCE", "ATOMS", "LABEL"],
+         "badges": ["pass"]
       },
       {
          "input": "d1: DISTANCE",
          "index": 11,
          "actions": ["DISTANCE"],
-         "tooltips": ["DISTANCE"]
+         "tooltips": ["DISTANCE"],
+         "badges": ["fail"]
       },
       {
          "input": "LOAD FILE=Distance2.cpp\ncv: DEBYE_STRUCTURE_FACTOR CUTOFF=10.5 ACTIVE_Q=2.070595",
          "index": 12,
          "actions": ["LOAD", "DEBYE_STRUCTURE_FACTOR"],
-         "tooltips": ["LOAD", "FILE", "DEBYE_STRUCTURE_FACTOR"] 
+         "tooltips": ["LOAD", "FILE", "DEBYE_STRUCTURE_FACTOR"],
+         "badges": ["fail", "load"] 
       },
       {
-         "input": "INCLUDE FILE=tdata/testInclude.inc",
+         "input": "dist: DISTANCE ATOMS=1,2\n INCLUDE FILE=tdata/testInclude.inc",
          "index": 13,
-         "actions": ["RESTRAINT", "INCLUDE"],
-         "tooltips": ["INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"]
+         "actions": ["DISTANCE", "RESTRAINT", "INCLUDE"],
+         "tooltips": ["DISTANCE", "ATOMS", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"],
+         "badges": ["pass"]
       },
       {
-         "input": "INCLUDE FILE=tdata/recursive.inc",
+         "input": "dist: DISTANCE ATOMS=1,2\n INCLUDE FILE=tdata/recursive.inc",
          "index": 14,
-         "actions": ["RESTRAINT", "INCLUDE"],
-         "tooltips": ["INCLUDE", "FILE", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"]
+         "actions": ["DISTANCE", "RESTRAINT", "INCLUDE"],
+         "tooltips": ["DISTANCE", "ATOMS", "INCLUDE", "FILE", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"],
+         "badges": ["pass"]
       },
       {
         "input": "#INCLUDE FILE=tdata/notthere.inc",
         "index": 15,
         "actions": [],
         "comments": ["#INCLUDE FILE=tdata/notthere.inc"],
-        "tooltips": []
+        "tooltips": [],
+        "badges": ["pass"]
       },
       {  
-         "input": "INCLUDE FILE=tdata/testInclude.inc   # Trailing comment",
+         "input": "dist: DISTANCE ATOMS=1,2\n INCLUDE FILE=tdata/testInclude.inc   # Trailing comment",
          "index": 16,
-         "actions": ["RESTRAINT", "INCLUDE"],
+         "actions": ["DISTANCE", "RESTRAINT", "INCLUDE"],
          "comments": ["# Trailing comment"],
-         "tooltips": ["INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"]
+         "tooltips": ["DISTANCE", "ATOMS", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"],
+         "badges": ["pass"]
       },
       {
         "input": "d: DISTANCE __FILL__=1,2 \n#SOLUTION \n d: DISTANCE ATOMS=1,2",
         "index": 17,
         "actions": ["DISTANCE"],
-        "tooltips": ["DISTANCE", "DISTANCE", "ATOMS"]
+        "tooltips": ["DISTANCE", "DISTANCE", "ATOMS"],
+        "badges": ["pass", "incomplete"]
       }
    ]
 }
