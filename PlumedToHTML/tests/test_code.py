@@ -21,11 +21,6 @@ class TestPlumedToHTML(TestCase):
                 self.assertTrue( actions==set(item["actions"]) ) 
                 self.assertTrue( PlumedToHTML.compare_to_reference( out, item ) )
                 soup = BeautifulSoup( out, "html.parser" )
-                # Check that there are places for the value descriptions to appear
-                for val in soup.find_all("b") :
-                    if "onclick" in val.attrs.keys() :
-                       vallabel = val.attrs["onclick"].split("\"")[1]
-                       self.assertTrue( soup.find("div", {"id": "value_details_" + vallabel})!=None )
                 # Check the badges 
                 out_badges = soup.find_all("img")
                 print( out_badges )

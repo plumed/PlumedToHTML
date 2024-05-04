@@ -233,6 +233,14 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     except etree.XMLSyntaxError as e:
        raise Exception("Generated html is invalid as " + str(e.error_log) ) from e
 
+    # Check everything that is marked as a clickable value has something that will appear
+    # when you click it
+    soup = BeautifulSoup( html, "html.parser" )
+    for val in soup.find_all("b") :
+        if "onclick" in val.attrs.keys() :
+           vallabels = val.attrs["onclick"].split("\"")
+           if not soup.find("span", {"id": vallabels[3]}) : raise Exception("Generated html is invalid as label hidden box for label " + vallabel + " is missing")
+           if not soup.find("div", {"id": "value_details_" + vallabels[1]}) : raise Exception("Generated html is invalid as there is no place to show data for " + vallabel)
     return html
  
 def resolve_includes( srcdir, inpt, foundfiles ) :
@@ -355,12 +363,5 @@ def compare_to_reference( output, reference ) :
        if len(soup_tooltips)!=len(reference["tooltips"]) : return False
        for i in range(len(soup_tooltips)) :
            if soup_tooltips[i].contents[0]!=reference["tooltips"][i] : return False
-
-    # Check everything that is marked as a clickable value has something that will appear
-    # when you click it
-    for val in soup.find_all("b") :
-        if "onclick" in val.attrs.keys() :
-           vallabel = val.attrs["onclick"].split("\"")[3]
-           if not soup.find("span", {"id": vallabel}) : return False
 
     return True
