@@ -4,6 +4,8 @@ import re
 import json
 import pathlib
 import zipfile
+from lxml import etree
+from io import StringIO
 from contextlib import contextmanager
 from pygments import highlight
 from pygments.lexers import load_lexer_from_file
@@ -217,12 +219,18 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
        html += "</div>\n"
        # This is the solution with the commplete input
        html += "<div style=\"display:none;\" id=\"" + name + "_long\">"
+       plumed_formatter.egname = plumed_formatter.egname + "_sol"
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
        html += '</div>\n'
     else : 
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
+    # Test output is valid parsable html
+    try :
+       etree.parse(StringIO(html), etree.HTMLParser(recover=False))
+    except etree.XMLSyntaxError as e:
+       raise Exception("Generated html is invalid as " + str(e.error_log) ) from e
 
     return html
  

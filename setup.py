@@ -19,7 +19,7 @@ setuptools.setup(
          "License :: Freely Distributable",
          "Operating System :: OS Independent",
      ],
-     install_requires=['pygments','requests'],
+     install_requires=['lxml','pygments','requests'],
      test_suite='nose.collector',
      tests_require=['nose'],
  )
