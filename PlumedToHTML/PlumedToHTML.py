@@ -356,4 +356,11 @@ def compare_to_reference( output, reference ) :
        for i in range(len(soup_tooltips)) :
            if soup_tooltips[i].contents[0]!=reference["tooltips"][i] : return False
 
+    # Check everything that is marked as a clickable value has something that will appear
+    # when you click it
+    for val in soup.find_all("b") :
+        if "onclick" in val.attrs.keys() :
+           vallabel = val.attrs["onclick"].split("\"")[3]
+           if not soup.find("span", {"id": vallabel}) : return False
+
     return True

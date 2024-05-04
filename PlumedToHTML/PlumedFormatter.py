@@ -29,9 +29,13 @@ class PlumedFormatter(Formatter):
                   action, label, keywords, notooltips = "", "", [], False
                else :
                   # This outputs information on the values computed in the previous action for the header
-                  if "output" in self.keyword_dict[action]["syntax"] and label not in all_labels : 
+                  if label not in all_labels : 
                      all_labels.add(label)
-                     self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+                     if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+                     else : 
+                        outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
+                        outfile.write('The ' + action + ' action with label <b>' + label + '</b> calculates something') 
+                        outfile.write('</span>') 
                   # Reset everything for the new action
                   action, label, keywords = "", "", []
 
@@ -186,9 +190,13 @@ class PlumedFormatter(Formatter):
                else :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>')
         # Check if there is stuff to output for the last action in the file
-        if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] and len(label)>0 and label not in all_labels :
+        if len(label)>0 and label not in all_labels :
            all_labels.add( label )
-           self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+           if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+           else : 
+              outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
+              outfile.write('The ' + action + ' action with label <b>' + label + '</b> calculates something')
+              outfile.write('</span>')
         outfile.write('</pre>')
 
     def writeValuesData( self, outfile, action, label, keywords, outdict ) :
