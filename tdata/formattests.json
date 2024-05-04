@@ -13,11 +13,11 @@
           "tooltips": ["DISTANCE", "ATOMS", "COMPONENTS"]
        },
        {
-          "input": "#NODEFAULT \nd1: DISTANCE ATOMS=1,2\n#DEFAULT \nd1: DISTANCE ATOMS=1,2 COMPONENTS\n#ENDDEFAULT\n",
+          "input": "#NODEFAULT d1\nd1: DISTANCE ATOMS=1,2\n#DEFAULT d1\nd1: DISTANCE ATOMS=1,2 COMPONENTS\n#ENDDEFAULT d1\n",
           "tooltips": ["DISTANCE", "ATOMS", "DISTANCE", "ATOMS", "COMPONENTS"]
        },
        {
-          "input": "#SHORTCUT \nd1: DISTANCE ATOMS=1,2\n \n #EXPANSION \nd1: DISTANCE ATOMS=1,2 COMPONENTS\n#ENDEXPANSION\n",
+          "input": "#SHORTCUT d1\nd1: DISTANCE ATOMS=1,2\n \n #EXPANSION d1\nd1: DISTANCE ATOMS=1,2 COMPONENTS\n#ENDEXPANSION d1\n",
           "tooltips": ["DISTANCE", "ATOMS", "DISTANCE", "ATOMS", "COMPONENTS"]
        },
        {
@@ -36,7 +36,7 @@
          "tooltips": ["DISTANCE", "ATOMS", "PRINT", "ARG", "BIASVALUE", "ARG"]
        },
        {
-         "input": "#SHORTCUT \n #NODEFAULT \n d1: DISTANCE ATOMS=1,2\n #DEFAULT \n d1: DISTANCE ATOMS=1,2\n #ENDDEFAULT \n #EXPANSION \n d1: DISTANCE ATOMS=1,2\n #ENDEXPANSION\n",
+         "input": "#SHORTCUT d1\n #NODEFAULT d1\n d1: DISTANCE ATOMS=1,2\n #DEFAULT d1\n d1: DISTANCE ATOMS=1,2\n #ENDDEFAULT d1\n #EXPANSION d1\n d1: DISTANCE ATOMS=1,2\n #ENDEXPANSION d1\n",
          "tooltips": ["DISTANCE", "ATOMS", "DISTANCE", "ATOMS", "DISTANCE", "ATOMS"]
        },
        {

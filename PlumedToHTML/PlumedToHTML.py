@@ -210,7 +210,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     if found_load :
        html += '<tr><td style="padding:1px"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></td></tr>\n'
     if len(incomplete)>0 : 
-       html += "<tr><td style=\"padding:0px\"><img src=\"https://img.shields.io/badge/" + tested[-1] + "-incomplete-yellow.svg\" alt=\"tested on " + tested[-1] + "\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'/></td></tr>\n" 
+       html += "<tr><td style=\"padding:0px\"><img class=\"toggler\" src=\"https://img.shields.io/badge/" + tested[-1] + "-incomplete-yellow.svg\" alt=\"tested on " + tested[-1] + "\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'/></td></tr>\n" 
     html += '</table></div></div>\n' 
     if len(incomplete)>0 : 
        # This creates the input with the __FILL__ 
@@ -241,6 +241,18 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
            vallabels = val.attrs["onclick"].split("\"")
            if not soup.find("span", {"id": vallabels[3]}) : raise Exception("Generated html is invalid as label hidden box for label " + vallabel + " is missing")
            if not soup.find("div", {"id": "value_details_" + vallabels[1]}) : raise Exception("Generated html is invalid as there is no place to show data for " + vallabel)
+
+    # Now check the togglers
+    for val in soup.find_all(attrs={'class': 'toggler'}) :
+        if "onclick" in val.attrs.keys() :
+           switchval = val.attrs["onclick"].split("\"")[1]
+           if not soup.find("span",{"id": switchval + "_long"} ) : raise Exception("Generated html is invalid as could not find " + switchval + "_long") 
+           if not soup.find("span",{"id": switchval + "_short"} ) : raise Exception("Generated html is invalid as could not find " + switchval + "_short")
+        elif "onmousedown" in val.attrs.keys() :
+           switchval = val.attrs["onmousedown"].split("\"")[1]
+           if not soup.find("div",{"id": switchval + "_long"} ) : raise Exception("Generated html is invalid as could not find " + switchval + "_long")
+           if not soup.find("div",{"id": switchval + "_short"} ) : raise Exception("Generated html is invalid as could not find " + switchval + "_short")
+        else : raise Exception("Could not find toggler command for " + val)
     return html
  
 def resolve_includes( srcdir, inpt, foundfiles ) :
