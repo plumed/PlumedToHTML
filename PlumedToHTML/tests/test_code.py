@@ -14,6 +14,7 @@ class TestPlumedToHTML(TestCase):
        # Now run over all the inputs in the json
        for item in tests["regtests"] :
            with self.subTest(item=item):
+                print("INPUT", item["index"], item["input"] )
                 actions = set({})
                 out = PlumedToHTML.test_and_get_html( item["input"], "plinp" + str(item["index"]), actions=actions )
                 self.assertTrue( actions==set(item["actions"]) ) 

@@ -26,7 +26,8 @@ class TestPlumedFormatter(TestCase):
        # Now run over all the inputs in the json
        for item in tests["regtests"] :
            with self.subTest(item=item): 
+               print("INPUT", item["input"] )
                tokensource = list(PlumedLexer().get_tokens(item["input"]))
                output = StringIO() 
                f.format( tokensource, output )
-               self.assertTrue( compare_to_reference( output, item ) )
+               self.assertTrue( compare_to_reference( output.getvalue(), item ) )

@@ -343,9 +343,17 @@ def compare_to_reference( output, reference ) :
     soup = BeautifulSoup( output, "html.parser" ) 
     # Check that comments in PLUMED input have been detected correctly
     if "comment" in reference.keys() :
-       soup_comments = soup.find(attrs={'class': 'comment'})
+       soup_comments = soup.find_all(attrs={'class': 'comment'})
        if len(soup_comments)!=len(reference["comments"]) : return False
        for i in range(len(soup_comments)) :
-           if soup_comments[i]!=reference["comments"][i] : return False
+           if soup_comments[i].get_text()!=reference["comments"][i] : return False
+
+    # Check that everything that should be rendered as a tooltip has been rendered as a tooltip
+    # This is action names and keywords
+    if "tooltips" in reference.keys() :
+       soup_tooltips = soup.find_all(attrs={'class': 'tooltip'})
+       if len(soup_tooltips)!=len(reference["tooltips"]) : return False
+       for i in range(len(soup_tooltips)) :
+           if soup_tooltips[i].contents[0]!=reference["tooltips"][i] : return False
 
     return True
