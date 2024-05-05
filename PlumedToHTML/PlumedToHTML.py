@@ -309,7 +309,7 @@ def resolve_includes( srcdir, inpt, foundfiles ) :
 
 def resolve_expansions( inpt, jsondata ) :
     # Stop expanding if we have reached the bottom 
-    if len(jsondata.keys())==0 : return inpt
+    if len(jsondata.keys())==0 : return inpt + "\n"
 
     incontinuation, final_inpt, clines = False, "", ""
     for line in inpt.splitlines() :        
