@@ -89,7 +89,7 @@
       {
          "input": "LOAD FILE=Distance2.cpp\ncv: DEBYE_STRUCTURE_FACTOR CUTOFF=10.5 ACTIVE_Q=2.070595",
          "index": 12,
-         "actions": ["LOAD", "DEBYE_STRUCTURE_FACTOR"],
+         "actions": ["LOAD"],
          "tooltips": ["LOAD", "FILE", "DEBYE_STRUCTURE_FACTOR"],
          "badges": ["fail", "load"] 
       },

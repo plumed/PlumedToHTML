@@ -185,11 +185,12 @@ class PlumedFormatter(Formatter):
             elif ttype==Keyword :
                # Name of action
                action, notooltips = value.strip().upper(), False
-               # Store name of action in set that contains all action names
-               self.actions.add(action)
                if action not in self.keyword_dict : 
                   if self.hasload or self.broken : notooltips = True
                   else : raise Exception("no action " + action + " in dictionary")
+               else :
+                  # Store name of action in set that contains all action names
+                  self.actions.add(action)
                if default_state!=0 or shortcut_state==1 : 
                   if label!="" and label!=act_label : raise Exception("mismatched label and act_label for shortcut/default") 
                if notooltips :
