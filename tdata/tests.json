@@ -52,20 +52,6 @@
          "badges": ["pass"] 
       },
       {
-         "input": "phi: TORSION ATOMS=1,2,3,4 \nrp: RESTRAINT ARG=phi AT=1 KAPPA=50.0 \n hh: WHAM_HISTOGRAM ARG=phi BIAS=rp.bias TEMP=300 GRID_MIN=-pi GRID_MAX=pi GRID_BIN=50",
-         "index": 7,
-         "actions": ["WHAM_HISTOGRAM", "TORSION", "COLLECT_FRAMES", "HISTOGRAM", "RESTRAINT", "REWEIGHT_WHAM"],
-         "tooltips": ["TORSION", "ATOMS", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA", "SLOPE", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "STRIDE", "REWEIGHT_WHAM", "ARG", "TEMP", "COLLECT_FRAMES", "LOGWEIGHTS", "STRIDE", "ARG", "HISTOGRAM", "ARG", "GRID_MIN", "GRID_MAX", "GRID_BIN", "KERNEL"],
-         "badges": ["pass"]
-      },
-      {
-         "input": "phi: TORSION ATOMS=1,2,3,4 \nrp: RESTRAINT ARG=phi AT=1 KAPPA=50.0 \n hh: WHAM_HISTOGRAM ... \n ARG=phi BIAS=rp.bias TEMP=300 GRID_MIN=-pi GRID_MAX=pi GRID_BIN=50 \n ...",
-         "index": 8,
-         "actions": ["WHAM_HISTOGRAM", "TORSION", "COLLECT_FRAMES", "HISTOGRAM", "RESTRAINT", "REWEIGHT_WHAM"],
-         "tooltips": ["TORSION", "ATOMS", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA", "SLOPE", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "WHAM_HISTOGRAM", "ARG", "BIAS", "TEMP", "GRID_MIN", "GRID_MAX", "GRID_BIN", "STRIDE", "REWEIGHT_WHAM", "ARG", "TEMP", "COLLECT_FRAMES", "LOGWEIGHTS", "STRIDE", "ARG", "HISTOGRAM", "ARG", "GRID_MIN", "GRID_MAX", "GRID_BIN", "KERNEL"],
-         "badges": ["pass"]
-      },
-      {
          "input": "phi: TORSION __FILL__ \nd: DISTANCE ATOMS=1,2 __FILL__ \nPRINT ARG=__FILL__ FILE=colvar \n#SOLUTION \nphi: TORSION ATOMS=1,2,3,4 \nd: DISTANCE ATOMS=1,2 COMPONENTS \nPRINT ARG=phi,d.z FILE=colvar",
          "index": 9,
          "actions": ["TORSION", "DISTANCE", "PRINT"],
