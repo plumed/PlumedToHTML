@@ -1,6 +1,7 @@
 from pygments.formatter import Formatter
 from pygments.token import Text, Comment, Literal, Keyword, Name, Generic, String
 from requests.exceptions import InvalidJSONError
+import html
 import json
 
 class PlumedFormatter(Formatter):
@@ -156,7 +157,7 @@ class PlumedFormatter(Formatter):
                outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '","' + self.valcolors[valtype] + '")\'>' + value + '</b>')
             elif ttype==Comment :
                # Comments
-               outfile.write('<span style="color:blue" class="comment">' + value + '</span>' )
+               outfile.write('<span style="color:blue" class="comment">' + html.escape(value) + '</span>' )
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
                keywords.append( value.strip().upper() )
