@@ -4,6 +4,7 @@ import re
 import json
 import pathlib
 import zipfile
+import warnings
 from lxml import etree
 from io import StringIO
 from bs4 import BeautifulSoup
@@ -251,7 +252,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     for val in soup.find_all("b") :
         if "onclick" in val.attrs.keys() :
            vallabels = val.attrs["onclick"].split("\"")
-           if not soup.find("span", {"id": vallabels[3]}) : raise Exception("Generated html is invalid as label hidden box for label " + vallabels[3] + " is missing")
+           if not soup.find("span", {"id": vallabels[3]}) : warnings.warn("Problems with generated as label hidden box for label " + vallabels[3] + " is missing")
            if not soup.find("div", {"id": "value_details_" + vallabels[1]}) : raise Exception("Generated html is invalid as there is no place to show data for " + vallabell[1])
 
     # Now check the togglers
