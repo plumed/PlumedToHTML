@@ -52,7 +52,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
     iff.write(test_inpt + "\n")
     iff.close()
     # Now do the test
-    broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json' ) #, valuefile='values_' + name + '.json' )
+    broken = test_plumed( "plumed", filename, header="", shortcutfile=name + '.json', valuefile='values_' + name + '.json' )
     # Retrieve the html that is output by plumed
     html = get_html( inpt, name, name, ("master",), (broken,), ("plumed",), actions )
     # Remove the tempory files that we created
