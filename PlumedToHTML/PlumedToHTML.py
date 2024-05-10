@@ -187,9 +187,11 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     # Check for shortcut file and build the modified input to read the shortcuts
     if os.path.exists( name + '.json' ) :
        # Read json file containing shortcuts
-       f = open( name + '.json' )
-       shortcutdata = json.load(f)
-       f.close()
+       with open(name + '.json') as f :
+           try:
+              shortcutdata = json.load(f)
+           except ValueError as ve:
+              raise InvalidJSONError(ve)
        # Put everything in to resolve the expansions.  We call this function recursively just in case there are shortcuts in shortcuts
        final_inpt = resolve_expansions( inpt, shortcutdata )
        # Remove the tempory files that we created
@@ -203,6 +205,8 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
               valuedict = json.load(f)
            except ValueError as ve:
               raise InvalidJSONError(ve)
+       # Remove the tempory files that we created
+       os.remove( 'values_' + name + ".json")
     else : valuedict = {}
 
     # Create the lexer that will generate the pretty plumed input
