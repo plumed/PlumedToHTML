@@ -173,7 +173,7 @@ class PlumedFormatter(Formatter):
                          if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
                          if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk.upper()]["description"].split('.')[0]
                      if not self.broken and not notooltips and not foundkey : 
-                        if self.hasload : foundkey, desc = True, 'There is a possibity that this action is not part of PLUMED and was included by using a LOAD command. This LOADing replaces one of the actions that is in PLUMED. You should thus be wary of the documentation in these tooltips and look at the cpp file that was loaded <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>'
+                        if self.hasload : foundkey, desc = True, 'There is a possibity that this action is not part of PLUMED and was included by using a LOAD command. This LOADing replaces one of the actions that is in PLUMED. You should thus be wary of the documentation in these tooltips and look at the cpp file that was loaded <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a>'
                         else : raise Exception("keyword " + value.strip().upper() + " is not in syntax for action " + action )
                   if desc=="" and self.broken : outfile.write( value )
                   else : outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
