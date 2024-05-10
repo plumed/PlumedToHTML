@@ -185,7 +185,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     found_load = "LOAD " in inpt
 
     # Check for shortcut file and build the modified input to read the shortcuts
-    if os.path.exists( name + '.json' ) :
+    if os.path.exists( name + '.json' ) and not any(broken) :
        # Read json file containing shortcuts
        with open(name + '.json') as f :
            try:
@@ -199,7 +199,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
     else : final_inpt = inpt   
 
     # Check for value dictionary to use to create labels
-    if os.path.exists( 'values_' + name + '.json') :
+    if os.path.exists( 'values_' + name + '.json') and not any(broken) :
        with open('values_' + name + '.json') as f :
            try:
               valuedict = json.load(f)
