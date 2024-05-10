@@ -194,9 +194,9 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
               raise Exception("invalid json for shortcut dictionary", ve)
        # Put everything in to resolve the expansions.  We call this function recursively just in case there are shortcuts in shortcuts
        final_inpt = resolve_expansions( inpt, shortcutdata )
-       # Remove the tempory files that we created
-       os.remove( name + ".json") 
-    else : final_inpt = inpt   
+    else : final_inpt = inpt  
+    # Remove the tempory files that we created
+    if os.path.exists( name + '.json' ) : os.remove( name + ".json")  
 
     # Check for value dictionary to use to create labels
     if os.path.exists( 'values_' + name + '.json') and not any(broken) :
@@ -205,9 +205,9 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
               valuedict = json.load(f)
            except json.JSONDecodeError as ve:
               raise Exception("invalid json for value dictionary", ve)
-       # Remove the tempory files that we created
-       os.remove( 'values_' + name + ".json")
     else : valuedict = {}
+    # Remove the tempory files that we created
+    if os.path.exists( 'values_' + name + '.json') : os.remove( 'values_' + name + ".json")
 
     # Create the lexer that will generate the pretty plumed input
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
