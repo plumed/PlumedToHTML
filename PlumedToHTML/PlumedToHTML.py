@@ -190,8 +190,8 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
        with open(name + '.json') as f :
            try:
               shortcutdata = json.load(f)
-           except ValueError as ve:
-              raise InvalidJSONError(ve)
+           except json.JSONDecodeError as ve:
+              raise Exception("invalid json for shortcut dictionary", ve)
        # Put everything in to resolve the expansions.  We call this function recursively just in case there are shortcuts in shortcuts
        final_inpt = resolve_expansions( inpt, shortcutdata )
        # Remove the tempory files that we created
@@ -203,8 +203,8 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, actions=set({}) ) :
        with open('values_' + name + '.json') as f :
            try:
               valuedict = json.load(f)
-           except ValueError as ve:
-              raise InvalidJSONError(ve)
+           except json.JSONDecodeError as ve:
+              raise Exception("invalid json for value dictionary", ve)
        # Remove the tempory files that we created
        os.remove( 'values_' + name + ".json")
     else : valuedict = {}
