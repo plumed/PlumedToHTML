@@ -77,7 +77,7 @@ class PlumedFormatter(Formatter):
                act_label=""
                if "#NODEFAULT" in value :
                   if default_state!=0 : raise ValueError("Found rogue #NODEFAULT")
-                  default_state, act_label = 1, value.replace("#NODEFAULT","").strip()
+                  default_state, act_label = 1, html.escape( value.replace("#NODEFAULT","").strip() )
                   outfile.write('<span id="' + self.egname + "def" + act_label + '_short">')
                elif "#ENDDEFAULT" in value :
                   if default_state!=2 : raise ValueError("Found rogue #ENDDEFAULT")
@@ -85,24 +85,24 @@ class PlumedFormatter(Formatter):
                   outfile.write('</span>')
                elif "#DEFAULT" in value :
                   if default_state!=1 : raise ValueError("Found rogue #DEFAULT")
-                  act_label, default_state = value.replace("#DEFAULT","").strip(), 2
+                  act_label, default_state = html.escape( value.replace("#DEFAULT","").strip() ), 2
                   outfile.write('</span><span id="' + self.egname + "def" + act_label + '_long" style="display:none;">')
                elif "#SHORTCUT" in value :
                   if shortcut_depth==0 and shortcut_state!=0 : raise ValueError("Found rogue #SHORTCUT")
                   shortcut_state, shortcut_depth = 1, shortcut_depth + 1
-                  act_label = value.replace("#SHORTCUT","").strip()
+                  act_label = html.escape( value.replace("#SHORTCUT","").strip() )
                   outfile.write('<span id="' + self.egname + act_label + '_short">')
                elif "#ENDEXPANSION" in value :
                   if shortcut_state!=2 : raise ValueError("Should only find #ENDEXPANSION tag after #EXPANSION tag")
                   shortcut_depth = shortcut_depth - 1
                   if shortcut_depth==0 : shortcut_state=0
-                  act_label = value.replace("#ENDEXPANSION","").strip()
+                  act_label = html.escape( value.replace("#ENDEXPANSION","").strip() )
                   # Now output the end of the expansion
                   outfile.write('<span style="color:blue"># --- End of included input --- </span></span>')
                elif "#EXPANSION" in value :
                   if shortcut_state!=1 : raise ValueError("Should only find #EXPANSION tag after #SHORTCUT tag")
                   shortcut_state = 2
-                  act_label, expansion_label = value.replace("#EXPANSION","").strip(), value.replace("#EXPANSION","").strip()
+                  act_label, expansion_label = html.escape( value.replace("#EXPANSION","").strip() ), value.replace("#EXPANSION","").strip()
                   outfile.write('</span><span id="' + self.egname + act_label + '_long" style="display:none;">')
                else : raise ValueError("Comment.Special should only catch string that are #SHORTCUT, #EXPANSION or #ENDEXPANSION")
                # This sets up the label at the start of a new block with NODEFAULT or SHORTCUT
@@ -147,7 +147,7 @@ class PlumedFormatter(Formatter):
             elif ttype==String or ttype==String.Double :
                # Labels of actions
                if not self.broken and action!="" and label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
-               elif label=="" : label = value.strip() 
+               elif label=="" : label = html.escape( value.strip() ) 
                valtype = "mix"
                if label in self.valuedict.keys() :
                   valtype = "unset"
