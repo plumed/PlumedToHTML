@@ -142,7 +142,7 @@ class PlumedFormatter(Formatter):
                             if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
                             tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
                         outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
-                      else : outfile.write( inp )
+                      else : outfile.write( html.escape(inp) )
                       nocomma = False 
             elif ttype==String or ttype==String.Double :
                # Labels of actions
