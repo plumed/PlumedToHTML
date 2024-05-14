@@ -278,7 +278,34 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, actio
            if not soup.find("div",{"id": switchval + "_short"} ) : raise Exception("Generated html is invalid as could not find " + switchval + "_short")
         else : raise Exception("Could not find toggler command for " + val)
     return html
- 
+
+def get_mermaid( inpt, force ) :
+    """
+     Generate the mermaid graph showing how data passes through PLUMED input file
+
+     Keyword arguments:
+     inpt -- A string containing the PLUMED input
+     force -- Bool that if true ensures we show the graph for the backwards pass through the action list
+    """
+    # Write the plumed input to a file
+    iff = open( "mermaid_plumed.dat", "w+")
+    iff.write(inpt+ "\n")
+    iff.close()
+    # Now check the input is OK
+    broken = test_plumed( "plumed", "mermaid_plumed.dat", header="" )
+    if broken!=0 : raise Exception("invalid plumed input file -- cannot create mermaid graph")
+    # Run mermaid
+    cmd = ['plumed', 'show_graph', '--plumed', 'mermaid_plumed.dat', '--out', 'mermaid.md']
+    if force : cmd.append("--force")
+    plumed_out = subprocess.run(cmd, capture_output=True, text=True )
+    mf = open("mermaid.md")
+    mermaid = mf.read()
+    mf.close()
+    # Remove stuff that was created
+    os.remove("mermaid_plumed.dat")
+    os.remove("mermaid.md")
+    return mermaid 
+
 def resolve_includes( srcdir, inpt, foundfiles ) :
     if not foundfiles or "INCLUDE" not in inpt : return foundfiles, inpt
 
