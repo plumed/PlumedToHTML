@@ -102,9 +102,6 @@ def test_plumed( executible, filename, header=[], shortcutfile=[], valuefile=[] 
         with open(errtxtfile,"w") as stderr:
              with cd(run_folder):
                  plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr )
-    # Remove *.so files from run folder to prevent clashes when we test with a different version of PLUMED
-    for item in os.listdir( run_folder ) :
-        if item.endswith(".so") : os.remove( os.path.join( run_folder, item ) ) 
     # write header and preamble to errfile
     with open(errfile,"w") as stderr:
         if len(header)>0 : print(header,file=stderr)
