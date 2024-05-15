@@ -279,7 +279,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, actio
         else : raise Exception("Could not find toggler command for " + val)
     return html
 
-def get_mermaid( inpt, force ) :
+def get_mermaid( executible, inpt, force ) :
     """
      Generate the mermaid graph showing how data passes through PLUMED input file
 
@@ -292,12 +292,13 @@ def get_mermaid( inpt, force ) :
     iff.write(inpt+ "\n")
     iff.close()
     # Now check the input is OK
-    broken = test_plumed( "plumed", "mermaid_plumed.dat", header="" )
+    broken = test_plumed( executible, "mermaid_plumed.dat", header="" )
     if broken!=0 : raise Exception("invalid plumed input file -- cannot create mermaid graph")
     # Run mermaid
-    cmd = ['plumed', 'show_graph', '--plumed', 'mermaid_plumed.dat', '--out', 'mermaid.md']
+    cmd = [executible, 'show_graph', '--plumed', 'mermaid_plumed.dat', '--out', 'mermaid.md']
     if force : cmd.append("--force")
-    plumed_out = subprocess.run(cmd, capture_output=True, text=True )
+    plumed_out = subprocess.run(cmd, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT )
+    if plumed_out.returncode!=0 : raise Exception("error running plumed show_graph")
     mf = open("mermaid.md")
     mermaid = mf.read()
     mf.close()
