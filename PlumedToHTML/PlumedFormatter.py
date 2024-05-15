@@ -40,8 +40,8 @@ class PlumedFormatter(Formatter):
                else :
                   # This outputs information on the values computed in the previous action for the header
                   if label not in all_labels : 
-                     if "shortcut_" + label not in self.valuedict.keys() : all_labels.add(label)
-                     if shortcut_state==1 and "shortcut_" + label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict["shortcut_" + label] )
+                     all_labels.add(label)
+                     if shortcut_state>0 and "shortcut_" + label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict["shortcut_" + label] )
                      elif label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict[label] )
                      elif action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
                      else : 
@@ -214,8 +214,8 @@ class PlumedFormatter(Formatter):
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>')
         # Check if there is stuff to output for the last action in the file
         if len(label)>0 and label not in all_labels :
-           if "shortcut_" + label not in self.valuedict.keys() : all_labels.add( label )
-           if shortcut_state==1 and "shortcut_" + label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict["shortcut_" + label] )
+           all_labels.add( label )
+           if shortcut_state>0 and "shortcut_" + label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict["shortcut_" + label] )
            elif label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict[label] )
            elif action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
            else : 
