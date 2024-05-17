@@ -39,11 +39,9 @@ class PlumedFormatter(Formatter):
                   action, label, keywords, notooltips = "", "", [], False
                else :
                   # This outputs information on the values computed in the previous action for the header
-                  if label not in all_labels : 
+                  if label not in self.valuedict.keys() and label not in all_labels : 
                      all_labels.add(label)
-                     if shortcut_state>0 and "shortcut_" + label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict["shortcut_" + label] )
-                     elif label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict[label] )
-                     elif action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+                     if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
                      else : 
                         outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
                         outfile.write('The ' + action + ' action with label <b>' + label + '</b> calculates something') 
@@ -153,9 +151,19 @@ class PlumedFormatter(Formatter):
                if label in self.valuedict.keys() :
                   valtype = "unset"
                   for key, ddd in self.valuedict[label].items() :
-                      if valtype=="unset" : valtype = ddd["type"]
+                      if key=="action" : continue
+                      elif valtype=="unset" : valtype = ddd["type"]
                       elif valtype!=ddd["type"] : valtype = "mix" 
-               outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '","' + self.valcolors[valtype] + '")\'>' + value + '</b>')
+               if shortcut_state==1 and "shortcut_" + label in self.valuedict.keys() : 
+                  outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '","' + self.egname + label + '_shortcut","' + self.valcolors[valtype] + '")\'>' + value + '</b>') 
+                  if label + "_shortcut" not in all_labels :
+                     all_labels.add(label + "_shortcut") 
+                     self.writeValueInfo( outfile, label, label + "_shortcut", self.valuedict["shortcut_" + label] )
+               else : 
+                  outfile.write('<b name="' + self.egname + label + '" onclick=\'showPath("' + self.divname + '","' + self.egname + label + '","' + self.egname + label + '","' + self.valcolors[valtype] + '")\'>' + value + '</b>')
+                  if label in self.valuedict.keys() and label not in all_labels :
+                     all_labels.add(label)
+                     self.writeValueInfo( outfile, label, label, self.valuedict[label] )
             elif ttype==Comment :
                # Comments
                outfile.write('<span style="color:blue" class="comment">' + html.escape(value) + '</span>' )
@@ -213,11 +221,9 @@ class PlumedFormatter(Formatter):
                else :
                     outfile.write('<div class="tooltip" style="color:green">' + value.strip() + '<div class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></div></div>')
         # Check if there is stuff to output for the last action in the file
-        if len(label)>0 and label not in all_labels :
+        if len(label)>0 and label not in all_labels and label not in self.valuedict.keys() :
            all_labels.add( label )
-           if shortcut_state>0 and "shortcut_" + label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict["shortcut_" + label] )
-           elif label in self.valuedict.keys() : self.writeValueInfo( outfile, action, label, self.valuedict[label] )
-           elif action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
+           if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
            else : 
               outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
               outfile.write('The ' + action + ' action with label <b>' + label + '</b> calculates something')
@@ -249,14 +255,15 @@ class PlumedFormatter(Formatter):
             outfile.write('</table>')
         outfile.write('</span>')
 
-    def writeValueInfo( self, outfile, action, label, valinfo ) :
+    def writeValueInfo( self, outfile, label, span_label, valinfo ) :
         # Some header stuff 
-        outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
-        outfile.write('The ' + action + ' action with label <b>' + label + '</b>')
+        outfile.write('<span style="display:none;" id="' + self.egname + span_label + r'">')
+        outfile.write('The ' + valinfo["action"] + ' action with label <b>' + label + '</b>')
         outfile.write(' calculates the following quantities:')
         outfile.write('<table  align="center" frame="void" width="95%" cellpadding="5%">')
         outfile.write('<tr><td width="5%"><b> Quantity </b>  </td><td width="5%"><b> Type </b>  </td><td><b> Description </b> </td></tr>')
         for key, value in valinfo.items() :
+            if key=="action" : continue
             outfile.write('<tr><td width="5%">' + key + '</td><td width="5%"><font color="' + self.valcolors[value["type"]] +'">' + value["type"] + '</font></td><td>' + value["description"] + '</td></tr>')
         outfile.write('</table>') 
         outfile.write('</span>')
