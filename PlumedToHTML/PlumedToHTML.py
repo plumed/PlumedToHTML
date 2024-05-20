@@ -152,7 +152,7 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
-def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, actions=set({}) ) :
+def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}) ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -259,15 +259,23 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, actio
 
     # Check everything that is marked as a clickable value has something that will appear
     # when you click it
-    soup = BeautifulSoup( html, "html.parser" )
+    nchecks, soup = 0, BeautifulSoup( html, "html.parser" )
     for val in soup.find_all("b") :
         if "onclick" in val.attrs.keys() :
-           vallabels = val.attrs["onclick"].split("\"")
+           nchecks, vallabels = nchecks + 1, val.attrs["onclick"].split("\"")
+           if maxchecks is not None and nchecks>maxchecks : 
+              warnings.warn("Only checked the html for the first " + str(maxchecks) + " of the " + str(len(soup.find_all("b"))) + " labels in input file to reduce computational expense. The output is most likely fine but has not been checked as carefully as inputs with fewer values")
+              break
            if not soup.find("span", {"id": vallabels[3]}) : warnings.warn("Problems with generated as label hidden box for label " + vallabels[3] + " is missing")
            if not soup.find("div", {"id": "value_details_" + vallabels[1]}) : raise Exception("Generated html is invalid as there is no place to show data for " + vallabell[1])
 
     # Now check the togglers
+    nchecks = 0 
     for val in soup.find_all(attrs={'class': 'toggler'}) :
+        nchecks = nchecks + 1 
+        if maxchecks is not None and nchecks>maxchecks : 
+           warnings.warn("Only checked the html for the first " + str(maxchecks) + " of the " + str(len(soup.find_all(attrs={'class': 'toggler'}))) + " shortcuts in the input file to reduce computational expense. The output is most likely fine but has not been checked as carefully as inputs with fewer shortcuts")
+           break
         if "onclick" in val.attrs.keys() :
            switchval = val.attrs["onclick"].split("\"")[1]
            if not soup.find("span",{"id": switchval + "_long"} ) : raise Exception("Generated html is invalid as could not find " + switchval + "_long") 
