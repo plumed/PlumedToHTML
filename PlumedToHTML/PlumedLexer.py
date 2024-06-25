@@ -26,8 +26,10 @@ class PlumedLexer(RegexLexer):
             (r'(\w+)(=)(@\S+:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
             (r'(\w+)(=)(@\S+:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
-            # Find KEYWORD with brackets around value
+            # Find KEYWORD with {} brackets around value
             (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
+            # Find KEYWORD with () brackets around value 
+            (r'(\w+)(=)((?s)\(.*?\))', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever 
             (r'(\w+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Generic))
          ],

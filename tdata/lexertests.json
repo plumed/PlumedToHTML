@@ -79,6 +79,10 @@
        {
          "input": "# This is a comment \n phi: TORSION ATOMS=1,2,3,4 # This is also a comment with : a colon",
          "output": "<div class=\"highlight\"><pre><span></span><span class=\"c\"># This is a comment </span>\n <span class=\"s\">phi</span>: <span class=\"k\">TORSION</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2,3,4</span> <span class=\"c\"># This is also a comment with : a colon</span>\n</pre></div>\n"
+       },
+       {
+         "input": "st_saxs: STATS ARG=(SAXS\\.q-.*) PARARG=(SAXS\\.exp-.*)",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">st_saxs</span>: <span class=\"k\">STATS</span> <span class=\"na\">ARG</span>=<span class=\"g\">(SAXS\\.q-.*)</span> <span class=\"na\">PARARG</span>=<span class=\"g\">(SAXS\\.exp-.*)</span>\n</pre></div>\n"
        }
    ]
 }
