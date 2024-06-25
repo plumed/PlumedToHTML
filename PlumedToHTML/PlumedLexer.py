@@ -28,8 +28,6 @@ class PlumedLexer(RegexLexer):
             (r'(\w+)(=)(@\S+:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
             # Find KEYWORD with {} brackets around value
             (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
-            # Find KEYWORD with () brackets around value 
-            (r'(\w+)(=)((?s)\(.*?\))', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever 
             (r'(\w+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Generic))
          ],
