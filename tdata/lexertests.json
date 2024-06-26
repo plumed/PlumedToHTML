@@ -85,8 +85,8 @@
         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">a</span>: <span class=\"k\">CUSTOM</span> <span class=\"na\">ARG</span>=<span class=\"g\">x</span> <span class=\"na\">PERIODIC</span>=<span class=\"g\">NO</span> <span class=\"na\">FUNC</span>=<span class=\"g\">(step(x-1</span><span class=\"err\">))</span>\n</pre></div>\n"
        },
        {
-         "input": "st_saxs: STATS ARG={SAXS\\.q-.*} PARARG={SAXS\\.exp-.*}",
-         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">st_saxs</span>: <span class=\"k\">STATS</span> <span class=\"na\">ARG</span>=<span class=\"g\">{SAXS\\.q-.*}</span> <span class=\"na\">PARARG</span>=<span class=\"g\">{SAXS\\.exp-.*}</span>\n</pre></div>\n"
+         "input": "st_saxs: STATS ARG={(SAXS\\.q-.*)} PARARG={(SAXS\\.exp-.*)}",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">st_saxs</span>: <span class=\"k\">STATS</span> <span class=\"na\">ARG</span>=<span class=\"g\">{(SAXS\\.q-.*)}</span> <span class=\"na\">PARARG</span>=<span class=\"g\">{(SAXS\\.exp-.*)}</span>\n</pre></div>\n"
        }
    ]
 }
