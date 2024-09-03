@@ -87,6 +87,10 @@
        {
          "input": "st_saxs: STATS ARG={(SAXS\\.q-.*)} PARARG={(SAXS\\.exp-.*)}",
          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">st_saxs</span>: <span class=\"k\">STATS</span> <span class=\"na\">ARG</span>=<span class=\"g\">{(SAXS\\.q-.*)}</span> <span class=\"na\">PARARG</span>=<span class=\"g\">{(SAXS\\.exp-.*)}</span>\n</pre></div>\n"
+       },
+       {
+         "input": "#HIDDEN\n d1: DISTANCE ATOMS=1,2 \n f: CUSTOM ARG=d1 FUNC=x*x PERIODIC=NO \n #ENDHIDDEN \n f2: CUSTOM ARG=d1,f FUNC=x+y PERIODIC=NO \nPRINT ARG=d1,f,f2 FILE=colvar",
+         "output": "<div class=\"highlight\"><pre><span></span><span class=\"cs\">#HIDDEN</span>\n<span class=\"s\"> d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> \n <span class=\"s\">f</span>: <span class=\"k\">CUSTOM</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1</span> <span class=\"na\">FUNC</span>=<span class=\"g\">x*x</span> <span class=\"na\">PERIODIC</span>=<span class=\"g\">NO</span> \n <span class=\"cs\">#ENDHIDDEN </span>\n<span class=\"s\"> f2</span>: <span class=\"k\">CUSTOM</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1,f</span> <span class=\"na\">FUNC</span>=<span class=\"g\">x+y</span> <span class=\"na\">PERIODIC</span>=<span class=\"g\">NO</span> \n<span class=\"k\">PRINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1,f,f2</span> <span class=\"na\">FILE</span>=<span class=\"g\">colvar</span>\n</pre></div>\n"
        }
    ]
 }

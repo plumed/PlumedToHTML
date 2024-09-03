@@ -52,6 +52,10 @@ class PlumedLexer(RegexLexer):
             (r'#EXPANSION.*?\r?\n',Comment.Special),
             # Find the end of shortcuts
             (r'#ENDEXPANSION.*?\r?\n',Comment.Special),
+            # Find the start of a hidden section
+            (r'#HIDDEN\s*\n',Comment.Special),
+            # Fidn the end of a hidden section
+            (r'#ENDHIDDEN\s*\n',Comment.Special),
             # Find vimsyntax expression
             (r'#\s*vim:\s*ft=plumed',Literal),
             # Include all the default stuff

@@ -29,7 +29,7 @@ class PlumedFormatter(Formatter):
         }
 
     def format(self, tokensource, outfile):
-        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label = "", "", set(), [], 0, 0, 0, False, ""
+        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label, hidden_state, hidenum = "", "", set(), [], 0, 0, 0, False, "", 0, 0
         outfile.write('<pre style="width=97%;">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
@@ -103,7 +103,17 @@ class PlumedFormatter(Formatter):
                   shortcut_state = 2
                   act_label, expansion_label = html.escape( value.replace("#EXPANSION","").strip() ), value.replace("#EXPANSION","").strip()
                   outfile.write('</span><span id="' + self.egname + act_label + '_long" style="display:none;">')
-               else : raise ValueError("Comment.Special should only catch string that are #SHORTCUT, #EXPANSION or #ENDEXPANSION")
+               elif "#ENDHIDDEN" in value :
+                  if hidden_state != 1 : raise ValueError("Found rogue #ENDHIDDEN")
+                  hidden_state = 0 
+                  outfile.write('<a class="toggler" style="color:red" onclick=\'toggleDisplay("' + self.egname + "_hiddenpart" + str(hidenum) + '")\'># --- Click here to hide input --- \n</a></span>')
+               elif "#HIDDEN" in value :
+                  if hidden_state != 0 : raise ValueError("Found rogue #HIDDEN in already hidden input") 
+                  hidden_state, hidenum = 1, hidenum + 1
+                  outfile.write('<span id="' + self.egname + "_hiddenpart" + str(hidenum) + '_short">')
+                  outfile.write('<a class="toggler" style="color:red" onclick=\'toggleDisplay("' + self.egname + "_hiddenpart" + str(hidenum) + '")\'># --- Click here to reveal hidden parts of input file ---- \n</a></span>')
+                  outfile.write('<span id="' + self.egname + "_hiddenpart" + str(hidenum) + '_long" style="display:none;">')
+               else : raise ValueError("Found " + value.strip() + " in Comment.Special should only catch string that are #SHORTCUT, #EXPANSION, #ENDEXPANSION, #HIDDEN or #ENDHIDDEN")
                # This sets up the label at the start of a new block with NODEFAULT or SHORTCUT
                if ttype==Comment.Preproc :
                   if label!="" and label!=act_label : raise Exception("label for shortcut (" + act_label + ") doesn't match action label (" + label + ")")

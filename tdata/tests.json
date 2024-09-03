@@ -115,6 +115,20 @@
         "actions": ["DISTANCE"],
         "tooltips": ["DISTANCE", "DISTANCE", "ATOMS"],
         "badges": ["pass", "incomplete"]
+      },
+      {
+        "input": "#HIDDEN\n #ENDHIDDEN \n",
+        "index": 18,
+        "actions": [],
+        "tooltips": [],
+        "badges": ["pass"]
+      },
+      {
+        "input": "#HIDDEN\n d1: DISTANCE ATOMS=1,2 \n f: CUSTOM ARG=d1 FUNC=x*x PERIODIC=NO \n #ENDHIDDEN \n f2: CUSTOM ARG=d1,f FUNC=x+y PERIODIC=NO \nPRINT ARG=d1,f,f2 FILE=colvar",
+        "index": 19,
+        "actions": ["DISTANCE", "CUSTOM", "CUSTOM", "PRINT"],
+        "tooltips": ["DISTANCE", "ATOMS", "CUSTOM", "ARG", "FUNC", "PERIODIC", "CUSTOM", "ARG", "FUNC", "PERIODIC", "PRINT", "ARG", "FILE"],
+        "badges": ["pass"]
       }
    ]
 }
