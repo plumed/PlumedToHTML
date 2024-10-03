@@ -60,7 +60,7 @@ jobs:
         cp /home/runner/opt/lib/plumed/json/syntax.json json
       
     - name: Put json file so it can be downloaded
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
          name: json-syntax
          path: json
