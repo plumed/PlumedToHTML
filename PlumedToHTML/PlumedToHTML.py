@@ -88,7 +88,7 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
     ifile.close()
     cmd = [executible, 'driver', '--plumed', plumed_file, '--natoms', str(natoms), '--parse-only', '--kt', '2.49']
     # Add everything to ensure we can run with replicas if needs be
-    if int(nreplicas)>1 : cmd = ['mpirun', '-np', str(nreplicas)] + cmd + ['--multi', str(nreplicas)]
+    if int(nreplicas)>1 : cmd = ['mpirun', '--oversubscribe', '-np', str(nreplicas)] + cmd + ['--multi', str(nreplicas)]
     if printjson :
        plumed_file = os.path.basename(filename)
        # Add the shortcutfile output if the user has asked for it 
