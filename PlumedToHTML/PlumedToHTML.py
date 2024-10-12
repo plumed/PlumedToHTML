@@ -446,15 +446,42 @@ def compare_to_reference( output, reference ) :
 
     return True
 
-def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" ) :
+def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./" ) :
+    """
+        Process a markdown file that contains PLUMED input files using PlumedtoHTML
+
+        Keyword arguments:
+        filename -- the name of the markdown file
+        plumedexe -- a tuple of plumed executible names for testing plumed.
+        plumed_names -- the names of the plumed executibles to use in the badges
+        actions -- names of actions used in the plumed inputs in this markdown file
+        jsondir -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries 
+    """
     if not os.path.exists(filename) :
        raise RuntimeError("Found no file called " + filename + " in lesson")
+
+    # Get the syntax file
+    cmd = [plumedexe[-1], 'info', '--root']
+    plumed_info = subprocess.run(cmd, capture_output=True, text=True )
+    keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
+    with open(keyfile) as f :
+        try:       
+           plumed_syntax = json.load(f)
+        except ValueError as ve:
+           raise InvalidJSONError(ve)
+
+    pagelist = {}
+    for key, value in plumed_syntax.items() :
+        if key=="modules" :
+           for k,v in value.items() : pagelist[key] = v["hyperlink"]
+        elif key=="vimlink" or key=="replicalink" or key=="groups" or key!=value["displayname"] : continue
+        elif key!="PLUMED" : pagelist[key] = value["hyperlink"]
 
     with open( filename, "r" ) as f:
        inp = f.read()
     
     ninputs = 0
-    nfail = len(plumed_exe)*[0]
+    nfail = len(plumedexe)*[0]
     inplumed = False
     plumed_inp = ""
     solutionfile = None                   
@@ -480,9 +507,9 @@ def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" )
             if usemermaid!="" :
                mermaidinpt = ""
                if usemermaid=="value" :
-                  mermaidinpt = get_mermaid( plumed_exe[-1], plumed_inp, False )
+                  mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, False )
                elif usemermaid=="force" :
-                  mermaidinpt = get_mermaid( plumed_exe[-1], plumed_inp, True )
+                  mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, True )
                else :
                   raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
                ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
@@ -507,27 +534,27 @@ def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" )
                      sf.write( plumed_inp )
     
             # Test whether the input solution can be parsed
-            success = len(plumed_exe)*[False] 
-            for i in range(len(plumed_exe)) : 
-                if i==len(plumed_exe)-1 : 
+            success = len(plumedexe)*[False] 
+            for i in range(len(plumedexe)) : 
+                if i==len(plumedexe)-1 : 
                    # Json files are put in directory one up from us to ensure that
                    # PlumedToHTML finds them when we do get_html (i.e. these will be in
                    # the data directory where the calculation is run)
                    if incomplete :
-                      success[i]=test_plumed(plumed_exe[i], solutionfile )
+                      success[i]=test_plumed(plumedexe[i], solutionfile )
                    else :                        
-                      success[i]=test_plumed(plumed_exe[i], solutionfile,
+                      success[i]=test_plumed(plumedexe[i], solutionfile,
                                                  printjson=True, jsondir=jsondir ) 
                 else : 
-                   success[i]=test_plumed( plumed_exe[i], solutionfile )
+                   success[i]=test_plumed( plumedexe[i], solutionfile )
                 if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
             # Use PlumedToHTML to create the input with all the bells and whistles
             html = get_html(plumed_inp,
                               solutionfile,
-                              solutionfile,
+                              os.path.basename(solutionfile),
                               plumed_names,
                               success,
-                              plumed_exe, 
+                              plumedexe, 
                               usejson=(not success[-1]),
                               actions=actions )
             # Print the html for the solution
@@ -543,7 +570,19 @@ def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" )
             plumed_inp += line + "\n"
          # Just copy any line that isn't part of a plumed input
          elif not inplumed :
-            ofile.write( line + "\n" )
+            inverbatim = False
+            for word in line.split() :
+                if "`" in word and inverbatim :
+                  ofile.write(word + " ")
+                  inverbatim = False
+                elif "`" in word :
+                  ofile.write(word + " ")
+                  inverbatim = True
+                elif word not in pagelist.keys() or inverbatim :
+                  ofile.write(word + " ")
+                elif word in pagelist.keys() :
+                  ofile.write("[" + word + "](" + pagelist[word] + ") " )
+            ofile.write( "\n" )
 
     return ninputs, nfail 
 

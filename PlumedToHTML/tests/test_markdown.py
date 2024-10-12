@@ -20,7 +20,7 @@ class TestPlumedToHTML(TestCase):
                 if "__FILL__" in item["input"] : continue
                 with open("testmarkdown" + str(n) +".md", "w") as of :
                      of.write("# TEST MARKDOWN \n\n")
-                     of.write("Some text before \n")
+                     of.write("Some text before DISTANCE \n")
                      of.write("```plumed`\n")
                      of.write( item["input"] + "\n")
                      of.write("```\n")
