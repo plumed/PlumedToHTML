@@ -104,7 +104,6 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
     with open(outfile,"w") as stdout:
         with open(errtxtfile,"w") as stderr:
              with cd(run_folder):
-                 print( cmd )
                  plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr )
     # write header and preamble to errfile
     with open(errfile,"w") as stderr:
@@ -494,6 +493,7 @@ def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" )
                         with open( dirname + "/" + solutionfile, "r" ) as sf:
                            solution = sf.read()
                            plumed_inp += "#SOLUTION \n" + solution
+                        solutionfile = dirname + "/" + solutionfile
                      except:
                         raise RuntimeError(f"error in opening {solutionfile} as solution"
                                           f" for an incomplete input from file {filename}")
@@ -503,7 +503,7 @@ def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" )
             # Create the full input for PlumedToHTML formatter 
             else :
                   solutionfile = filename + "_working_" + str(ninputs) + ".dat"
-                  with open( dirname + "/" + solutionfile, "w+" ) as sf:
+                  with open( solutionfile, "w+" ) as sf:
                      sf.write( plumed_inp )
     
             # Test whether the input solution can be parsed
@@ -514,12 +514,12 @@ def processMarkdown( filename, plumed_exe, plumed_names, actions, jsondir="./" )
                    # PlumedToHTML finds them when we do get_html (i.e. these will be in
                    # the data directory where the calculation is run)
                    if incomplete :
-                      success[i]=test_plumed(plumed_exe[i], dirname + "/" + solutionfile )
+                      success[i]=test_plumed(plumed_exe[i], solutionfile )
                    else :                        
-                      success[i]=test_plumed(plumed_exe[i], dirname + "/" + solutionfile,
+                      success[i]=test_plumed(plumed_exe[i], solutionfile,
                                                  printjson=True, jsondir=jsondir ) 
                 else : 
-                   success[i]=test_plumed( plumed_exe[i], dirname + "/" + solutionfile )
+                   success[i]=test_plumed( plumed_exe[i], solutionfile )
                 if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
             # Use PlumedToHTML to create the input with all the bells and whistles
             html = get_html(plumed_inp,
