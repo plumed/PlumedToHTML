@@ -460,12 +460,36 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./" ) 
     if not os.path.exists(filename) :
        raise RuntimeError("Found no file called " + filename + " in lesson")
 
+    with open( filename, "r" ) as f:
+       inp = f.read()
+    
+    dirname = os.path.dirname(filename)
+    if dirname=="" : dirname = "." 
+
+    with open( filename, "w+" ) as ofile: 
+       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir )
+    return ninputs, nfail
+
+def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir="./" ) :
+    """
+       Process a string of markdown that contains LUMED input files using PlumedtoHTML
+
+        Keyword arguments:
+        inp -- the string that contains the plumed input file
+        filename -- a name to use for the plumed inputs we create 
+        plumedexe -- a tuple of plumed executible names for testing plumed.
+        plumed_names -- the names of the plumed executibles to use in the badges
+        actions -- names of actions used in the plumed inputs in this markdown file
+        dirname -- the directory in which to find solution files
+        ofile -- the file on which to output the processed markdown
+        jsondir -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries 
+    """
     # Get the syntax file
     cmd = [plumedexe[-1], 'info', '--root']
     plumed_info = subprocess.run(cmd, capture_output=True, text=True )
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     with open(keyfile) as f :
-        try:       
+        try:
            plumed_syntax = json.load(f)
         except ValueError as ve:
            raise InvalidJSONError(ve)
@@ -477,112 +501,105 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./" ) 
         elif key=="vimlink" or key=="replicalink" or key=="groups" or key!=value["displayname"] : continue
         elif key!="PLUMED" : pagelist[key] = value["hyperlink"]
 
-    with open( filename, "r" ) as f:
-       inp = f.read()
-    
     ninputs = 0
     nfail = len(plumedexe)*[0]
     inplumed = False
     plumed_inp = ""
-    solutionfile = None                   
+    solutionfile = None
     incomplete = False
     usemermaid = ""
-    dirname = os.path.dirname(filename)
-    if dirname=="" : dirname = "." 
-
-    with open( filename, "w+" ) as ofile:
-      for line in inp.splitlines() :
-         # Detect and copy plumed input files 
-         if "```plumed" in line :
-            inplumed = True
-            plumed_inp = ""
-            solutionfile = None
-            incomplete = False
-            ninputs = ninputs + 1 
+    for line in inp.splitlines() :
+       # Detect and copy plumed input files 
+       if "```plumed" in line :
+          inplumed = True
+          plumed_inp = ""
+          solutionfile = None
+          incomplete = False
+          ninputs = ninputs + 1 
     
-         # Test plumed input files that have been found in tutorial 
-         elif inplumed and "```" in line :
-            inplumed = False
-            # Create mermaid graphs from PLUMED inputs if this has been requested
-            if usemermaid!="" :
-               mermaidinpt = ""
-               if usemermaid=="value" :
-                  mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, False )
-               elif usemermaid=="force" :
-                  mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, True )
-               else :
-                  raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
-               ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
-            if incomplete :
-                  if solutionfile:
-                     # Read solution from solution file
-                     try:
-                        with open( dirname + "/" + solutionfile, "r" ) as sf:
-                           solution = sf.read()
-                           plumed_inp += "#SOLUTION \n" + solution
-                        solutionfile = dirname + "/" + solutionfile
-                     except:
-                        raise RuntimeError(f"error in opening {solutionfile} as solution"
-                                          f" for an incomplete input from file {filename}")
-                  else:
-                     raise RuntimeError(f"an incomplete input from file {filename}"
-                                       " does not have its solution file")
-            # Create the full input for PlumedToHTML formatter 
-            else :
-                  solutionfile = filename + "_working_" + str(ninputs) + ".dat"
-                  with open( solutionfile, "w+" ) as sf:
-                     sf.write( plumed_inp )
+       # Test plumed input files that have been found in tutorial 
+       elif inplumed and "```" in line :
+          inplumed = False
+          # Create mermaid graphs from PLUMED inputs if this has been requested
+          if usemermaid!="" :
+             mermaidinpt = ""
+             if usemermaid=="value" :
+                mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, False )
+             elif usemermaid=="force" :
+                mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, True )
+             else :
+                raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
+             ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
+          if incomplete :
+                if solutionfile:
+                   # Read solution from solution file
+                   try:
+                      with open( dirname + "/" + solutionfile, "r" ) as sf:
+                         solution = sf.read()
+                         plumed_inp += "#SOLUTION \n" + solution
+                      solutionfile = dirname + "/" + solutionfile
+                   except:
+                      raise RuntimeError(f"error in opening {solutionfile} as solution"
+                                        f" for an incomplete input from file {filename}")
+                else:
+                   raise RuntimeError(f"an incomplete input from file {filename}"
+                                     " does not have its solution file")
+          # Create the full input for PlumedToHTML formatter 
+          else :
+                solutionfile = filename + "_working_" + str(ninputs) + ".dat"
+                with open( solutionfile, "w+" ) as sf:
+                   sf.write( plumed_inp )
     
-            # Test whether the input solution can be parsed
-            success = len(plumedexe)*[False] 
-            for i in range(len(plumedexe)) : 
-                if i==len(plumedexe)-1 : 
-                   # Json files are put in directory one up from us to ensure that
-                   # PlumedToHTML finds them when we do get_html (i.e. these will be in
-                   # the data directory where the calculation is run)
-                   if incomplete :
-                      success[i]=test_plumed(plumedexe[i], solutionfile )
-                   else :                        
-                      success[i]=test_plumed(plumedexe[i], solutionfile,
-                                                 printjson=True, jsondir=jsondir ) 
-                else : 
-                   success[i]=test_plumed( plumedexe[i], solutionfile )
-                if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
-            # Use PlumedToHTML to create the input with all the bells and whistles
-            html = get_html(plumed_inp,
-                              solutionfile,
-                              os.path.basename(solutionfile),
-                              plumed_names,
-                              success,
-                              plumedexe, 
-                              usejson=(not success[-1]),
-                              actions=actions )
-            # Print the html for the solution
-            ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
-         # This finds us the solution file
-         elif inplumed and "#SOLUTIONFILE=" in line :
-            solutionfile=line.replace("#SOLUTIONFILE=","")
-         elif inplumed and "#MERMAID=" in line :
-            usemermaid = line.replace("#MERMAID=","").strip()
-         elif inplumed :
-            if "__FILL__" in line :
-               incomplete = True
-            plumed_inp += line + "\n"
-         # Just copy any line that isn't part of a plumed input
-         elif not inplumed :
-            inverbatim = False
-            for word in line.split() :
-                if "`" in word and inverbatim :
-                  ofile.write(word + " ")
-                  inverbatim = False
-                elif "`" in word :
-                  ofile.write(word + " ")
-                  inverbatim = True
-                elif word not in pagelist.keys() or inverbatim :
-                  ofile.write(word + " ")
-                elif word in pagelist.keys() :
-                  ofile.write("[" + word + "](" + pagelist[word] + ") " )
-            ofile.write( "\n" )
+          # Test whether the input solution can be parsed
+          success = len(plumedexe)*[False] 
+          for i in range(len(plumedexe)) : 
+              if i==len(plumedexe)-1 : 
+                 # Json files are put in directory one up from us to ensure that
+                 # PlumedToHTML finds them when we do get_html (i.e. these will be in
+                 # the data directory where the calculation is run)
+                 if incomplete :
+                    success[i]=test_plumed(plumedexe[i], solutionfile )
+                 else :                        
+                    success[i]=test_plumed(plumedexe[i], solutionfile,
+                                               printjson=True, jsondir=jsondir ) 
+              else : 
+                 success[i]=test_plumed( plumedexe[i], solutionfile )
+              if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
+          # Use PlumedToHTML to create the input with all the bells and whistles
+          html = get_html(plumed_inp,
+                            solutionfile,
+                            os.path.basename(solutionfile),
+                            plumed_names,
+                            success,
+                            plumedexe, 
+                            usejson=(not success[-1]),
+                            actions=actions )
+          # Print the html for the solution
+          ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
+       # This finds us the solution file
+       elif inplumed and "#SOLUTIONFILE=" in line :
+          solutionfile=line.replace("#SOLUTIONFILE=","")
+       elif inplumed and "#MERMAID=" in line :
+          usemermaid = line.replace("#MERMAID=","").strip()
+       elif inplumed :
+          if "__FILL__" in line :
+             incomplete = True
+          plumed_inp += line + "\n"
+       # Just copy any line that isn't part of a plumed input
+       elif not inplumed :
+          inverbatim = False
+          for word in line.split() :
+              if "`" in word and inverbatim :
+                ofile.write(word + " ")
+                inverbatim = False
+              elif "`" in word :
+                ofile.write(word + " ")
+                inverbatim = True
+              elif word not in pagelist.keys() or inverbatim :
+                ofile.write(word + " ")
+              elif word in pagelist.keys() :
+                ofile.write("[" + word + "](" + pagelist[word] + ") " )
+          ofile.write( "\n" )
 
     return ninputs, nfail 
 
