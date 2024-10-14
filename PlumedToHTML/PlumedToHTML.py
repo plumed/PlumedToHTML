@@ -508,6 +508,7 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
     solutionfile = None
     incomplete = False
     usemermaid = ""
+    incode = False
     for line in inp.splitlines() :
        # Detect and copy plumed input files 
        if "```plumed" in line :
@@ -585,8 +586,12 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
           if "__FILL__" in line :
              incomplete = True
           plumed_inp += line + "\n"
+       elif not inplumed and not incode and "```" in line :
+          incode=True
+       elif not inplumed and incode and "```" in line :
+          incode=False
        # Just copy any line that isn't part of a plumed input
-       elif not inplumed :
+       elif not inplumed and not incode :
           inverbatim = False
           for word in line.split() :
               if "`" in word and inverbatim :
@@ -600,6 +605,8 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
               elif word in pagelist.keys() :
                 ofile.write("[" + word + "](" + pagelist[word] + ") " )
           ofile.write( "\n" )
+       else :
+          ofile.write( line + "\n")
 
     return ninputs, nfail 
 
