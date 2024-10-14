@@ -187,7 +187,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
 
     # Check for include files
     foundincludedfiles, srcdir = True, str(pathlib.PurePosixPath(name).parent)
-    if "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
+    if not any(broken) and "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
 
     # Check if there is a LOAD command in the input
     found_load = "LOAD " in inpt
