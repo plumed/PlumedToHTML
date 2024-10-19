@@ -29,7 +29,7 @@ class PlumedLexer(RegexLexer):
             # Find KEYWORD with {} brackets around value
             (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever 
-            (r'(\w+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Generic))
+            (r'(\w+)(=)(\S+)(\s*)', bygroups(Name.Attribute, Text, Generic, Text))
          ],
         'root': [
             # Deals with blank lines
