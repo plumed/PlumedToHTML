@@ -95,6 +95,14 @@
        {
          "input": "#HIDDEN\n d1: DISTANCE ATOMS=1,2 \n f: CUSTOM ARG=d1 FUNC=x*x PERIODIC=NO \n #ENDHIDDEN \n f2: CUSTOM ARG=d1,f FUNC=x+y PERIODIC=NO \nPRINT ARG=d1,f,f2 FILE=colvar",
          "output": "<div class=\"highlight\"><pre><span></span><span class=\"cs\">#HIDDEN</span>\n<span class=\"s\"> d1</span>: <span class=\"k\">DISTANCE</span> <span class=\"na\">ATOMS</span>=<span class=\"g\">1,2</span> \n <span class=\"s\">f</span>: <span class=\"k\">CUSTOM</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1</span> <span class=\"na\">FUNC</span>=<span class=\"g\">x*x</span> <span class=\"na\">PERIODIC</span>=<span class=\"g\">NO</span> \n <span class=\"cs\">#ENDHIDDEN </span>\n<span class=\"s\"> f2</span>: <span class=\"k\">CUSTOM</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1,f</span> <span class=\"na\">FUNC</span>=<span class=\"g\">x+y</span> <span class=\"na\">PERIODIC</span>=<span class=\"g\">NO</span> \n<span class=\"k\">PRINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">d1,f,f2</span> <span class=\"na\">FILE</span>=<span class=\"g\">colvar</span>\n</pre></div>\n"
+       },
+       {
+        "input": "RESTRAINT ARG=d,t AT=@replicas:{{1.0,2.0} {3.0,4.0} {5.0,6.0}} KAPPA=1.0,3.0",
+        "output": "<div class=\"highlight\"><pre><span></span><span class=\"k\">RESTRAINT</span> <span class=\"na\">ARG</span>=<span class=\"g\">d,t</span> <span class=\"na\">AT</span>=<span class=\"no\">@replicas:</span><span class=\"g\">{{1.0,2.0} {3.0,4.0} {5.0,6.0}}</span> <span class=\"na\">KAPPA</span>=<span class=\"g\">1.0,3.0</span>\n</pre></div>\n"
+       },
+       {
+        "input": "RESTRAINT ... \n ARG=d,t \n AT=@replicas:{\n {1.0,2.0}\n  {3.0,4.0}\n  {5.0,6.0}\n}\n KAPPA=1.0,3.0\n ...",
+        "output": "<div class=\"highlight\"><pre><span></span><span class=\"k\">RESTRAINT</span> ... \n <span class=\"na\">ARG</span>=<span class=\"g\">d,t</span> \n <span class=\"na\">AT</span>=<span class=\"no\">@replicas:</span><span class=\"g\">{</span>\n<span class=\"g\"> {1.0,2.0}</span>\n<span class=\"g\">  {3.0,4.0}</span>\n<span class=\"g\">  {5.0,6.0}</span>\n<span class=\"g\">}</span>\n <span class=\"na\">KAPPA</span>=<span class=\"g\">1.0,3.0</span>\n ...\n</pre></div>\n"
        }
    ]
 }

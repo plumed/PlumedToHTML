@@ -23,6 +23,8 @@ class PlumedLexer(RegexLexer):
             # Find special replica syntax with brackets around replica command
             (r'(\w+)(=\{)(@\S+:)((?s)\{.*?\})(\})', bygroups(Name.Attribute, Text, Name.Constant, Generic, Text)),
             # Find special replica syntax with brackets
+            (r'(\w+)(=)(@replicas:)(\{[\S\s\n]+\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
+            # Find mda syntax with brackets
             (r'(\w+)(=)(@\S+:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
             (r'(\w+)(=)(@\S+:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
