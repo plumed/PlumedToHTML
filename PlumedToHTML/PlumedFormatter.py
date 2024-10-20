@@ -183,19 +183,23 @@ class PlumedFormatter(Formatter):
                if notooltips :
                   outfile.write( value.strip() )
                else :
-                  desc = ""
-                  if value.strip().upper() in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][value.strip().upper()]["description"].split('.')[0]
+                  desc, mykey = "", value.strip().upper()
+                  if mykey in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][mykey]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
                      foundkey=False
                      for kkkk in self.keyword_dict[action]["syntax"] :
                          if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
-                         if kkkk in value.strip() : foundkey, desc = True, self.keyword_dict[action]["syntax"][kkkk.upper()]["description"].split('.')[0]
+                         if kkkk in value.strip() : foundkey, mykey, desc = True, kkkk.upper(), self.keyword_dict[action]["syntax"][kkkk.upper()]["description"].split('.')[0]
                      if not self.broken and not notooltips and not foundkey : 
                         if self.hasload : foundkey, desc = True, 'There is a possibity that this action is not part of PLUMED and was included by using a LOAD command. This LOADing replaces one of the actions that is in PLUMED. You should thus be wary of the documentation in these tooltips and look at the cpp file that was loaded <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a>'
                         else : raise Exception("keyword " + value.strip().upper() + " is not in syntax for action " + action )
                   if desc=="" and self.broken : outfile.write( value )
-                  else : outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
+                  else :
+                     if "actionlink" in self.keyword_dict[action]["syntax"][mykey].keys() and self.keyword_dict[action]["syntax"][mykey]["actionlink"]!="none" : 
+                        linkaction = self.keyword_dict[action]["syntax"][mykey]["actionlink"]
+                        desc = desc + ". Options for this keyword are explained in the documentation for <a href=\"" + self.keyword_dict[linkaction]["hyperlink"] + "\">" + linkaction + "</a>.";  
+                     outfile.write('<div class="tooltip">' + value + '<div class="right">' + desc + '<i></i></div></div>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
                if value=="@replicas:" : 

@@ -129,6 +129,13 @@
         "actions": ["DISTANCE", "CUSTOM", "CUSTOM", "PRINT"],
         "tooltips": ["DISTANCE", "ATOMS", "CUSTOM", "ARG", "FUNC", "PERIODIC", "CUSTOM", "ARG", "FUNC", "PERIODIC", "PRINT", "ARG", "FILE"],
         "badges": ["pass"]
+      },
+      {
+       "input": "c1: CONTACT_MATRIX GROUP=1-100 SWITCH={RATIONAL R_0=0.1}",
+       "index": 20,
+       "actions": ["CONTACT_MATRIX"],
+       "tooltips": ["CONTACT_MATRIX", "GROUP", "SWITCH"],
+       "badges": ["pass"]
       }
    ]
 }
