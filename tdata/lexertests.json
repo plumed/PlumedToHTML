@@ -103,6 +103,10 @@
        {
         "input": "RESTRAINT ... \n ARG=d,t \n AT=@replicas:{\n {1.0,2.0}\n  {3.0,4.0}\n  {5.0,6.0}\n}\n KAPPA=1.0,3.0\n ...",
         "output": "<div class=\"highlight\"><pre><span></span><span class=\"k\">RESTRAINT</span> ... \n <span class=\"na\">ARG</span>=<span class=\"g\">d,t</span> \n <span class=\"na\">AT</span>=<span class=\"no\">@replicas:</span><span class=\"g\">{</span>\n<span class=\"g\"> {1.0,2.0}</span>\n<span class=\"g\">  {3.0,4.0}</span>\n<span class=\"g\">  {5.0,6.0}</span>\n<span class=\"g\">}</span>\n <span class=\"na\">KAPPA</span>=<span class=\"g\">1.0,3.0</span>\n ...\n</pre></div>\n"
+       },
+       {
+        "input": "p1: FIXEDATOM AT=2.696525,2.75872,13.5# Identify",
+        "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">p1</span>: <span class=\"k\">FIXEDATOM</span> <span class=\"na\">AT</span>=<span class=\"g\">2.696525,2.75872,13.5</span><span class=\"c\"># Identify</span>\n</pre></div>\n" 
        }
    ]
 }
