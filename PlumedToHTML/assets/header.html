@@ -59,6 +59,39 @@ pre.fragment {
     background-color:#EEEEEE;
     box-shadow:0 1px 8px rgba(0,0,0,0.5);
 }
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+.modal-body {padding: 2px 16px;}
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 0; opacity: 1}
+}
 </style>
 <script>
 var redpath="";
@@ -81,6 +114,23 @@ function toggleDisplay(name) {
   } else { 
       short_div.style.display = "none";
       long_div.style.display = "block";
+  }
+}
+function openModal(name) {
+  var modal = document.getElementById(name);
+  modal.style.display = "block"; 
+}
+function closeModal(name) {
+  var modal = document.getElementById(name);
+  modal.style.display = "none";
+}
+window.onclick = function(event) {
+  var elements = document.getElementsByClassName("modal");
+  var i;
+  for(i = 0; i<elements.length; ++i) {
+      if (event.target == elements[i]) {
+        elements[i].style.display = "none";
+      }
   }
 }
 </script>

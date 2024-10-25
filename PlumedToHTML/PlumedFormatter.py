@@ -17,6 +17,7 @@ class PlumedFormatter(Formatter):
         self.egname=options["input_name"]
         self.hasload=options["hasload"]
         self.broken=options["broken"]
+        self.auxinputs=options["auxinputs"]
         self.valuedict=options["valuedict"]
         self.actions=options["actions"]
         self.valcolors = { 
@@ -134,6 +135,31 @@ class PlumedFormatter(Formatter):
                              break
                       if not nocomma : outfile.write(',')
                       if islab : outfile.write('<b name="' + self.egname + inpt.split('.')[0] + '">' + inp + '</b>')
+                      # Deal with files
+                      elif inp in self.auxinputs :
+                        iff = open( inp, 'r' )
+                        fcontent = iff.read()
+                        iff.close()
+                        if len(fcontent.splitlines())>5 : 
+                           n, shortversion = 0, ""
+                           for l in fcontent.splitlines() :
+                               shortversion += l + "\n"
+                               n = n + 1
+                               if n==5 : break
+                           shortversion += "...\n" + fcontent.splitlines()[-1]
+                           fcontent = shortversion
+                        outfile.write('<div class="tooltip">' + inp + '<div class="right"> Click <a onclick=\'openModal("' + self.egname + inp + '")\'>here</a> to see an extract from this file.<i></i></div></div>')
+                        outfile.write('<div id="' + self.egname + inp + '" class="modal">')
+                        outfile.write('  <div class="modal-content">')
+                        outfile.write('<div class="modal-header">')
+                        outfile.write('  <span class="close" onclick=\'closeModal("' + self.egname + inp + '")\'>&times;</span>')
+                        outfile.write('  <h2>FILE: ' + inp + '</h2>')
+                        outfile.write('</div>')
+                        outfile.write('<div class="modal-body">')
+                        outfile.write('    <pre>' + fcontent + '</pre>')
+                        outfile.write('</div>')
+                        outfile.write('  </div>')
+                        outfile.write('</div>')
                       # Deal with atom selections
                       elif "@" in inp :
                         # Deal with residue

@@ -185,6 +185,16 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     # If we find the fill command then split up the input file to find the solution
     inpt, incomplete = manage_incomplete_inputs( inpt )
 
+    # Create a list of all the auxiliary input files that are needed by the plumed input 
+    inputfiles = []
+    for line in inpt.splitlines() :
+        if "#SETTINGS" in line :
+           for word in line.split() :
+               if "MOLFILE=" in word : 
+                   inputfiles.append( word.replace("MOLFILE=","") )
+               elif "INPUTFILES=" in word : 
+                   for n in word.replace("INPUTFILES=","").split(",") : inputfiles.append( n )
+
     # Check for include files
     foundincludedfiles, srcdir = True, str(pathlib.PurePosixPath(name).parent)
     if not any(broken) and "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
@@ -225,7 +235,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), valuedict=valuedict, actions=actions )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, valuedict=valuedict, actions=actions )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'
@@ -484,23 +494,6 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
         ofile -- the file on which to output the processed markdown
         jsondir -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries 
     """
-    # Get the syntax file
-    cmd = [plumedexe[-1], 'info', '--root']
-    plumed_info = subprocess.run(cmd, capture_output=True, text=True )
-    keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
-    with open(keyfile) as f :
-        try:
-           plumed_syntax = json.load(f)
-        except ValueError as ve:
-           raise InvalidJSONError(ve)
-
-    pagelist = {}
-    for key, value in plumed_syntax.items() :
-        if key=="modules" :
-           for k,v in value.items() : pagelist[key] = v["hyperlink"]
-        elif key=="vimlink" or key=="replicalink" or key=="groups" or key!=value["displayname"] : continue
-        elif key!="PLUMED" : pagelist[key] = value["hyperlink"]
-
     ninputs = 0
     nfail = len(plumedexe)*[0]
     inplumed = False

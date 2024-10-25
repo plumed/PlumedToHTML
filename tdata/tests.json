@@ -136,6 +136,13 @@
        "actions": ["CONTACT_MATRIX"],
        "tooltips": ["CONTACT_MATRIX", "GROUP", "SWITCH"],
        "badges": ["pass"]
+      },
+      {
+       "input": "#SETTINGS MOLFILE=tdata/helix.pdb \nMOLINFO STRUCTURE=tdata/helix.pdb",
+       "index": 21,
+       "actions": ["MOLINFO"],
+       "tooltips": ["MOLINFO", "STRUCTURE", "tdata/helix.pdb"],
+       "badges": ["pass"]
       }
    ]
 }
