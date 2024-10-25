@@ -107,6 +107,10 @@
        {
         "input": "p1: FIXEDATOM AT=2.696525,2.75872,13.5# Identify",
         "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">p1</span>: <span class=\"k\">FIXEDATOM</span> <span class=\"na\">AT</span>=<span class=\"g\">2.696525,2.75872,13.5</span><span class=\"c\"># Identify</span>\n</pre></div>\n" 
+       },
+       {
+        "input": "#SETTINGS MOLFILE=tdata/helix.pdb \nMOLINFO STRUCTURE=tdata/helix.pdb",
+        "output": "<div class=\"highlight\"><pre><span></span><span class=\"c\">#SETTINGS MOLFILE=tdata/helix.pdb </span>\n<span class=\"k\">MOLINFO</span> <span class=\"na\">STRUCTURE</span>=<span class=\"g\">tdata/helix.pdb</span>\n</pre></div>\n"
        }
    ]
 }
