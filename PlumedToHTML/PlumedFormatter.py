@@ -184,6 +184,7 @@ class PlumedFormatter(Formatter):
                   outfile.write( value.strip() )
                else :
                   desc, mykey = "", value.strip().upper()
+                  if action not in self.keyword_dict : raise Exception("action " + action + " not present in keyword dictionary")
                   if mykey in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][mykey]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
