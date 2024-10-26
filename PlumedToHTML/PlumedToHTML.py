@@ -186,14 +186,22 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     inpt, incomplete = manage_incomplete_inputs( inpt )
 
     # Create a list of all the auxiliary input files that are needed by the plumed input 
-    inputfiles = []
+    inputfiles, inputfilelines = [], []
     for line in inpt.splitlines() :
         if "#SETTINGS" in line :
            for word in line.split() :
                if "MOLFILE=" in word : 
-                   inputfiles.append( word.replace("MOLFILE=","") )
+                   molfile = word.replace("MOLFILE=","")
+                   iff = open( molfile, 'r' )
+                   content = iff.read()
+                   iff.close()
+                   inputfiles.append(molfile)
+                   inputfilelines.append("1-5")
+                   inputfilelines.append( str(len(content.splitlines())-4) + "-" + str(len(content.splitlines())) ) 
                elif "INPUTFILES=" in word : 
                    for n in word.replace("INPUTFILES=","").split(",") : inputfiles.append( n )
+               elif "INPUTFILELINES=" in word : 
+                   inputfilelines = word.replace("INPUTFILELINES=","").split(",")
 
     # Check for include files
     foundincludedfiles, srcdir = True, str(pathlib.PurePosixPath(name).parent)
@@ -235,7 +243,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
     keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, valuedict=valuedict, actions=actions )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'

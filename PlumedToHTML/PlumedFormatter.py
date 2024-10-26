@@ -18,6 +18,7 @@ class PlumedFormatter(Formatter):
         self.hasload=options["hasload"]
         self.broken=options["broken"]
         self.auxinputs=options["auxinputs"]
+        self.auxinputlines=options["auxinputlines"]
         self.valuedict=options["valuedict"]
         self.actions=options["actions"]
         self.valcolors = { 
@@ -140,13 +141,13 @@ class PlumedFormatter(Formatter):
                         iff = open( inp, 'r' )
                         fcontent = iff.read()
                         iff.close()
-                        if len(fcontent.splitlines())>5 : 
-                           n, shortversion = 0, ""
-                           for l in fcontent.splitlines() :
-                               shortversion += l + "\n"
-                               n = n + 1
-                               if n==5 : break
-                           shortversion += "...\n" + fcontent.splitlines()[-1]
+                        if len(self.auxinputlines)>0 : 
+                           shortversion, allines = "", fcontent.splitlines()
+                           for n, l in enumerate(self.auxinputlines) : 
+                               bounds = l.split("-")
+                               start, end = int( bounds[0] ), int( bounds[1] )
+                               if n>0 : shortversion += "...\n"
+                               for kk in range(start,end+1) : shortversion += allines[kk-1] + "\n"
                            fcontent = shortversion
                         outfile.write('<div class="tooltip">' + inp + '<div class="right"> Click <a onclick=\'openModal("' + self.egname + inp + '")\'>here</a> to see an extract from this file.<i></i></div></div>')
                         outfile.write('<div id="' + self.egname + inp + '" class="modal">')
@@ -223,6 +224,7 @@ class PlumedFormatter(Formatter):
                         else : raise Exception("keyword " + value.strip().upper() + " is not in syntax for action " + action )
                   if desc=="" and self.broken : outfile.write( value )
                   else :
+                     if action not in self.keyword_dict : raise Exception("action " + action + " not present in keyword dictionary")
                      if "actionlink" in self.keyword_dict[action]["syntax"][mykey].keys() and self.keyword_dict[action]["syntax"][mykey]["actionlink"]!="none" : 
                         linkaction = self.keyword_dict[action]["syntax"][mykey]["actionlink"]
                         desc = desc + ". Options for this keyword are explained in the documentation for <a href=\"" + self.keyword_dict[linkaction]["hyperlink"] + "\">" + linkaction + "</a>.";  
