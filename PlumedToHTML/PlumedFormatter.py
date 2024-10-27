@@ -31,7 +31,7 @@ class PlumedFormatter(Formatter):
         }
 
     def format(self, tokensource, outfile):
-        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label, hidden_state, hidenum = "", "", set(), [], 0, 0, 0, False, "", 0, 0
+        action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label, hidden_state, hidenum, nfiles = "", "", set(), [], 0, 0, 0, False, "", 0, 0, 0
         outfile.write('<pre style="width=97%;">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
@@ -141,6 +141,7 @@ class PlumedFormatter(Formatter):
                         iff = open( inp, 'r' )
                         fcontent = iff.read()
                         iff.close()
+                        nfiles = nfiles + 1
                         if len(self.auxinputlines)>0 : 
                            shortversion, allines = "", fcontent.splitlines()
                            for n, l in enumerate(self.auxinputlines) : 
@@ -149,11 +150,11 @@ class PlumedFormatter(Formatter):
                                if n>0 : shortversion += "...\n"
                                for kk in range(start,end+1) : shortversion += allines[kk-1] + "\n"
                            fcontent = shortversion
-                        outfile.write('<div class="tooltip">' + inp + '<div class="right"> Click <a onclick=\'openModal("' + self.egname + inp + '")\'>here</a> to see an extract from this file.<i></i></div></div>')
-                        outfile.write('<div id="' + self.egname + inp + '" class="modal">')
+                        outfile.write('<div class="tooltip">' + inp + '<div class="right"> Click <a onclick=\'openModal("' + self.egname + inp + str(nfiles) + '")\'>here</a> to see an extract from this file.<i></i></div></div>')
+                        outfile.write('<div id="' + self.egname + inp + str(nfiles) + '" class="modal">')
                         outfile.write('  <div class="modal-content">')
                         outfile.write('<div class="modal-header">')
-                        outfile.write('  <span class="close" onclick=\'closeModal("' + self.egname + inp + '")\'>&times;</span>')
+                        outfile.write('  <span class="close" onclick=\'closeModal("' + self.egname + inp + str(nfiles) + '")\'>&times;</span>')
                         outfile.write('  <h2>FILE: ' + inp + '</h2>')
                         outfile.write('</div>')
                         outfile.write('<div class="modal-body">')
