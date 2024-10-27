@@ -143,6 +143,13 @@
        "actions": ["MOLINFO"],
        "tooltips": ["MOLINFO", "STRUCTURE", "tdata/helix.pdb"],
        "badges": ["pass"]
+      },
+      {
+       "input": "#SETTINGS MOLFILE=tdata/notthere.pdb \nMOLINFO STRUCTURE=tdata/helix.pdb",
+       "index": 22,
+       "actions": ["MOLINFO"],
+       "tooltips": ["MOLINFO", "STRUCTURE"],
+       "badges": ["pass"]
       }
    ]
 }

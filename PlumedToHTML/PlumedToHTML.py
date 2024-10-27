@@ -192,14 +192,16 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
            for word in line.split() :
                if "MOLFILE=" in word : 
                    molfile = word.replace("MOLFILE=","")
-                   iff = open( molfile, 'r' )
-                   content = iff.read()
-                   iff.close()
-                   inputfiles.append(molfile)
-                   inputfilelines.append("1-5")
-                   inputfilelines.append( str(len(content.splitlines())-4) + "-" + str(len(content.splitlines())) ) 
+                   if os.path.isfile(molfile) : 
+                      iff = open( molfile, 'r' )
+                      content = iff.read()
+                      iff.close()
+                      inputfiles.append(molfile)
+                      inputfilelines.append("1-5")
+                      inputfilelines.append( str(len(content.splitlines())-4) + "-" + str(len(content.splitlines())) ) 
                elif "INPUTFILES=" in word : 
-                   for n in word.replace("INPUTFILES=","").split(",") : inputfiles.append( n )
+                   for n in word.replace("INPUTFILES=","").split(",") : 
+                      if os.path.isfile(n) : inputfiles.append( n )
                elif "INPUTFILELINES=" in word : 
                    inputfilelines = word.replace("INPUTFILELINES=","").split(",")
 
