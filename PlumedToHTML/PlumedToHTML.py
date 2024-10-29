@@ -581,7 +581,7 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
           ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
        # This finds us the solution file
        elif inplumed and "#SOLUTIONFILE=" in line :
-          solutionfile=line.replace("#SOLUTIONFILE=","")
+          solutionfile=line.strip().replace("#SOLUTIONFILE=","")
        elif inplumed and "#MERMAID=" in line :
           usemermaid = line.replace("#MERMAID=","").strip()
        elif inplumed :
