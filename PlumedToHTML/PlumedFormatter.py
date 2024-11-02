@@ -147,8 +147,10 @@ class PlumedFormatter(Formatter):
                            for n, l in enumerate(self.auxinputlines) : 
                                bounds = l.split("-")
                                start, end = int( bounds[0] ), int( bounds[1] )
+                               if start>len(allines) : break
                                if n>0 : shortversion += "...\n"
-                               for kk in range(start,end+1) : shortversion += allines[kk-1] + "\n"
+                               for kk in range(start,end+1) : 
+                                   if kk<=len(allines) : shortversion += allines[kk-1] + "\n"
                            fcontent = shortversion
                         outfile.write('<div class="tooltip">' + inp + '<div class="right"> Click <a onclick=\'openModal("' + self.egname + inp + str(nfiles) + '")\'>here</a> to see an extract from this file.<i></i></div></div>')
                         outfile.write('<div id="' + self.egname + inp + str(nfiles) + '" class="modal">')
