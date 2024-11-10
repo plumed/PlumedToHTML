@@ -150,6 +150,13 @@
        "actions": ["MOLINFO"],
        "tooltips": ["MOLINFO", "STRUCTURE"],
        "badges": ["pass"]
+      },
+      {
+       "input": "b: DEBUG logRequestedAtoms STRIDE=2",
+       "index": 23,
+       "actions": ["DEBUG"],
+       "tooltips": ["DEBUG", "logRequestedAtoms", "STRIDE"],
+       "badges": ["pass"]
       }
    ]
 }

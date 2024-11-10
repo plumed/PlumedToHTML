@@ -215,6 +215,7 @@ class PlumedFormatter(Formatter):
                else :
                   desc, mykey = "", value.strip().upper()
                   if action not in self.keyword_dict : raise Exception("action " + action + " not present in keyword dictionary")
+                  if mykey not in self.keyword_dict[action]["syntax"] and value.strip() in self.keyword_dict[action]["syntax"] : mykey = value.strip()
                   if mykey in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][mykey]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
