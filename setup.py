@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='PlumedToHTML',  
-     version='0.93',
+     version='0.94',
      author="Gareth Tribello",
      author_email="gareth.tribello@gmail.com",
      description="A package for creating pretified HTML for PLUMED files",

@@ -5,6 +5,7 @@ import json
 import pathlib
 import zipfile
 import warnings
+import glob
 from lxml import etree
 from io import StringIO
 from bs4 import BeautifulSoup
@@ -104,6 +105,7 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
     with open(outfile,"w") as stdout:
         with open(errtxtfile,"w") as stderr:
              with cd(run_folder):
+                 for bkpf in glob.glob("bck.*") : os.remove(bkpf)
                  plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr )
     # write header and preamble to errfile
     with open(errfile,"w") as stderr:
