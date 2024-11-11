@@ -157,6 +157,13 @@
        "actions": ["DEBUG"],
        "tooltips": ["DEBUG", "logRequestedAtoms", "STRIDE"],
        "badges": ["pass"]
+      },
+      {
+       "input": "#SETTINGS NREPLICAS=2\n t: TORSION ATOMS=1,2,3,4\n INCLUDE FILE=tdata/other.inc",
+       "index": 24,
+       "actions": ["TORSION", "INCLUDE", "RESTRAINT", "RESTRAINT"],
+       "tooltips": ["TORSION", "ATOMS", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA"],
+       "badges": ["pass"]
       }
    ]
 }

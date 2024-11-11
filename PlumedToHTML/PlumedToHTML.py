@@ -188,11 +188,13 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     inpt, incomplete = manage_incomplete_inputs( inpt )
 
     # Create a list of all the auxiliary input files that are needed by the plumed input 
-    inputfiles, inputfilelines = [], []
+    inputfiles, inputfilelines, nreplicas = [], [], 1
     for line in inpt.splitlines() :
         if "#SETTINGS" in line :
            for word in line.split() :
-               if "MOLFILE=" in word : 
+               if "NREPLICAS=" in word : 
+                   nreplicas = int(word.replace("NREPLICAS=",""))
+               elif "MOLFILE=" in word : 
                    molfile = word.replace("MOLFILE=","")
                    if os.path.isfile(molfile) : 
                       iff = open( molfile, 'r' )
@@ -209,7 +211,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
 
     # Check for include files
     foundincludedfiles, srcdir = True, str(pathlib.PurePosixPath(name).parent)
-    if not any(broken) and "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, foundincludedfiles )
+    if not any(broken) and "INCLUDE" in inpt : foundincludedfiles, inpt = resolve_includes( srcdir, inpt, nreplicas, foundincludedfiles )
 
     # Check if there is a LOAD command in the input
     found_load = "LOAD " in inpt
@@ -341,7 +343,7 @@ def get_mermaid( executible, inpt, force ) :
     os.remove("mermaid.md")
     return mermaid 
 
-def resolve_includes( srcdir, inpt, foundfiles ) :
+def resolve_includes( srcdir, inpt, nreplicas, foundfiles ) :
     if not foundfiles or "INCLUDE" not in inpt : return foundfiles, inpt
 
     incontinuation, final_inpt, clines = False, "", "" 
@@ -368,15 +370,31 @@ def resolve_includes( srcdir, inpt, foundfiles ) :
               continue
            if filename=="" : raise Exception("could not find name of file to include")
            if not os.path.exists(filename) : foundfiles = False 
-           f = open( srcdir + "/" + filename, "r" )
-           include_contents = f.read()
-           f.close()
+           splitname = filename.split(".")
+           if len(splitname)>2 : raise Exception("cannot deal with included file named " + filename )
+
            final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
-           final_inpt += "# " + clines+ "# ensures PLUMED loads the contents of the file called " + filename + "\n"
-           final_inpt += "# The contents of this file are shown below (click the red comment to hide them).\n" 
-           foundfiles, parsed_inpt = resolve_includes( srcdir, include_contents, foundfiles )
-           if parsed_inpt.endswith("\n") : final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
-           else : final_inpt += parsed_inpt + "\n#ENDEXPANSION " + filename + "\n"
+           final_inpt += "# " + clines+ "# ensures PLUMED loads the contents of the file called " + filename + "\n" 
+           if nreplicas>1 and os.path.exists( splitname[0] + ".0." + splitname[1] ) :
+              final_inpt += "# There are different versions of this file on each replica\n"
+              for i in range(nreplicas) : 
+                  f = open( srcdir + "/" + splitname[0] + "." + str(i) + "." + splitname[1], "r" )
+                  include_contents = f.read()
+                  f.close() 
+                  final_inpt += "# The contents of the version of this file (" + splitname[0] + "." + str(i) + "." + splitname[1] + ") on replica " + str(i) + " is shown below.\n"
+                  foundfiles, parsed_inpt = resolve_includes( srcdir, include_contents, nreplicas, foundfiles )
+                  final_inpt += parsed_inpt
+              final_inpt += "#(click the red comment to hide this expanded text).\n"
+              if final_inpt.endswith("\n") : final_inpt += "#ENDEXPANSION " + filename + "\n"
+              else : final_inpt += "\n#ENDEXPANSION " + filename + "\n"
+           else : 
+              f = open( srcdir + "/" + filename, "r" )
+              include_contents = f.read()
+              f.close()
+              final_inpt += "# The contents of this file are shown below (click the red comment to hide them).\n" 
+              foundfiles, parsed_inpt = resolve_includes( srcdir, include_contents, nreplicas, foundfiles )
+              if parsed_inpt.endswith("\n") : final_inpt += parsed_inpt + "#ENDEXPANSION " + filename + "\n"
+              else : final_inpt += parsed_inpt + "\n#ENDEXPANSION " + filename + "\n"
         else : final_inpt += clines         
     return foundfiles, final_inpt
 
