@@ -166,6 +166,7 @@ class PlumedFormatter(Formatter):
                         outfile.write('</div>')
                       # Deal with atom selections
                       elif "@" in inp :
+                        tooltip, link = "", ""
                         # Deal with residue
                         if "-" in inp : 
                             select, defs, residue = "", inp.split("-"), "" 
@@ -178,9 +179,9 @@ class PlumedFormatter(Formatter):
                             else : tooltip, link = self.keyword_dict["groups"][select]["description"] + " " + residue, self.keyword_dict["groups"][select]["link"]
                         else : 
                             select = inp.strip()
-                            if select not in self.keyword_dict["groups"] : raise Exception("special group " + select + " not in special group dictionary")
-                            tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
-                        outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
+                            if select in self.keyword_dict["groups"] : tooltip, link = self.keyword_dict["groups"][select]["description"], self.keyword_dict["groups"][select]["link"]
+                        if len(tooltip)>0 : outfile.write('<div class="tooltip">' + inp + '<div class="right">' + tooltip + '. <a href="' + link + '">Click here</a> for more information. <i></i></div></div>') 
+                        else : outfile.write( html.escape(inp) )
                       else : outfile.write( html.escape(inp) )
                       nocomma = False 
             elif ttype==String or ttype==String.Double :

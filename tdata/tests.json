@@ -159,8 +159,15 @@
        "badges": ["pass"]
       },
       {
+       "input": "INCLUDE FILE=tdata/groups.dat",
+       "index": 25,
+       "actions": ["INCLUDE", "GROUP"], 
+       "tooltips": ["INCLUDE", "FILE", "GROUP", "ATOMS", "GROUP", "ATOMS"],
+       "badges": ["pass"]
+      },
+      {
        "input": "#SETTINGS NREPLICAS=2\n t: TORSION ATOMS=1,2,3,4\n INCLUDE FILE=tdata/other.inc",
-       "index": 24,
+       "index": 25,
        "actions": ["TORSION", "INCLUDE", "RESTRAINT", "RESTRAINT"],
        "tooltips": ["TORSION", "ATOMS", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA"],
        "badges": ["pass"]
