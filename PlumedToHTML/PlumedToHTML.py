@@ -375,7 +375,7 @@ def resolve_includes( srcdir, inpt, nreplicas, foundfiles ) :
 
            final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
            final_inpt += "# " + clines+ "# ensures PLUMED loads the contents of the file called " + filename + "\n" 
-           if nreplicas>1 and os.path.exists( splitname[0] + ".0." + splitname[1] ) :
+           if nreplicas>1 and os.path.exists( srcdir + "/" + splitname[0] + ".0." + splitname[1] ) :
               final_inpt += "# There are different versions of this file on each replica\n"
               for i in range(nreplicas) : 
                   f = open( srcdir + "/" + splitname[0] + "." + str(i) + "." + splitname[1], "r" )
