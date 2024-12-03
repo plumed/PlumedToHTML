@@ -171,6 +171,13 @@
        "actions": ["TORSION", "INCLUDE", "RESTRAINT", "RESTRAINT"],
        "tooltips": ["TORSION", "ATOMS", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA", "RESTRAINT", "ARG", "AT", "KAPPA"],
        "badges": ["pass"]
+      },
+      {
+       "input": "DUMPATOMS ATOMS={@ndx:{index.ndx Protein}} FILE=traj.gro",
+       "index": 26,
+       "actions": ["DUMPATOMS"],
+       "tooltips": ["DUMPATOMS", "ATOMS", "@ndx:", "FILE"],
+       "badges": ["fail"]
       }
    ]
 }
