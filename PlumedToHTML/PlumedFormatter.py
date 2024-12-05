@@ -1,5 +1,8 @@
+from pygments import highlight
 from pygments.formatter import Formatter
 from pygments.token import Text, Comment, Literal, Keyword, Name, Generic, String
+from pygments.lexers.c_cpp import CppLexer
+from pygments.formatters import HtmlFormatter
 from requests.exceptions import InvalidJSONError
 import html
 import json
@@ -141,6 +144,8 @@ class PlumedFormatter(Formatter):
                         iff = open( inp, 'r' )
                         fcontent = iff.read()
                         iff.close()
+                        # This does syntax highlighting on cpp files 
+                        if inp.split(".")[-1]=="cpp" : fcontent = highlight( fcontent, CppLexer(), HtmlFormatter() )
                         nfiles = nfiles + 1
                         if len(self.auxinputlines)>0 : 
                            shortversion, allines = "", fcontent.splitlines()

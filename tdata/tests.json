@@ -178,6 +178,13 @@
        "actions": ["DUMPATOMS"],
        "tooltips": ["DUMPATOMS", "ATOMS", "@ndx:", "FILE"],
        "badges": ["fail"]
+      },
+      {
+       "input": "#SETTINGS INPUTFILES=tdata/Distance2.cpp \nLOAD FILE=tdata/Distance2.cpp",
+       "index": 27,
+       "actions": ["LOAD"],
+       "tooltips": ["LOAD", "FILE", "tdata/Distance2.cpp"],
+       "badges": ["fail", "load"]
       }
    ]
 }
