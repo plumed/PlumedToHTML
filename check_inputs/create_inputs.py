@@ -49,7 +49,6 @@ for item in tests["regtests"] :
     print("Input number " + str(item["index"]))
     print( out )
 
-print( PlumedToHTML.get_html_header() )
 print('</section>')
 print('</body>')
 print('</html>')
