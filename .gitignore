@@ -6,3 +6,12 @@ build
 .tox
 __pycache__
 coverage.xml
+# remainings of tox tests
+/colvar*
+/bck*
+/plinp*
+/testmarkdown*
+/mermaid*
+# virtual environments
+/venv*
+/env*
