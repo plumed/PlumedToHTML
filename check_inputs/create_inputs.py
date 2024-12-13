@@ -37,8 +37,9 @@ print('<h1 class="project-name">PLUMED</h1>')
 print('<h2 class="project-tagline">The community-developed PLUgin for MolEcular Dynamics</h2>')
 print('</section>')
 print('<section class="main-content">', flush=True)
-
-f = open("../tdata/tests.json")
+# Putting this here You can see render the page while it is being generated
+print( PlumedToHTML.get_html_header() )
+f = open("./tdata/tests.json")
 tests = json.load(f)
 f.close()
 
