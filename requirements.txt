@@ -1,0 +1,4 @@
+lxml
+pygments
+requests
+bs4
