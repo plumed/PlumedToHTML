@@ -238,11 +238,11 @@ class PlumedFormatter(Formatter):
                      if "actionlink" in self.keyword_dict[action]["syntax"][mykey].keys() and self.keyword_dict[action]["syntax"][mykey]["actionlink"]!="none" : 
                         linkaction = self.keyword_dict[action]["syntax"][mykey]["actionlink"]
                         desc = desc + ". Options for this keyword are explained in the documentation for <a href=\"" + self.keyword_dict[linkaction]["hyperlink"] + "\">" + linkaction + "</a>.";  
-                     outfile.write('<span class="tooltip">' + value + '<span class="right">' + desc + '<i></i></span><span>')
+                     outfile.write('<span class="tooltip">' + value + '<span class="right">' + desc + '<i></i></span></span>')
             elif ttype==Name.Constant :
                # @replicas in special replica syntax
                if value=="@replicas:" : 
-                  outfile.write('<span class="tooltip">' + value + '<span class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></span><span>')
+                  outfile.write('<span class="tooltip">' + value + '<span class="right">This keyword specifies that different replicas have different values for this quantity.  See <a href="' + self.keyword_dict["replicalink"] +'">here for more details.</a><i></i></span></span>')
                # Deal with external libraries doing atom selections
                else :
                   if value not in self.keyword_dict["groups"] : raise Exception("special group " + value + " not in special group dictionary")
