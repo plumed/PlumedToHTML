@@ -22,4 +22,6 @@ setuptools.setup(
      install_requires=['lxml','pygments','requests','bs4'],
      test_suite='nose.collector',
      tests_require=['nose'],
+     # This adds the assets that PlumedToHTML.get_html_header() asks for
+     include_package_data=True,
  )

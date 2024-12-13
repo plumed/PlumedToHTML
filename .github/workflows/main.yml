@@ -3,6 +3,21 @@ name: CI
 on: [push, pull_request]
 
 jobs: 
+  build-wheel:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Show what is in the wheel (for debugging)
+      run: |
+        pip install build
+        python -m build .
+        unzip -l dist/PlumedToHTML*.whl
+
   build:
     runs-on: ubuntu-latest
 
