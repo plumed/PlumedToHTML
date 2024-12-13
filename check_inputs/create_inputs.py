@@ -46,7 +46,12 @@ f.close()
 for item in tests["regtests"] :
     actions = set({})
     out = PlumedToHTML.test_and_get_html( item["input"], "plinp" + str(item["index"]), actions=actions )
-    print("Input number " + str(item["index"]))
+    
+    print(f"<h3>Input number {item['index']}</h3>")
+    #this visualizes the "from-to" and it is more clear to eye-check what is going on
+    print("<pre>")
+    print(item["input"])
+    print("</pre>")
     print( out )
 
 print('</section>')
