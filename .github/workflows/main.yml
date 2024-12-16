@@ -3,76 +3,121 @@ name: CI
 on: [push, pull_request]
 
 jobs: 
-  build:
+  #this is setting up a new "test workflow" following the one we use for the plumed-testcenter
+  setup-plumed:
     runs-on: ubuntu-latest
-
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    
-    - uses: actions/cache@v2
+    - name: calculate cache key for the compilation
+      id: get-key
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        mastersha=$(gh api repos/plumed/plumed2/branches --paginate --jq '.[] | select( .name | match("^master$")) | .commit.sha')
+        echo "key=$mastersha" >> $GITHUB_OUTPUT
+    - uses: actions/cache@v4
       with:
         path: |
-          ~/opt
           ~/.ccache
-        key: ccache-${{ runner.os }}-${{ github.sha }}
-        restore-keys: ccache-${{ runner.os }}-
-      
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    
+          ~/opt
+        key: ccache-${{ runner.os }}-master-${{ steps.get-key.outputs.key }}
+        restore-keys: ccache-${{ runner.os }}-master
     - name: Set paths
       run: |
-        echo "$HOME/opt/bin" >> $GITHUB_PATH
-        echo "CPATH=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$CPATH" >> $GITHUB_ENV
-        echo "INCLUDE=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$INCLUDE" >> $GITHUB_ENV
-        echo "LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LIBRARY_PATH" >> $GITHUB_ENV
-        echo "LD_LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-        echo "PYTHONPATH=$HOME/opt/lib/plumed/python:$PYTHONPATH" >> $GITHUB_ENV
-        # needed to avoid MPI warning
-        echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
-    
-    - name: Install plumed
+          echo "$HOME/opt/bin" >> $GITHUB_PATH
+          echo "CPATH=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$CPATH" >> $GITHUB_ENV
+          echo "INCLUDE=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$INCLUDE" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LIBRARY_PATH" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "PYTHONPATH=$HOME/opt/lib/plumed/python:$PYTHONPATH" >> $GITHUB_ENV
+          # needed to avoid MPI warning
+          echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
+    #we need to checkout to access .ci/install.libtorch
+    # - uses: actions/checkout@v4
+    #   with:
+    #     persist-credentials: false
+
+    - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install mpi-default-bin mpi-default-dev
         sudo apt install libfftw3-dev gsl-bin libgsl0-dev libboost-serialization-dev
         sudo apt install ccache
-        sudo apt-get update
-        pip install PyYAML pytz
-        git clone --bare https://github.com/plumed/plumed2.git
-        sudo ln -s ccache /usr/local/bin/mpic++
-        export PATH=/usr/lib/ccache:${PATH}
+        ccache -p
         ccache -s
-        # .ci/install.libtorch
-        # version=master or version=f123f12f3 to select a specific version
-        # pick newest release branch (alphabetic, will fail at v2.10)
-        # CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)" repo=$PWD/plumed2.git
-        # GB: in addition, we install master version as plumed_master
-        CXX="mpic++" .ci/install.plumed version=master repo=$PWD/plumed2.git
-        ccache -s
-
-    - name: Copy json syntax to directory to upload
+        mkdir -p ~/.ccache/ccache
+    - name: Install plumed
+      uses: Iximiel/install-plumed@v1
+      with:
+        CC: "ccache mpicc"
+        CXX: "ccache mpic++"
+        version: master
+        extra_options: --enable-modules=all --enable-boost_serialization --enable-fftw --enable-libtorch LDFLAGS=-Wl,-rpath,$LD_LIBRARY_PATH --disable-basic-warnings
+    - name: prepare plumed tar
       run: |
-        mkdir json 
-        cp /home/runner/opt/lib/plumed/json/syntax.json json
-      
-    - name: Put json file so it can be downloaded
+        cd $HOME
+        tar cf plumed-master.tar opt/
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-         name: json-syntax
-         path: json
-  
-    - name: Install PlumedToHTML
-      # And install the package
-      run: python setup.py install 
-      
+        name: plumed-master
+        path: ~/plumed-master.tar
+        retention-days: 1
+
+  build-and-test:
+    needs: setup-plumed
+    strategy:
+      fail-fast: false
+      matrix:
+        # as now the various plumed support sites use 3.9 and 3.8 (and with 3.10 starts to fail...)
+        python-version: ["3.8", "3.9"] #, "3.10", "3.11", "3.12"]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Install plumed dependencies
+      run: |
+        sudo apt update
+        sudo apt install mpi-default-bin mpi-default-dev
+        sudo apt install libfftw3-dev gsl-bin libgsl0-dev libboost-serialization-dev
+
+    - name: Set paths 
+      run: |
+          echo "$HOME/opt/bin" >> $GITHUB_PATH
+          echo "CPATH=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$CPATH" >> $GITHUB_ENV
+          echo "INCLUDE=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$INCLUDE" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LIBRARY_PATH" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "PYTHONPATH=$HOME/opt/lib/plumed/python:$PYTHONPATH" >> $GITHUB_ENV
+          # needed to avoid MPI warning
+          echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
+    - name: Download artifacts with plumed
+      uses: actions/download-artifact@v4
+      with:
+        name: plumed-master
+        path: ~
+    - name: Unpacking the artifacts
+      run: |
+        cd $HOME
+        tar xf ${GITHUB_WORKSPACE}/plumed-master.tar
+    - name: Confirming that plumed can execute
+      run: |
+        plumed info --root
+        cat $(plumed info --root)/json/syntax.json | jq '.["ENDPLUMED"]'
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: setup.py
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox
     - name: Run tests
       run: |
-        pip install tox 
-        tox
+        python -m tox
 
     - name: Upload Coverage to Codecov
-      uses: codecov/codecov-action@v2  
+      uses: codecov/codecov-action@v2
