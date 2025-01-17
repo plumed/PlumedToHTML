@@ -1,5 +1,6 @@
 #!/bin/bash
-PlumedToHTMLInstalled=no
+# if PlumedToHTMLInstalled is not exported, assume it is not installed
+PlumedToHTMLInstalled=${PlumedToHTMLInstalled:-no}
 # This script will test PlumedToHTML (without needing to install it)
 
 # Clean the previous run
@@ -10,7 +11,7 @@ cd testDir || {
     exit 1
 }
 if [[ $PlumedToHTMLInstalled = no ]]; then
-    # Create symbolic links to PlumedToHMTL
+    # Create symbolic links to PlumedToHTML
     ln -s ../../PlumedToHTML/PlumedFormatter.py .
     ln -s ../../PlumedToHTML/PlumedToHTML.py .
     ln -s ../../PlumedToHTML/PlumedLexer.py .
@@ -18,5 +19,5 @@ if [[ $PlumedToHTMLInstalled = no ]]; then
 fi
 ln -s ../../tdata .
 cp ../create_inputs.py .
-# And run the python
+# And run the python script
 python create_inputs.py >check_site.html
