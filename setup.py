@@ -21,5 +21,7 @@ setuptools.setup(
      ],
      install_requires=['lxml','pygments','requests','bs4'],
     # This adds the assets that PlumedToHTML.get_html_header() asks for ()
+     data_files=[('PlumedToHTML', ['PlumedToHTML/assets/header.html'])],
      include_package_data=True,
  )
+# print(setuptools.find_packages())
