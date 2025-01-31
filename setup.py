@@ -20,6 +20,6 @@ setuptools.setup(
          "Operating System :: OS Independent",
      ],
      install_requires=['lxml','pygments','requests','bs4'],
-     test_suite='',
-     tests_require=['pytest'],
+    # This adds the assets that PlumedToHTML.get_html_header() asks for ()
+     include_package_data=True,
  )
