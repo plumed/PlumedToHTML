@@ -17,19 +17,19 @@ class PlumedLexer(RegexLexer):
             (r'(\w+)(=)(__FILL__)', bygroups(Name.Attribute, Text, Literal)),
             (r'__FILL__', Literal),  
             # Find LABEL=lab
-            (r'((?i)LABEL)(=)(\S+\b)', bygroups(Name.Attribute, Text, String.Double)),
+            (r'([Ll][Aa][Bb][Ee][Ll])(=)(\S+\b)', bygroups(Name.Attribute, Text, String.Double)),
             # Find special replica syntax with fill
             (r'(\w+)(=)(@\S+:)(__FILL__)', bygroups(Name.Attribute, Text, Name.Constant, Literal)), 
             # Find special replica syntax with brackets around replica command
-            (r'(\w+)(=\{)(@\S+:)((?s)\{.*?\})(\})', bygroups(Name.Attribute, Text, Name.Constant, Generic, Text)),
+            (r'(?s)(\w+)(=\{)(@\S+:)(\{.*?\})(\})', bygroups(Name.Attribute, Text, Name.Constant, Generic, Text)),
             # Find special repliica syntax with multiple brackets
-            (r'(\w+)(=)(@\S+:)((?s)\{\s*\{.*?\}\s*\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)), 
+            (r'(?s)(\w+)(=)(@\S+:)(\{\s*\{.*?\}\s*\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)), 
             # Find special replica syntax with brackets
-            (r'(\w+)(=)(@\S+:)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
+            (r'(?s)(\w+)(=)(@\S+:)(\{.*?\})', bygroups(Name.Attribute, Text, Name.Constant, Generic)),  
             # Find special replica syntax without brackets
             (r'(\w+)(=)(@\S+:)(\S+\b)', bygroups(Name.Attribute, Text, Name.Constant, Generic)),
             # Find KEYWORD with {} brackets around value
-            (r'(\w+)(=)((?s)\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
+            (r'(?s)(\w+)(=)(\{.*?\})', bygroups(Name.Attribute, Text, Generic)),
             # Find KEYWORD=whatever with comment immediately after end of whatever
             (r'(\w+)(=)(\S+)(#.*$)', bygroups(Name.Attribute, Text, Generic, Comment)),
             # Find KEYWORD=whatever 
@@ -43,7 +43,7 @@ class PlumedLexer(RegexLexer):
             # And stuff for long versions of shortcuts
             (r'(^# PLUMED interprets the command:\n)(#.+$)', bygroups(Comment, Comment.Hashbang)),
             # Find ENDPLUMED and set everything after it to a comment
-            (r'(^\s*ENDPLUMED)((?s).*\Z)', bygroups(Keyword, Comment)),
+            (r'(?s)(^\s*)([Ee][Nn][Dd][Pp][Ll][Uu][Mm][Ee][Dd])(.*\Z)', bygroups(Text, Keyword, Comment)),
             # Find the start of shortcuts
             (r'#SHORTCUT.*?\r?\n',Comment.Preproc),
             # Find the start of a shortcut with a nested default
