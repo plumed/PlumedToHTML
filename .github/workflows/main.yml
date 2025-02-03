@@ -70,7 +70,7 @@ jobs:
       fail-fast: false
       matrix:
         # as now the various plumed support sites use 3.9 and 3.8 (and with 3.10 starts to fail...)
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12","3.13"]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
