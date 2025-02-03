@@ -106,7 +106,7 @@ jobs:
         plumed info --root
         cat $(plumed info --root)/json/syntax.json | jq '.["ENDPLUMED"]'
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
