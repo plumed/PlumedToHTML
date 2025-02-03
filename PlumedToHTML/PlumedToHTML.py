@@ -370,7 +370,7 @@ def resolve_includes( srcdir, inpt, nreplicas, foundfiles ) :
               continue
            if filename=="" : raise Exception("could not find name of file to include")
            if not os.path.exists(filename) : foundfiles = False 
-           splitname = filename.split(".")
+           splitname = filename.rsplit(".",1)
            if len(splitname)>2 : raise Exception("cannot deal with included file named " + filename )
 
            final_inpt += "#SHORTCUT " + filename + "\n" + clines + "#EXPANSION " + filename + "\n# The command:\n"
