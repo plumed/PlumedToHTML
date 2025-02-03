@@ -15,3 +15,6 @@ coverage.xml
 # virtual environments
 /venv*
 /env*
+*.zip
+*.stderr.*
+/test*
