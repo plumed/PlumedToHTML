@@ -105,7 +105,8 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
     with open(outfile,"w") as stdout:
         with open(errtxtfile,"w") as stderr:
              with cd(run_folder):
-                 for bkpf in glob.glob("bck.*") : os.remove(bkpf)
+                 for bkpf in glob.glob("bck.*") : 
+                     if os.path.isfile(bkpf) : os.remove(bkpf)
                  plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr )
     # write header and preamble to errfile
     with open(errfile,"w") as stderr:
