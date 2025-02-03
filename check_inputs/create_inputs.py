@@ -37,18 +37,23 @@ print('<h1 class="project-name">PLUMED</h1>')
 print('<h2 class="project-tagline">The community-developed PLUgin for MolEcular Dynamics</h2>')
 print('</section>')
 print('<section class="main-content">', flush=True)
-
-f = open("../tdata/tests.json")
+# Putting this here You can see render the page while it is being generated
+print( PlumedToHTML.get_html_header() )
+f = open("./tdata/tests.json")
 tests = json.load(f)
 f.close()
 
 for item in tests["regtests"] :
     actions = set({})
     out = PlumedToHTML.test_and_get_html( item["input"], "plinp" + str(item["index"]), actions=actions )
-    print("Input number " + str(item["index"]))
+    
+    print(f"<h3>Input number {item['index']}</h3>")
+    #this visualizes the "from-to" and it is more clear to eye-check what is going on
+    print("<pre>")
+    print(item["input"])
+    print("</pre>")
     print( out )
 
-print( PlumedToHTML.get_html_header() )
 print('</section>')
 print('</body>')
 print('</html>')
