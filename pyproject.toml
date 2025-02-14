@@ -1,0 +1,84 @@
+[build-system]
+# a lower limit on the version might be needed
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PlumedToHTML"
+version = "0.101"
+description = "A package for creating prettified HTML for PLUMED files"
+authors = [{ name = "Gareth Tribello", email = "gareth.tribello@gmail.com" }]
+maintainers = [{ name = "Daniele Rapetti", email = "iximiel@gmail.com" }]
+requires-python = ">=3.8"
+readme = "README.md"
+license = { text = "LGPL-2.1-only" }
+keywords = ["PLUMED", "HTML", "developer", "documentation", "prettified"]
+classifiers = [
+    # How mature is this project? Common values are
+    #   3 - Alpha
+    #   4 - Beta
+    #   5 - Production/Stable
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+    #"Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+
+    "Framework :: tox",
+    "Framework :: Pytest",
+
+    "Topic :: Text Processing :: Markup :: HTML",
+
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+]
+dependencies = ["bs4", "lxml", "pygments", "requests"]
+
+[project.urls]
+Repository = "https://github.com/plumed/PlumedToHTML"
+#this might not be useful, but it is here for fun :D
+"PLUMED Website" = "https://www.plumed.org/"
+
+[tool.setuptools]
+#this makes possible to  distribuite the assets directory
+include-package-data = true
+[tool.setuptools.packages.find]
+#this finds the package(s) within the src directory
+where = ["src"]
+[tool.setuptools.package-data]
+#we state which files we want to include per package
+PlumedToHTML = ['assets/*.html']
+
+#this is not elegant, but having all the settings in a single file is cozier
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+env_list =
+    tests
+    lint
+
+[testenv:tests]
+deps = pytest
+       pytest-cov
+commands = pytest --cov=PlumedToHTML --cov-report=term-missing
+
+[pytest]
+testpaths =
+    tests
+
+[testenv:lint]
+skip_install = true
+deps = 
+    ruff==0.9.6
+commands = 
+    ruff check src/PlumedToHTML
+    ruff format src/PlumedToHTML --check
+"""

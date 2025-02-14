@@ -29,10 +29,3 @@ class TestPlumedToHTML(TestCase):
                     elif item["badges"][i]=="fail" : self.assertTrue( out_badges[i].attrs["src"].find("failed")>0 )
                     elif item["badges"][i]=="load" : self.assertTrue( out_badges[i].attrs["src"].find("with-LOAD")>0 )
                     elif item["badges"][i]=="incomplete" : self.assertTrue( out_badges[i].attrs["src"].find("incomplete")>0 )
-
-   def testHeader(self) :
-       headerfilename = os.path.join(os.path.dirname(__file__),"../assets/header.html")
-       hfile = open( headerfilename )
-       codes = hfile.read()
-       hfile.close()
-       self.assertTrue( codes==PlumedToHTML.get_html_header() )

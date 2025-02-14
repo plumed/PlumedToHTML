@@ -4,6 +4,7 @@ build
 .coverage
 .eggs
 .tox
+.python-version
 __pycache__
 coverage.xml
 # remainings of tox tests
@@ -17,4 +18,4 @@ coverage.xml
 /env*
 *.zip
 *.stderr.*
-/test*
+/test*.md

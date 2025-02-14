@@ -60,7 +60,9 @@ class TestPlumedToHTML(TestCase):
 
 
    def testHeader(self) :
-       headerfilename = os.path.join(os.path.dirname(__file__),"../assets/header.html")
+       #checks that the header has been installed
+       #assuming that we are in /tests
+       headerfilename = os.path.join(os.path.dirname(__file__),"../src/PlumedToHTML/assets/header.html")
        hfile = open( headerfilename )
        codes = hfile.read()
        hfile.close()
