@@ -3,6 +3,7 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/plumed/PlumedToHTML.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/plumed/PlumedToHTML/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/plumed/PlumedToHTML.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/plumed/PlumedToHTML/context:python)
 [![PyPI version](https://badge.fury.io/py/PlumedToHTML.svg)](https://badge.fury.io/py/PlumedToHTML)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/PlumedToHTML)
 
 # PlumedToHTML
 
