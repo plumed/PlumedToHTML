@@ -63,7 +63,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
 
     return html
 
-def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" ) :
+def test_plumed( executible, filename, header=[], printjson=False, jsondir="./", cmdTimeout:"None|float"=None ) :
     """
         Test if plumed can parse this input file
 
@@ -75,6 +75,7 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
         header       -- A string to put at the top of the error page that is output
         printjson    -- Set true if you want to used plumed to print the files containing the expansions of shortcuts and the value dictionary 
         jsondir      -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries
+        cmdTimeout   -- Set the timeout for the plumed test 
     """
     # Get the information for running the code
     run_folder = str(pathlib.PurePosixPath(filename).parent)
@@ -107,7 +108,12 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
              with cd(run_folder):
                  for bkpf in glob.glob("bck.*") : 
                      if os.path.isfile(bkpf) : os.remove(bkpf)
-                 plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr )
+                 try:
+                     plumed_out = subprocess.run(cmd, text=True, stdout=stdout, stderr=stderr, timeout=cmdTimeout )
+                     returnCode = plumed_out.returncode
+                 except subprocess.TimeoutExpired:
+                     returnCode=-1
+                    
     # write header and preamble to errfile
     with open(errfile,"w") as stderr:
         if len(header)>0 : print(header,file=stderr)
@@ -134,7 +140,7 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./" 
     # compress both outfile and errtxtfile
     zip(outfile)
     zip(errtxtfile)
-    return plumed_out.returncode
+    return returnCode
 
 def manage_incomplete_inputs( inpt ) :
    """
