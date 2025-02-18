@@ -551,7 +551,7 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./" ) 
        ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir )
     return ninputs, nfail
 
-def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir="./" ) :
+def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir="./", ghmarkdown=True ) :
     """
        Process a string of markdown that contains LUMED input files using PlumedtoHTML
 
@@ -639,7 +639,8 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
                             usejson=(not success[-1]),
                             actions=actions )
           # Print the html for the solution
-          ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
+          if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
+          else : ofile.write( html )
        # This finds us the solution file
        elif inplumed and "#SOLUTIONFILE=" in line :
           solutionfile=line.strip().replace("#SOLUTIONFILE=","")
