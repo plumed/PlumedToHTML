@@ -67,3 +67,16 @@ class TestPlumedToHTML(TestCase):
        codes = hfile.read()
        hfile.close()
        self.assertTrue( codes==PlumedToHTML.get_html_header() )
+
+   def testJavascriptAndCSS(self) : 
+       headerfilename = os.path.join(os.path.dirname(__file__),"../src/PlumedToHTML/assets/header.html")
+       hfile = open( headerfilename )
+       codes = hfile.read()
+       hfile.close()
+       reference = "<style>\n"
+       reference += PlumedToHTML.get_css()
+       reference += "</style>\n<script>\n"
+       reference += PlumedToHTML.get_javascript()
+       reference += "</script>\n"
+       print( reference )
+       self.assertTrue( codes==reference )

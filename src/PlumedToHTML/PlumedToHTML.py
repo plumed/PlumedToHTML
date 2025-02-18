@@ -466,6 +466,40 @@ def get_html_header() :
     hfile.close()
     return codes
 
+def get_javascript() :
+    """
+       Get the javascript from the header of the html file to make the interactive PLUMED inputs work
+    """
+    inscript, fullheader, jscode = False, get_html_header().splitlines(), ""
+    for line in fullheader :
+        if "</script>" in line and inscript :
+            inscript = False
+            break
+        elif "<script>" in line :
+            inscript = True
+        elif inscript :
+            if ("<style>" in line) or ("</style>" in line) or ("<script>" in line) or ("</script>" in line) : 
+               raise Exception('found invalid html tag in javascript line ' + line)
+            jscode += line + "\n"
+    return jscode
+
+def get_css() :
+    """
+       Get the css from the header of the html file to make the interactive PLUMED inputs work
+    """
+    inscript, fullheader, css = False, get_html_header().splitlines(), ""
+    for line in fullheader :
+        if "</style>" in line and inscript :
+            inscript = False
+            break
+        elif "<style>" in line :
+            inscript = True
+        elif inscript :
+            if ("<style>" in line) or ("</style>" in line) or ("<script>" in line) or ("</script>" in line) : 
+               raise Exception('found invalid html tag in css line ' + line)
+            css += line + "\n"               
+    return css 
+
 def compare_to_reference( output, reference ) :
     """
       Compare the html that is output by PlumedFormatter with the reference data.  This function is used for 
@@ -483,7 +517,7 @@ def compare_to_reference( output, reference ) :
     # Check that everything that should be rendered as a tooltip has been rendered as a tooltip
     # This is action names and keywords
     if "tooltips" in reference.keys() :
-       soup_tooltips = soup.find_all(attrs={'class': 'tooltip'})
+       soup_tooltips = soup.find_all(attrs={'class': 'plumedtooltip'})
        print("CHECK TOOLTIP",  soup_tooltips )
        print("TOOLTIP NUMBER CORRECT", len(soup_tooltips), len(reference["tooltips"]))
        if len(soup_tooltips)!=len(reference["tooltips"]) : return False
