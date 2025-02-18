@@ -527,7 +527,7 @@ def compare_to_reference( output, reference ) :
 
     return True
 
-def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./" ) :
+def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", ghmarkdown=True ) :
     """
         Process a markdown file that contains PLUMED input files using PlumedtoHTML
 
@@ -548,7 +548,7 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./" ) 
     if dirname=="" : dirname = "." 
 
     with open( filename, "w+" ) as ofile: 
-       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir )
+       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir, ghmarkdown )
     return ninputs, nfail
 
 def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir="./", ghmarkdown=True ) :
