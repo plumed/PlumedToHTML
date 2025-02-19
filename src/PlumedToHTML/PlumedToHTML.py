@@ -63,7 +63,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
 
     return html
 
-def test_plumed( executible, filename, header=[], printjson=False, jsondir="./", cmdTimeout:"None|float"=None ) :
+def test_plumed( executible, filename, header=[], printjson=False, jsondir="./", cmdTimeout:"None|float"=None, ghmarkdown=True ) :
     """
         Test if plumed can parse this input file
 
@@ -119,7 +119,8 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./",
         if len(header)>0 : print(header,file=stderr)
         print("Stderr for source: ",re.sub("^data/","",filename),"  ",file=stderr)
         print("Download: [zipped raw stdout](" + plumed_file + "." + executible + ".stdout.txt.zip) - [zipped raw stderr](" + plumed_file + "." + executible + ".stderr.txt.zip) ",file=stderr)
-        print("{% raw %}\n<pre>",file=stderr)
+        if ghmarkdown : print("{% raw %}\n<pre>",file=stderr)
+        else : print("<pre>",file=stderr)
         # now we print the first 1000 lines of errtxtfile to errfile
         with open(errtxtfile, "r") as stdtxterr:
           # line counter
@@ -136,7 +137,8 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./",
             # print line to stderr
             print(line.strip(), file=stderr)
           # close stderr
-          print("</pre>\n{% endraw %}",file=stderr)
+          if ghmarkdown : print("</pre>\n{% endraw %}",file=stderr)
+          else : print("</pre>\n",file=stderr)
     # compress both outfile and errtxtfile
     zip(outfile)
     zip(errtxtfile)
@@ -164,7 +166,7 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
-def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}) ) :
+def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}), ghmarkdown=True ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -265,7 +267,10 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     for i in range(len(tested)) :
         btype = 'passing-green.svg'
         if broken[i] : btype = 'failed-red.svg' 
-        html += '<tr><td style="padding:1px"><a href="' + outloc + '.' +  plumedexe[i] + '.stderr"><img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
+        html += '<tr><td style="padding:1px">' 
+        if ghmarkdown : html += '<a href="' + outloc + '.' +  plumedexe[i] + '.stderr">'
+        else : html += '<a href="../' + outloc + '.' +  plumedexe[i] + '.stderr">'
+        html += '<img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
     if found_load :
        html += '<tr><td style="padding:1px"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></td></tr>\n'
     if len(incomplete)>0 : 
@@ -622,12 +627,12 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
                  # PlumedToHTML finds them when we do get_html (i.e. these will be in
                  # the data directory where the calculation is run)
                  if incomplete :
-                    success[i]=test_plumed(plumedexe[i], solutionfile )
+                    success[i]=test_plumed(plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
                  else :                        
                     success[i]=test_plumed(plumedexe[i], solutionfile,
-                                               printjson=True, jsondir=jsondir ) 
+                                               printjson=True, jsondir=jsondir, ghmarkdown=ghmarkdown ) 
               else : 
-                 success[i]=test_plumed( plumedexe[i], solutionfile )
+                 success[i]=test_plumed( plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
               if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
           # Use PlumedToHTML to create the input with all the bells and whistles
           html = get_html(plumed_inp,
@@ -637,7 +642,8 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
                             success,
                             plumedexe, 
                             usejson=(not success[-1]),
-                            actions=actions )
+                            actions=actions,
+                            ghmarkdown=ghmarkdown )
           # Print the html for the solution
           if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
           else : ofile.write( html )
