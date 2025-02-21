@@ -548,15 +548,12 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", g
 
     with open( filename, "r" ) as f:
        inp = f.read()
-    
-    dirname = os.path.dirname(filename)
-    if dirname=="" : dirname = "." 
 
     with open( filename, "w+" ) as ofile: 
-       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir, ghmarkdown )
+       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir, ghmarkdown )
     return ninputs, nfail
 
-def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirname, ofile, jsondir="./", ghmarkdown=True ) :
+def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir="./", ghmarkdown=True ) :
     """
        Process a string of markdown that contains LUMED input files using PlumedtoHTML
 
@@ -570,6 +567,9 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, dirn
         ofile -- the file on which to output the processed markdown
         jsondir -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries 
     """
+    dirname = os.path.dirname(filename)
+    if dirname=="" : dirname = "." 
+
     ninputs = 0
     nfail = len(plumedexe)*[0]
     inplumed = False
