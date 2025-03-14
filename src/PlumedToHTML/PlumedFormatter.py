@@ -11,11 +11,7 @@ class PlumedFormatter(Formatter):
     def __init__(self, **options) :
         Formatter.__init__(self, **options) 
         # Retrieve the dictionary of keywords from the json
-        with open(options["keyword_file"]) as f :
-           try:
-              self.keyword_dict = json.load(f)
-           except ValueError as ve:
-              raise InvalidJSONError(ve) 
+        self.keyword_dict=options["keyword_dict"]
         self.divname=options["input_name"]
         self.egname=options["input_name"]
         self.hasload=options["hasload"]

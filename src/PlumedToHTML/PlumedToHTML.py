@@ -31,6 +31,26 @@ def cd(newdir):
     finally:
         os.chdir(prevdir)
 
+def getPlumedSyntax( plumedexe ) :
+    """
+       Get the plumed syntax information from the syntax.json file
+
+       This function reurns a dictionary that contains all the information on the plumed syntax that was read in from the 
+       syntax.json file.
+
+       Keyword arguments:
+       plumedexe -- The plumed executibles that were used.  The last one is the one whose syntax.json file we retrieve
+    """
+    cmd = [plumedexe[-1], 'info', '--root']
+    plumed_info = subprocess.run(cmd, capture_output=True, text=True )
+    keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
+    with open(keyfile) as f :
+        try:
+           keyword_dict = json.load(f)
+        except ValueError as ve:
+           raise InvalidJSONError(ve)
+    return keyword_dict  
+
 def test_and_get_html( inpt, name, actions=set({}) ) :
     """
         Test if the plumed input is broken and generate the html syntax
@@ -166,6 +186,27 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
+def get_cltoolarg_html( inpt, name, plumedexe ) :
+    """
+       Generate an html representation of the input to PLUMED command line tool
+
+       The html representation of the input to a command line tool has toopltips that tell you what the keywords do.
+
+       Keyword arguments:
+       inpt -- A string containing the input you want to get the html for
+       name -- The name to use for this input in the html
+       plumedexe -- The plumed executibles that were used.  The last one is the one that is used to create the input file annotations
+    """
+    # Create the lexer that will generate the pretty plumed input
+    lexerfile = os.path.join(os.path.dirname(__file__),"PlumedCLtoolLexer.py")
+    plumed_lexer = load_lexer_from_file(lexerfile, "PlumedCLtoolLexer" )
+     # Get the plumed syntax file
+    keyword_dict = getPlumedSyntax( plumedexe )
+    # Setup the formatter
+    formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name )  
+    return highlight( inpt, plumed_lexer, plumed_formatter )
+
 def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}), ghmarkdown=True ) :
     """
        Generate the html representation of a PLUMED input file
@@ -257,11 +298,10 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedLexer" )
     # Get the plumed syntax file
-    cmd = [plumedexe[-1], 'info', '--root']
-    plumed_info = subprocess.run(cmd, capture_output=True, text=True ) 
-    keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
+    keyword_dict = getPlumedSyntax( plumedexe )
+    # Setup the formatter
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_file=keyfile, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions )
 
     # Now generate html of input
     html = '<div style="width: 100%; float:left">\n'

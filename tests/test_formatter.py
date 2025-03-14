@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from PlumedToHTML.PlumedLexer import PlumedLexer
 from PlumedToHTML.PlumedFormatter import PlumedFormatter
 from PlumedToHTML import compare_to_reference
+from PlumedToHTML import getPlumedSyntax
 
 class TestPlumedFormatter(TestCase):
    def testSimple(self) :
@@ -17,12 +18,10 @@ class TestPlumedFormatter(TestCase):
        f.close()
 
        # Get the plumed syntax file
-       cmd = ['plumed', 'info', '--root']
-       plumed_info = subprocess.run(cmd, capture_output=True, text=True )
-       keyfile = plumed_info.stdout.strip() + "/json/syntax.json"
+       keydict = getPlumedSyntax( ("plumed",) )
 
        # Setup a plumed formatter
-       f = PlumedFormatter( keyword_file=keyfile, input_name="testout", hasload=False, broken=False, actions=set({}), valuedict=dict({}), auxinputs=[], auxinputlines=[] )
+       f = PlumedFormatter( keyword_dict=keydict, input_name="testout", hasload=False, broken=False, actions=set({}), valuedict=dict({}), auxinputs=[], auxinputlines=[] )
 
        # Now run over all the inputs in the json
        for item in tests["regtests"] :
