@@ -4,6 +4,7 @@ import os
 import json
 from io import StringIO
 from PlumedToHTML.PlumedCLtoolLexer import PlumedCLtoolLexer 
+import PlumedToHTML
 from pygments.formatters import HtmlFormatter
 
 class TestPlumedLexer(TestCase):
@@ -27,3 +28,5 @@ class TestPlumedLexer(TestCase):
                print( item["input"] )
                print( json.dumps( data, indent=3 ) )
                self.assertTrue( output.getvalue()==item["output"] )
+               out = PlumedToHTML.get_cltoolarg_html( item["input"], "plinp" + str(item["index"]), ("plumed",) )
+               self.assertTrue( PlumedToHTML.compare_to_reference( out, item ) )

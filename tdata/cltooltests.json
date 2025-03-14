@@ -2,27 +2,39 @@
    "regtests": [
        {
           "input": "plumed driver -h",
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">-h</span>\n</pre></div>\n"
+          "index": 0,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">-h</span>\n</pre></div>\n",
+          "tooltips": ["driver", "-h"]
        },
        {
           "input": "plumed driver --help",
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--help</span>\n</pre></div>\n"
+          "index": 1,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--help</span>\n</pre></div>\n",
+          "tooltips": ["driver", "--help"]
        }, 
        {
           "input": "plumed driver --plumed plumed.dat",
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span> plumed.dat\n</pre></div>\n"
+          "index": 2, 
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span> plumed.dat\n</pre></div>\n",
+          "tooltips": ["driver", "--plumed"]
        },
        {
           "input": "plumed driver --plumed=plumed.dat --noatoms",
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span>=plumed.dat <span class=\"na\">--noatoms</span>\n</pre></div>\n"
+          "index": 3,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span>=plumed.dat <span class=\"na\">--noatoms</span>\n</pre></div>\n",
+          "tooltips": ["driver", "--plumed", "--noatoms"] 
        },
        {
           "input": "plumed driver --plumed plumed.dat --noatoms",
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span> plumed.dat <span class=\"na\">--noatoms</span>\n</pre></div>\n"
+          "index": 4,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span> plumed.dat <span class=\"na\">--noatoms</span>\n</pre></div>\n",
+          "tooltips": ["driver", "--plumed", "--noatoms"]
        },
        {
           "input": "plumed simplemd < in",
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">simplemd</span> &lt; <span class=\"nd\">in</span>\n</pre></div>\n"
+          "index": 5,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">simplemd</span> &lt; <span class=\"nd\">in</span>\n</pre></div>\n",
+          "tooltips": ["simplemd", "in"]
        }
    ]
 }

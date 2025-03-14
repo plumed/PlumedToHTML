@@ -217,8 +217,13 @@ class PlumedFormatter(Formatter):
                else :
                   desc, mykey = "", value.strip().upper()
                   if action not in self.keyword_dict : raise Exception("action " + action + " not present in keyword dictionary")
+                  if "syntax" not in self.keyword_dict[action] : raise Exception("syntax not present in documentation for " + action )
                   if mykey not in self.keyword_dict[action]["syntax"] and value.strip() in self.keyword_dict[action]["syntax"] : mykey = value.strip()
-                  if mykey in self.keyword_dict[action]["syntax"] : desc = self.keyword_dict[action]["syntax"][mykey]["description"].split('.')[0]
+
+                  if mykey=="--HELP" or mykey=="-H" : 
+                     mykey, desc = "--help/-h", self.keyword_dict[action]["syntax"]["--help/-h"]["description"] 
+                  elif mykey in self.keyword_dict[action]["syntax"] : 
+                     desc = self.keyword_dict[action]["syntax"][mykey]["description"].split('.')[0]
                   else :
                      # This deals with numbered keywords
                      foundkey=False
@@ -243,9 +248,14 @@ class PlumedFormatter(Formatter):
                else :
                   if value not in self.keyword_dict["groups"] : raise Exception("special group " + value + " not in special group dictionary")
                   outfile.write('<span class="plumedtooltip">' + value + '<span class="right">' + self.keyword_dict["groups"][value]["description"] + '.  <a href="' + self.keyword_dict["groups"][value]["link"] + '">Click here</a> for more information. <i></i></span></span>');
+            elif ttype==Name.Decorator :
+               # Input files for command line tools
+               outfile.write('<span class="plumedtooltip">' + value + '<span class="right"> This is the input file for the calculation.<i></i></span></span>')
             elif ttype==Keyword :
+               action, notooltips = value.strip(), False
+               if action not in self.keyword_dict :
+                  action = value.upper()
                # Name of action
-               action, notooltips = value.strip().upper(), False
                if action not in self.keyword_dict : 
                   if self.hasload or self.broken : notooltips = True
                   else : raise Exception("no action " + action + " in dictionary")

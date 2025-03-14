@@ -204,7 +204,8 @@ def get_cltoolarg_html( inpt, name, plumedexe ) :
     keyword_dict = getPlumedSyntax( plumedexe )
     # Setup the formatter
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name )  
+    valuedict, actions = {}, set()
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name, hasload=False, broken=False, auxinputs=[], auxinputlines=[], valuedict=valuedict, actions=actions )  
     return highlight( inpt, plumed_lexer, plumed_formatter )
 
 def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}), ghmarkdown=True ) :
