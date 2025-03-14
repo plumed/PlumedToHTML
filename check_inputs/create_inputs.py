@@ -54,6 +54,19 @@ for item in tests["regtests"] :
     print("</pre>")
     print( out )
 
+f = open("./tdata/cltooltests.json")
+tests = json.load(f)
+f.close()
+
+for item in tests["regtests"] :
+    out = PlumedToHTML.get_cltoolarg_html( item["input"], "clinp" + str(item["index"]), ("plumed",) )
+    #this visualizes the "from-to" and it is more clear to eye-check what is going on
+    print(f"<h3>CL tool input number {item['index']}</h3>")
+    print("<pre>")
+    print(item["input"])
+    print("</pre>")
+    print( out )
+
 print('</section>')
 print('</body>')
 print('</html>')
