@@ -632,6 +632,12 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
     solutionfile = None
     incomplete = False
     usemermaid = ""
+    # Create a collection of cltools to regexp for
+    plumed_syntax = getPlumedSyntax( plumedexe )
+    cltoolregexps = []
+    for key in plumed_syntax["cltools"].keys() :
+        cltoolregexps.append("plumed\s+" + key )
+
     for line in inp.splitlines() :
        # Detect and copy plumed input files 
        if "```plumed" in line :
@@ -643,10 +649,10 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
     
        # Test plumed input files that have been found in tutorial 
        elif inplumed and "```" in line :
-          inplumed = False
+          skipplumedfile, inplumed = False, False
           # Create mermaid graphs from PLUMED inputs if this has been requested
           if usemermaid!="" :
-             mermaidinpt = ""
+             skipplumedfile, mermaidinpt = True, ""
              if usemermaid=="value" :
                 mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, False )
              elif usemermaid=="force" :
@@ -654,6 +660,15 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
              else :
                 raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
              ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
+
+          # Check if this is the input for a command line tool and render accordingly
+          for tool in cltoolregexps :
+              if re.search( tool, plumed_inp ) :
+                 html = get_cltoolarg_html( plumed_inp, "cltool" + str(ninputs), plumedexe )
+                 if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
+                 else : ofile.write( html )
+                 skipplumedfile = True
+
           if incomplete :
                 if solutionfile:
                    # Read solution from solution file
@@ -675,33 +690,34 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
                    sf.write( plumed_inp )
     
           # Test whether the input solution can be parsed
-          success = len(plumedexe)*[False] 
-          for i in range(len(plumedexe)) : 
-              if i==len(plumedexe)-1 : 
-                 # Json files are put in directory one up from us to ensure that
-                 # PlumedToHTML finds them when we do get_html (i.e. these will be in
-                 # the data directory where the calculation is run)
-                 if incomplete :
-                    success[i]=test_plumed(plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
-                 else :                        
-                    success[i]=test_plumed(plumedexe[i], solutionfile,
-                                               printjson=True, jsondir=jsondir, ghmarkdown=ghmarkdown ) 
-              else : 
-                 success[i]=test_plumed( plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
-              if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
-          # Use PlumedToHTML to create the input with all the bells and whistles
-          html = get_html(plumed_inp,
-                            solutionfile,
-                            os.path.basename(solutionfile),
-                            plumed_names,
-                            success,
-                            plumedexe, 
-                            usejson=(not success[-1]),
-                            actions=actions,
-                            ghmarkdown=ghmarkdown )
-          # Print the html for the solution
-          if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
-          else : ofile.write( html )
+          if not skipplumedfile : 
+             success = len(plumedexe)*[False] 
+             for i in range(len(plumedexe)) : 
+                 if i==len(plumedexe)-1 : 
+                    # Json files are put in directory one up from us to ensure that
+                    # PlumedToHTML finds them when we do get_html (i.e. these will be in
+                    # the data directory where the calculation is run)
+                    if incomplete :
+                       success[i]=test_plumed(plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
+                    else :                        
+                       success[i]=test_plumed(plumedexe[i], solutionfile,
+                                                  printjson=True, jsondir=jsondir, ghmarkdown=ghmarkdown ) 
+                 else : 
+                    success[i]=test_plumed( plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
+                 if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
+             # Use PlumedToHTML to create the input with all the bells and whistles
+             html = get_html(plumed_inp,
+                               solutionfile,
+                               os.path.basename(solutionfile),
+                               plumed_names,
+                               success,
+                               plumedexe, 
+                               usejson=(not success[-1]),
+                               actions=actions,
+                               ghmarkdown=ghmarkdown )
+             # Print the html for the solution
+             if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
+             else : ofile.write( html )
        # This finds us the solution file
        elif inplumed and "#SOLUTIONFILE=" in line :
           solutionfile=line.strip().replace("#SOLUTIONFILE=","")
