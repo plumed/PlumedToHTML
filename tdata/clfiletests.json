@@ -1,0 +1,10 @@
+{         
+   "regtests": [
+       {
+          "input": "#TOOL=simplemd\ninputfile input.xyz\n outputfile output.xyz\n temperature 0.722\n tstep 0.005\n friction 1\n forcecutoff 2.5\n listcutoff  3.0\n nstep 50\n nconfig 10 trajectory.xyz\n nstat   10 energies.dat\n",
+          "index": 0,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"c\">#TOOL=</span><span class=\"k\">simplemd</span>\n<span class=\"na\">inputfile</span> input.xyz\n <span class=\"na\">outputfile</span> output.xyz\n <span class=\"na\">temperature</span> 0.722\n <span class=\"na\">tstep</span> 0.005\n <span class=\"na\">friction</span> 1\n <span class=\"na\">forcecutoff</span> 2.5\n <span class=\"na\">listcutoff</span>  3.0\n <span class=\"na\">nstep</span> 50\n <span class=\"na\">nconfig</span> 10 trajectory.xyz\n <span class=\"na\">nstat</span>   10 energies.dat\n</pre></div>\n",
+          "tooltips": ["simplemd", "inputfile", "outputfile", "temperature", "tstep", "friction", "forcecutoff", "listcutoff", "nstep", "nconfig", "nstat"]
+       }
+   ]
+}
