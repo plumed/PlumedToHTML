@@ -197,11 +197,22 @@ def get_cltoolarg_html( inpt, name, plumedexe ) :
        name -- The name to use for this input in the html
        plumedexe -- The plumed executibles that were used.  The last one is the one that is used to create the input file annotations
     """
+    # Get the cltool that we are using
+    pl, tool = inpt.split()[0], inpt.split()[1]
+    if pl!="plumed" :
+       raise Exception("first word in the command should be plumed")
     # Create the lexer that will generate the pretty plumed input
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedCLtoolLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedCLtoolLexer" )
      # Get the plumed syntax file
-    keyword_dict = getPlumedSyntax( plumedexe )
+    defstr, keyword_dict = inpt, getPlumedSyntax( plumedexe )
+    # Find the default values in the dictionary
+    if inpt.split()[2]!="-h" and inpt.split()[2]!="--help" and keyword_dict["cltools"][tool]["inputtype"]!="file" : 
+       for key, dicti in keyword_dict["cltools"][tool]["syntax"].items() :
+           if "default" not in dicti.keys() or dicti["default"]=="off" or key in inpt : continue
+           defstr += " " + key + " " + dicti["default"]
+       if defstr!=inpt :
+           inpt = "#NODEFAULT plumed\n" + inpt + " \n#DEFAULT plumed\n" + defstr + " \n#ENDDEFAULT plumed\n"
     # Setup the formatter
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     valuedict, actions = {}, set()

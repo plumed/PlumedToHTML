@@ -16,19 +16,19 @@
           "input": "plumed driver --plumed plumed.dat",
           "index": 2, 
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span> plumed.dat\n</pre></div>\n",
-          "tooltips": ["driver", "--plumed"]
+          "tooltips": ["driver", "--plumed", "driver", "--plumed", "--timestep", "--trajectory-stride", "--multi", "--dump-forces-fmt"]
        },
        {
           "input": "plumed driver --plumed=plumed.dat --noatoms",
           "index": 3,
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span>=plumed.dat <span class=\"na\">--noatoms</span>\n</pre></div>\n",
-          "tooltips": ["driver", "--plumed", "--noatoms"] 
+          "tooltips": ["driver", "--plumed", "--noatoms", "driver", "--plumed", "--noatoms", "--timestep", "--trajectory-stride", "--multi", "--dump-forces-fmt"] 
        },
        {
           "input": "plumed driver --plumed plumed.dat --noatoms",
           "index": 4,
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">driver</span> <span class=\"na\">--plumed</span> plumed.dat <span class=\"na\">--noatoms</span>\n</pre></div>\n",
-          "tooltips": ["driver", "--plumed", "--noatoms"]
+          "tooltips": ["driver", "--plumed", "--noatoms", "driver", "--plumed", "--noatoms", "--timestep", "--trajectory-stride", "--multi", "--dump-forces-fmt"]
        },
        {
           "input": "plumed simplemd < in",
