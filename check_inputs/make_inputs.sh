@@ -16,6 +16,7 @@ if [[ $PlumedToHTMLInstalled = no ]]; then
     ln -s ../../src/PlumedToHTML/PlumedToHTML.py .
     ln -s ../../src/PlumedToHTML/PlumedLexer.py .
     ln -s ../../src/PlumedToHTML/PlumedCLtoolLexer.py
+    ln -s ../../src/PlumedToHTML/PlumedCLFileLexer.py .
     ln -s ../../src/PlumedToHTML/assets .
 fi
 ln -s ../../tdata .

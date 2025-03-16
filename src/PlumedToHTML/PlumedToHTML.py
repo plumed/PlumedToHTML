@@ -666,9 +666,11 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
     usemermaid = ""
     # Create a collection of cltools to regexp for
     plumed_syntax = getPlumedSyntax( plumedexe )
-    cltoolregexps = []
-    for key in plumed_syntax["cltools"].keys() :
+    cltoolregexps, clfileregexps = [], []
+    for key, data in plumed_syntax["cltools"].items() :
         cltoolregexps.append("plumed\s+" + key )
+        if data["inputtype"]=="file" :
+           clfileregexps.append( "#TOOL\s*=\s*" + key )
 
     for line in inp.splitlines() :
        # Detect and copy plumed input files 
@@ -700,6 +702,14 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
                  if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
                  else : ofile.write( html )
                  skipplumedfile = True
+
+          # Check if this the input file for a command line tool and render accordingly
+          for tool in clfileregexps :
+              if re.search( tool, plumed_inp ) :
+                 html = get_cltoolfile_html( plumed_inp, "cltool" + str(ninputs), plumedexe )
+                 if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
+                 else : ofile.write( html )
+                 skipplumedfile = True 
 
           if incomplete :
                 if solutionfile:
