@@ -186,6 +186,38 @@ def manage_incomplete_inputs( inpt ) :
        return complete, incomplete
    return inpt, ""
 
+def get_cltoolfile_html( inpt, name, plumedexe ) :
+    """
+       Generate an html representation of the input file for a PLUMED command line tool
+    
+       The html representation of the input to a command line tool has toopltips that tell you what the keywords do.
+
+       Keyword arguments:
+       inpt -- A string containing the input you want to get the html for
+       name -- The name to use for this input in the html
+       plumedexe -- The plumed executibles that were used.  The last one is the one that is used to create the input file annotations
+    """ 
+    # need to get the name of the command 
+    if inpt.splitlines()[0].split("=")[0]!="#TOOL" : raise Exception("could not find tool that this input file is for")
+    tool = inpt.splitlines()[0].split("=")[1]
+    # Create the lexer that will generate the pretty plumed input
+    lexerfile = os.path.join(os.path.dirname(__file__),"PlumedCLFileLexer.py")
+    plumed_lexer = load_lexer_from_file(lexerfile, "PlumedCLFileLexer" )
+     # Get the plumed syntax file
+    defstr, keyword_dict = inpt, getPlumedSyntax( plumedexe )
+    # Find the default values in the dictionary
+    for key, dicti in keyword_dict["cltools"][tool]["syntax"].items() :
+        if "default" not in dicti.keys() or dicti["default"]=="off" or key in inpt : continue
+        defstr += "\n" + key + " " + dicti["default"]
+    if defstr!=inpt :
+        inpt = "#NODEFAULT plumed\n" + inpt + " \n#DEFAULT plumed\n" + defstr + " \n#ENDDEFAULT plumed\n"
+    print( "FINAL INPT", inpt )
+    # Setup the formatter 
+    formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
+    valuedict, actions = {}, set()
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name, hasload=False, broken=False, auxinputs=[], auxinputlines=[], valuedict=valuedict, actions=actions )  
+    return highlight( inpt, plumed_lexer, plumed_formatter )
+
 def get_cltoolarg_html( inpt, name, plumedexe ) :
     """
        Generate an html representation of the input to PLUMED command line tool
