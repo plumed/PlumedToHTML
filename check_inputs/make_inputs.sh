@@ -12,10 +12,10 @@ cd testDir || {
 }
 if [[ $PlumedToHTMLInstalled = no ]]; then
     # Create symbolic links to PlumedToHTML
-    ln -s ../../PlumedToHTML/PlumedFormatter.py .
-    ln -s ../../PlumedToHTML/PlumedToHTML.py .
-    ln -s ../../PlumedToHTML/PlumedLexer.py .
-    ln -s ../../PlumedToHTML/assets .
+    ln -s ../../src/PlumedToHTML/PlumedFormatter.py .
+    ln -s ../../src/PlumedToHTML/PlumedToHTML.py .
+    ln -s ../../src/PlumedToHTML/PlumedLexer.py .
+    ln -s ../../src/PlumedToHTML/assets .
 fi
 ln -s ../../tdata .
 cp ../create_inputs.py .

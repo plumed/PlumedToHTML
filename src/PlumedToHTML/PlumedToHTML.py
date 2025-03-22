@@ -212,9 +212,12 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
                       inputfiles.append(molfile)
                       inputfilelines.append("1-5")
                       inputfilelines.append( str(len(content.splitlines())-4) + "-" + str(len(content.splitlines())) ) 
+                   else :
+                      warnings.warn("file " + molfile + " found in MOLFILE setting but file is not present")
                elif "INPUTFILES=" in word : 
                    for n in word.replace("INPUTFILES=","").split(",") : 
                       if os.path.isfile(n) : inputfiles.append( n )
+                      else : raise Exception("file " + n + " found in list of INPUTFILES but file is not present")
                elif "INPUTFILELINES=" in word : 
                    inputfilelines = word.replace("INPUTFILELINES=","").split(",")
 
