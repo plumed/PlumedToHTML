@@ -700,6 +700,7 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
              else :
                 raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
              ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
+             usemermaid = ""
 
           # Check if this is the input for a command line tool and render accordingly
           for tool in cltoolregexps :
