@@ -699,7 +699,8 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
                 mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, True )
              else :
                 raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
-             ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
+             if ghmarkdown : ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
+             else : print("<pre class=\"mermaid\">\n" + mermaidinpt + "\n</pre>\n")
              usemermaid = ""
 
           # Check if this is the input for a command line tool and render accordingly
