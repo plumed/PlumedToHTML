@@ -4,6 +4,7 @@ from pygments.token import Text, Comment, Literal, Keyword, Name, Generic, Strin
 from pygments.lexers.c_cpp import CppLexer
 from pygments.formatters import HtmlFormatter
 from requests.exceptions import InvalidJSONError
+import re
 import html
 import json
 
@@ -61,8 +62,11 @@ class PlumedFormatter(Formatter):
                # Non PLUMED stuff
                outfile.write( value )
             elif ttype==Literal :
+               # mpirun -np for command line tools
+               if re.search("mpirun\s+-np", value ) :
+                   outfile.write('<span class="plumedtooltip">' + value + '<span class="right">Run instances of PLUMED on this number of MPI processes<i></i></span></span>') 
                # __FILL__ for incomplete values
-               if( value=="__FILL__" ) : 
+               elif( value=="__FILL__" ) : 
                    outfile.write('<span style="background-color:yellow">__FILL__</span>')
                # This is for vim syntax expression
                elif "vim:" in value :
@@ -188,6 +192,7 @@ class PlumedFormatter(Formatter):
             elif ttype==String or ttype==String.Double :
                # Labels of actions
                if not self.broken and action!="" and label!="" and label!=value.strip() : raise Exception("label for " + action + " is not what is expected.  Is " + label + " should be " + value.strip() )
+               elif value.strip()=="plumed-runtime" : label = "plumed"
                elif label=="" : label = html.escape( value.strip() ) 
                valtype = "mix"
                if label in self.valuedict.keys() :
@@ -263,7 +268,7 @@ class PlumedFormatter(Formatter):
                   # Store name of action in set that contains all action names
                   self.actions.add(action)
                if default_state!=0 or shortcut_state==1 : 
-                  if label!="" and label!=act_label : raise Exception("mismatched label and act_label for shortcut/default") 
+                  if label!="" and label!=act_label : raise Exception("mismatched label and act_label for shortcut/default label=" + label + " act_label=" + act_label ) 
                if notooltips :
                     outfile.write('<span class="plumedtooltip" style="color:green">' + value.strip() + '<span class="right">This action is not part of PLUMED and was included by using a LOAD command <a href="' + self.keyword_dict["LOAD"]["hyperlink"] + '" style="color:green">More details</a><i></i></span></span>') 
                elif shortcut_state==1 and default_state==1 :

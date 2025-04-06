@@ -1,5 +1,5 @@
 from pygments.lexer import RegexLexer, bygroups, include
-from pygments.token import Text, Keyword, Name, String, Comment
+from pygments.token import Text, Keyword, Name, String, Comment, Literal
 
 class PlumedCLtoolLexer(RegexLexer):
     name = 'plumedcltool'
@@ -14,8 +14,16 @@ class PlumedCLtoolLexer(RegexLexer):
             (r'#DEFAULT plumed\n',Comment.Special),
             # Find the end of a default section
             (r'#ENDDEFAULT plumed\n',Comment.Special),
+            # Find commands that use MPI and that take an input file
+            (r'(^\s*mpirun\s+-np)(\s+[0-9]+\s+)(plumed)(\s+)(\S+\b)(\s*<\s*)(\S+\b)', bygroups(Literal, Text, String, Text, Keyword, Text, Name.Decorator)), 
+            # With plumed-runtime and MPI
+            (r'(^\s*mpirun\s+-np)(\s+[0-9]+\s+)(plumed-runtime)(\s+)(\S+\b)', bygroups(Literal, Text, String, Text, Keyword)),
+            # Find commands that use MPI
+            (r'(^\s*mpirun\s+-np)(\s+[0-9]+\s+)(plumed)(\s+)(\S+\b)', bygroups(Literal, Text, String, Text, Keyword)),
             # Find commands that take an input file
             (r'(^\s*plumed)(\s+)(\S+\b)(\s*<\s*)(\S+\b)', bygroups(String, Text, Keyword, Text, Name.Decorator)),
+            # Find the name of the command if we are using plumed-runtime
+            (r'(^\s*plumed-runtime)(\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Find the name of the command
             (r'(^\s*plumed)(\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Deals with keywords with equals sign
