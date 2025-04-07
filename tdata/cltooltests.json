@@ -53,6 +53,18 @@
           "index": 8,
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"l\">mpirun -np</span> 4 <span class=\"s\">plumed-runtime</span> <span class=\"k\">benchmark</span>\n</pre></div>\n",
           "tooltips": ["mpirun -np", "benchmark", "mpirun -np", "benchmark", "--plumed", "--kernel", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution"]
-       } 
+       },
+       {
+          "input": "plumed --no-mpi gen_json --actions action_list > syntax.json",
+          "index": 9,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"l\">--no-mpi</span> <span class=\"k\">gen_json</span> <span class=\"na\">--actions</span> action_list &gt; <span class=\"ni\">syntax.json</span>\n</pre></div>\n",
+          "tooltips": ["--no-mpi","gen_json", "--actions", "syntax.json"]
+       },
+       {  
+          "input": "plumed plotswitch --switch=\"RATIONAL NN=5 MM=9 R_0=1.3\" --from=1.29999 --to=1.30001 --steps=100 > plot.dat",
+          "index": 10,
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">plotswitch</span> <span class=\"na\">--switch</span>=&quot;RATIONAL NN=5 MM=9 R_0=1.3&quot; <span class=\"na\">--from</span>=1.29999 <span class=\"na\">--to</span>=1.30001 <span class=\"na\">--steps</span>=100 &gt; <span class=\"ni\">plot.dat</span>\n</pre></div>\n",
+          "tooltips": ["plotswitch", "--switch", "--from", "--to", "--steps", "plot.dat", "plotswitch", "--switch", "--from", "--to", "--steps","--plotprecision", "--rationalR_0", "--rationalNN", "--rationalMM", "--rationalD_0", "--centerrange", "plot.dat"]
+       }
    ]
 }

@@ -211,7 +211,6 @@ def get_cltoolfile_html( inpt, name, plumedexe ) :
         defstr += "\n" + key + " " + dicti["default"]
     if defstr!=inpt :
         inpt = "#NODEFAULT plumed\n" + inpt + " \n#DEFAULT plumed\n" + defstr + " \n#ENDDEFAULT plumed\n"
-    print( "FINAL INPT", inpt )
     # Setup the formatter 
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     valuedict, actions = {}, set()
@@ -233,13 +232,19 @@ def get_cltoolarg_html( inpt, name, plumedexe ) :
     pl, tool = inpt.split()[0], inpt.split()[1]
     if re.search("^mpirun\s+-np\s+[0-9]+\s+plumed",inpt) : 
        tool = inpt.split()[4]
-    elif pl!="plumed" and pl!="plumed-runtime" :
+       pl = inpt.split()[3]
+    if re.search("^plumed\s+\--no-mpi\s+", inpt) :
+       tool = inpt.split()[2]  
+    if pl!="plumed" and pl!="plumed-runtime" :
        raise Exception("first word in the command should be plumed or plumed-runtime")
     # Create the lexer that will generate the pretty plumed input
     lexerfile = os.path.join(os.path.dirname(__file__),"PlumedCLtoolLexer.py")
     plumed_lexer = load_lexer_from_file(lexerfile, "PlumedCLtoolLexer" )
-     # Get the plumed syntax file
-    defstr, keyword_dict = inpt, getPlumedSyntax( plumedexe )
+    # Get the plumed syntax file
+    fileoutstr, defstr, keyword_dict = "", inpt, getPlumedSyntax( plumedexe )
+    if ">" in inpt :
+       fileoutstr = ">" + inpt.split(">")[1]
+       defstr = inpt.split(">")[0]
     # Find the default values in the dictionary
     ishelp = False
     if len(inpt.split())>2 and (inpt.split()[2]=="-h" or inpt.split()[2]=="--help") :
@@ -248,8 +253,8 @@ def get_cltoolarg_html( inpt, name, plumedexe ) :
        for key, dicti in keyword_dict["cltools"][tool]["syntax"].items() :
            if "default" not in dicti.keys() or dicti["default"]=="off" or key in inpt : continue
            defstr += " " + key + " " + dicti["default"]
-       if defstr!=inpt :
-           inpt = "#NODEFAULT plumed\n" + inpt + " \n#DEFAULT plumed\n" + defstr + " \n#ENDDEFAULT plumed\n"
+       if (defstr+fileoutstr)!=inpt :
+           inpt = "#NODEFAULT plumed\n" + inpt + " \n#DEFAULT plumed\n" + defstr + fileoutstr + " \n#ENDDEFAULT plumed\n"
     # Setup the formatter
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     valuedict, actions = {}, set()
@@ -674,6 +679,7 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
     cltoolregexps, clfileregexps = [], []
     for key, data in plumed_syntax["cltools"].items() :
         cltoolregexps.append("plumed\s+" + key )
+        cltoolregexps.append("plumed\s+--no-mpi\s+" + key )
         cltoolregexps.append("plumed-runtime\s+" + key )
         if data["inputtype"]=="file" :
            clfileregexps.append( "#TOOL\s*=\s*" + key )

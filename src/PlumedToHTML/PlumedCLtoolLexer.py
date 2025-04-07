@@ -20,12 +20,18 @@ class PlumedCLtoolLexer(RegexLexer):
             (r'(^\s*mpirun\s+-np)(\s+[0-9]+\s+)(plumed-runtime)(\s+)(\S+\b)', bygroups(Literal, Text, String, Text, Keyword)),
             # Find commands that use MPI
             (r'(^\s*mpirun\s+-np)(\s+[0-9]+\s+)(plumed)(\s+)(\S+\b)', bygroups(Literal, Text, String, Text, Keyword)),
+            # Find commands that use the nompi flag
+            (r'(^\s*plumed)(\s+)(--no-mpi)(\s+)(\S+\b)', bygroups(String, Text, Literal, Text, Keyword)),
             # Find commands that take an input file
             (r'(^\s*plumed)(\s+)(\S+\b)(\s*<\s*)(\S+\b)', bygroups(String, Text, Keyword, Text, Name.Decorator)),
+            # Find direct out to file
+            (r'(\s*>\s*)(\S+\b)', bygroups(Text, Name.Entity)),
             # Find the name of the command if we are using plumed-runtime
             (r'(^\s*plumed-runtime)(\s+)(\S+\b)', bygroups(String, Text, Keyword)),
             # Find the name of the command
             (r'(^\s*plumed)(\s+)(\S+\b)', bygroups(String, Text, Keyword)),
+            # Deals with keywords with argument in inverted commas
+            (r'(-\S+)(=)(".+")', bygroups(Name.Attribute, Text, Text)),
             # Deals with keywords with equals sign
             (r'(-\S+)(=)(\S+\b)', bygroups(Name.Attribute, Text, Text)),
             # Flag at end of line

@@ -65,8 +65,11 @@ class PlumedFormatter(Formatter):
                # mpirun -np for command line tools
                if re.search("mpirun\s+-np", value ) :
                    outfile.write('<span class="plumedtooltip">' + value + '<span class="right">Run instances of PLUMED on this number of MPI processes<i></i></span></span>') 
+               # --no-mpmi for command such as plumed --no-mpi tool ...
+               elif value=="--no-mpi" :
+                   outfile.write('<span class="plumedtooltip">' + value + '<span class="right">Ignore any mpirun commands and turn off MPI.<i></i></span></span>')
                # __FILL__ for incomplete values
-               elif( value=="__FILL__" ) : 
+               elif value=="__FILL__"  : 
                    outfile.write('<span style="background-color:yellow">__FILL__</span>')
                # This is for vim syntax expression
                elif "vim:" in value :
@@ -256,6 +259,9 @@ class PlumedFormatter(Formatter):
             elif ttype==Name.Decorator :
                # Input files for command line tools
                outfile.write('<span class="plumedtooltip">' + value + '<span class="right"> This is the input file for the calculation.<i></i></span></span>')
+            elif ttype==Name.Entity :
+               # Direct out for command line tools
+               outfile.write('<span class="plumedtooltip">' + value + '<span class="right"> What is printed on standard output is directed to a file with this name.<i></i></span></span>')
             elif ttype==Keyword :
                action, notooltips = value.strip(), False
                if action not in self.keyword_dict :
