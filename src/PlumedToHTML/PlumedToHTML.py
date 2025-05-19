@@ -358,21 +358,37 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions )
 
     # Now generate html of input
-    html = '<div style="width: 100%; float:left">\n'
-    html += '<div style="width: 90%; float:left" id="value_details_' + name + '"> Click on the labels of the actions for more information on what each action computes </div>\n'
-    html += '<div style="width: 10%; float:left"><table>'
+    html = '<div class="plumedpreheader">\n'
+    html += f'<div class="headerInfo" id="value_details_{name}"> Click on the labels of the actions for more information on what each action computes </div>\n'
+    html += '<div class="containerBadge">\n'
     for i in range(len(tested)) :
+        html +='<div class="headerBadge">'
         btype = 'passing-green.svg'
-        if broken[i] : btype = 'failed-red.svg' 
-        html += '<tr><td style="padding:1px">' 
-        if ghmarkdown : html += '<a href="' + outloc + '.' +  plumedexe[i] + '.stderr">'
-        else : html += '<a href="../' + outloc + '.' +  plumedexe[i] + '.stderr">'
-        html += '<img src=\"https://img.shields.io/badge/' + tested[i] + '-' + btype + '" alt="tested on' + tested[i] + '" /></a></td></tr>'
+        if broken[i] :
+           btype = 'failed-red.svg'
+        #this if can be collapsed in a f'<a href="{"" if ghmarkdown else "../"}{outloc}.{plumedexe[i]}.stderr">'
+        #but like this it might be clearer, what do you think?
+        if ghmarkdown :
+           html += f'<a href="{outloc}.{plumedexe[i]}.stderr">'
+        else :
+           html += f'<a href="../{outloc}.{plumedexe[i]}.stderr">'
+        html += f'<img src="https://img.shields.io/badge/{tested[i]}-{btype}" alt="tested on{tested[i]}" />'
+        html += '</a>'
+        html += '</div>\n'
+
     if found_load :
-       html += '<tr><td style="padding:1px"><img src=\"https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" /></td></tr>\n'
+       html += '<div class="headerBadge">'
+       html += '<img src="https://img.shields.io/badge/with-LOAD-yellow.svg" alt="tested on master" />'
+       html += '</div>\n'
+
     if len(incomplete)>0 : 
-       html += "<tr><td style=\"padding:0px\"><img class=\"toggler\" src=\"https://img.shields.io/badge/" + tested[-1] + "-incomplete-yellow.svg\" alt=\"tested on " + tested[-1] + "\" onmouseup=\'toggleDisplay(\"" + name + "\")\' onmousedown=\'toggleDisplay(\"" + name + "\")\'/></td></tr>\n" 
-    html += '</table></div></div>\n' 
+       html += '<div class="headerBadge">'
+       html += f'<img class="toggler" src="https://img.shields.io/badge/{tested[-1]}-incomplete-yellow.svg" alt="tested on {tested[-1]}"'
+       html += f" onmouseup='toggleDisplay(\"{name}\")' onmousedown='toggleDisplay(\"{name}\")'/>"
+       html += "</div>\n"
+
+    html += '</div>\n</div>\n' 
+
     if len(incomplete)>0 : 
        # This creates the input with the __FILL__ 
        html += "<div id=\"" + name + "_short\">\n"

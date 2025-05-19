@@ -1,4 +1,19 @@
 <style>
+.plumedpreheader{
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "info badges";
+    grid-template-columns: 90% 10%;
+}
+.plumedpreheader > div.headerInfo{
+    grid-area: info;
+
+}
+.plumedpreheader > div.containerBadge{
+    grid-area: badges;
+    display: block;
+}
 pre.plumedlisting{
     width:97%;
     overflow: visible;
