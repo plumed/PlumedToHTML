@@ -40,19 +40,19 @@
           "input": "plumed-runtime benchmark --kernel /path/to/lib/libplumedKernel.so",
           "index": 6,
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed-runtime</span> <span class=\"k\">benchmark</span> <span class=\"na\">--kernel</span> /path/to/lib/libplumedKernel.so\n</pre></div>\n",
-          "tooltips": ["benchmark", "--kernel", "benchmark", "--kernel", "--plumed", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution"]
+          "tooltips": ["benchmark", "--kernel", "benchmark", "--kernel", "--plumed", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution", "--repeatX", "--repeatY", "--repeatZ"]
        },
        {
           "input": "plumed benchmark",
           "index": 7,
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">benchmark</span>\n</pre></div>\n",
-          "tooltips": ["benchmark", "benchmark", "--plumed", "--kernel", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution"]
+          "tooltips": ["benchmark", "benchmark", "--plumed", "--kernel", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution", "--repeatX", "--repeatY", "--repeatZ"]
        },
        {
           "input": "mpirun -np 4 plumed-runtime benchmark",
           "index": 8,
           "output": "<div class=\"highlight\"><pre><span></span><span class=\"l\">mpirun -np</span> 4 <span class=\"s\">plumed-runtime</span> <span class=\"k\">benchmark</span>\n</pre></div>\n",
-          "tooltips": ["mpirun -np", "benchmark", "mpirun -np", "benchmark", "--plumed", "--kernel", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution"]
+          "tooltips": ["mpirun -np", "benchmark", "mpirun -np", "benchmark", "--plumed", "--kernel", "--natoms", "--nsteps", "--maxtime", "--sleep", "--atom-distribution", "--repeatX", "--repeatY", "--repeatZ"]
        },
        {
           "input": "plumed --no-mpi gen_json --actions action_list > syntax.json",

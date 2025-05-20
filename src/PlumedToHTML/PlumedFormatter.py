@@ -32,7 +32,7 @@ class PlumedFormatter(Formatter):
 
     def format(self, tokensource, outfile):
         action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label, hidden_state, hidenum, nfiles = "", "", set(), [], 0, 0, 0, False, "", 0, 0, 0
-        outfile.write('<pre style="width=97%;">\n')
+        outfile.write('<pre class="plumedlisting">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
