@@ -638,7 +638,10 @@ def compare_to_reference( output, reference ) :
        soup_tooltips = soup.find_all(attrs={'class': 'plumedtooltip'})
        print("CHECK TOOLTIP",  soup_tooltips )
        print("TOOLTIP NUMBER CORRECT", len(soup_tooltips), len(reference["tooltips"]))
-       if len(soup_tooltips)!=len(reference["tooltips"]) : return False
+       if len(soup_tooltips)!=len(reference["tooltips"]) :
+         print ("REFERENCE tooltips: ",reference["tooltips"])
+         print ("FOUND tooltips:     ",[x.contents[0] for x in soup_tooltips])
+         return False
        for i in range(len(soup_tooltips)) :
            print("COMPARISON", soup_tooltips[i].contents[0], reference["tooltips"][i] )
            if soup_tooltips[i].contents[0]!=reference["tooltips"][i] : return False
