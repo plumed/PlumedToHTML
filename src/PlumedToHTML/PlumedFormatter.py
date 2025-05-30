@@ -21,6 +21,8 @@ class PlumedFormatter(Formatter):
         self.auxinputlines=options["auxinputlines"]
         self.valuedict=options["valuedict"]
         self.actions=options["actions"]
+        self.checkaction=options["checkaction"]
+        self.checkaction_keywords = set({})
         self.valcolors = { 
            "scalar": "black", 
            "atoms": "violet", 
@@ -301,6 +303,9 @@ class PlumedFormatter(Formatter):
         outfile.write('</pre>')
 
     def writeValuesData( self, outfile, action, label, keywords, outdict ) :
+        if action==self.checkaction :
+           for key in keywords :
+               self.checkaction_keywords.add( key )
         # Some header stuff 
         outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
         outfile.write('The ' + action + ' action with label <b>' + label + '</b>')
@@ -337,4 +342,7 @@ class PlumedFormatter(Formatter):
             outfile.write('<tr><td width="5%">' + key + '</td><td width="5%"><font color="' + self.valcolors[value["type"]] +'">' + value["type"] + '</font></td><td>' + value["description"] + '</td></tr>')
         outfile.write('</table>') 
         outfile.write('</span>')
+
+    def getCheckActionKeywords( self ) :
+        return self.checkaction_keywords 
  

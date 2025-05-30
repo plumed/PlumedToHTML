@@ -214,7 +214,7 @@ def get_cltoolfile_html( inpt, name, plumedexe ) :
     # Setup the formatter 
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     valuedict, actions = {}, set()
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name, hasload=False, broken=False, auxinputs=[], auxinputlines=[], valuedict=valuedict, actions=actions )  
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name, hasload=False, broken=False, auxinputs=[], auxinputlines=[], valuedict=valuedict, actions=actions, checkaction="" )  
     return highlight( inpt, plumed_lexer, plumed_formatter )
 
 def get_cltoolarg_html( inpt, name, plumedexe ) :
@@ -258,10 +258,10 @@ def get_cltoolarg_html( inpt, name, plumedexe ) :
     # Setup the formatter
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
     valuedict, actions = {}, set()
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name, hasload=False, broken=False, auxinputs=[], auxinputlines=[], valuedict=valuedict, actions=actions )  
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict["cltools"], input_name=name, hasload=False, broken=False, auxinputs=[], auxinputlines=[], valuedict=valuedict, actions=actions, checkaction="" )  
     return highlight( inpt, plumed_lexer, plumed_formatter )
 
-def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}), ghmarkdown=True ) :
+def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxchecks=None, actions=set({}), ghmarkdown=True, checkaction="", checkactionkeywords=set({}) ) :
     """
        Generate the html representation of a PLUMED input file
 
@@ -355,7 +355,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     keyword_dict = getPlumedSyntax( plumedexe )
     # Setup the formatter
     formatfile = os.path.join(os.path.dirname(__file__),"PlumedFormatter.py")
-    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions )
+    plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions, checkaction=checkaction )
 
     # Now generate html of input
     html = '<div class="plumedpreheader">\n'
@@ -404,6 +404,13 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     else : 
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
+
+    # Now remove keywords that appear in examples
+    mykeywords = plumed_formatter.getCheckActionKeywords()
+    for key in mykeywords : 
+        if key in checkactionkeywords :
+           checkactionkeywords.remove(key)
+
     # Test output is valid parsable html
     try :
        etree.parse(StringIO(html), etree.HTMLParser(recover=False))
@@ -669,7 +676,7 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", g
        ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir, ghmarkdown )
     return ninputs, nfail
 
-def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir="./", ghmarkdown=True ) :
+def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir="./", ghmarkdown=True, checkaction="ignore", checkactionkeywords=set({}) ) :
     """
        Process a string of markdown that contains LUMED input files using PlumedtoHTML
 
@@ -789,7 +796,9 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
                                plumedexe, 
                                usejson=(not success[-1]),
                                actions=actions,
-                               ghmarkdown=ghmarkdown )
+                               ghmarkdown=ghmarkdown,
+                               checkaction=checkaction,
+                               checkactionkeywords=checkactionkeywords )
              # Print the html for the solution
              if ghmarkdown : ofile.write( "{% raw %}\n" + html + "\n {% endraw %} \n" )
              else : ofile.write( html )
