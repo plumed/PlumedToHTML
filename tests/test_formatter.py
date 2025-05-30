@@ -21,7 +21,7 @@ class TestPlumedFormatter(TestCase):
        keydict = getPlumedSyntax( ("plumed",) )
 
        # Setup a plumed formatter
-       f = PlumedFormatter( keyword_dict=keydict, input_name="testout", hasload=False, broken=False, actions=set({}), valuedict=dict({}), auxinputs=[], auxinputlines=[], , actions=actions, checkaction="" )
+       f = PlumedFormatter( keyword_dict=keydict, input_name="testout", hasload=False, broken=False, actions=set({}), valuedict=dict({}), auxinputs=[], auxinputlines=[], actions=actions, checkaction="" )
 
        # Now run over all the inputs in the json
        for item in tests["regtests"] :
