@@ -38,6 +38,9 @@ class PlumedFormatter(Formatter):
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
+               if action==self.checkaction :
+                  for key in keywords :
+                      self.checkaction_keywords.add( key )
                if notooltips : 
                   # Reset everything for the new action
                   action, label, keywords, notooltips = "", "", [], False
@@ -293,6 +296,9 @@ class PlumedFormatter(Formatter):
                else :
                      outfile.write('<span class="plumedtooltip" style="color:green">' + value.strip() + '<span class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></span></span>')
         # Check if there is stuff to output for the last action in the file
+        if action==self.checkaction :
+           for key in keywords :
+               self.checkaction_keywords.add( key )
         if len(label)>0 and label not in all_labels and label not in self.valuedict.keys() :
            all_labels.add( label )
            if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
@@ -303,9 +309,6 @@ class PlumedFormatter(Formatter):
         outfile.write('</pre>')
 
     def writeValuesData( self, outfile, action, label, keywords, outdict ) :
-        if action==self.checkaction :
-           for key in keywords :
-               self.checkaction_keywords.add( key )
         # Some header stuff 
         outfile.write('<span style="display:none;" id="' + self.egname + label + r'">')
         outfile.write('The ' + action + ' action with label <b>' + label + '</b>')
