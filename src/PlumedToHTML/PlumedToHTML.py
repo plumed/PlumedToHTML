@@ -140,7 +140,7 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./",
         print("Stderr for source: ",re.sub("^data/","",filename),"  ",file=stderr)
         print("Download: [zipped raw stdout](" + plumed_file + "." + executible + ".stdout.txt.zip) - [zipped raw stderr](" + plumed_file + "." + executible + ".stderr.txt.zip) ",file=stderr)
         if ghmarkdown : print("{% raw %}\n<pre style=\"overflow:scroll;\">",file=stderr)
-        else : print("<pre>",file=stderr)
+        else : print("<pre style=\"overflow:scroll;\">",file=stderr)
         # now we print the first 1000 lines of errtxtfile to errfile
         with open(errtxtfile, "r") as stdtxterr:
           # line counter
