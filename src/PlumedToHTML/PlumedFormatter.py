@@ -40,7 +40,13 @@ class PlumedFormatter(Formatter):
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
                if action==self.checkaction :
                   for key in keywords :
-                      self.checkaction_keywords.add( key )
+                      if key in self.keyword_dict[action]["syntax"] : 
+                         self.checkaction_keywords.add( key )
+                      else :
+                         # This makes sure we find numbered keywords
+                         for kkkk in self.keyword_dict[action]["syntax"] :
+                             if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
+                             if kkkk in key : self.checkaction_keywords.add( kkkk )
                if notooltips : 
                   # Reset everything for the new action
                   action, label, keywords, notooltips = "", "", [], False

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PlumedToHTML"
-version = "0.118"
+version = "0.119"
 description = "A package for creating prettified HTML for PLUMED files"
 authors = [{ name = "Gareth Tribello", email = "gareth.tribello@gmail.com" }]
 maintainers = [{ name = "Daniele Rapetti", email = "iximiel@gmail.com" }]
