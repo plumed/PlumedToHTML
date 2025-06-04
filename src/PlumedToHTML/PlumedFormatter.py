@@ -38,15 +38,8 @@ class PlumedFormatter(Formatter):
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
-               if action==self.checkaction :
-                  for key in keywords :
-                      if key in self.keyword_dict[action]["syntax"] : 
-                         self.checkaction_keywords.add( key )
-                      else :
-                         # This makes sure we find numbered keywords
-                         for kkkk in self.keyword_dict[action]["syntax"] :
-                             if kkkk=="output" or self.keyword_dict[action]["syntax"][kkkk]["multiple"]==0 : continue
-                             if kkkk in key : self.checkaction_keywords.add( kkkk )
+               if action==self.checkaction : 
+                  self.storeKeywordsForCheckAction( keywords )
                if notooltips : 
                   # Reset everything for the new action
                   action, label, keywords, notooltips = "", "", [], False
@@ -302,9 +295,8 @@ class PlumedFormatter(Formatter):
                else :
                      outfile.write('<span class="plumedtooltip" style="color:green">' + value.strip() + '<span class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></span></span>')
         # Check if there is stuff to output for the last action in the file
-        if action==self.checkaction :
-           for key in keywords :
-               self.checkaction_keywords.add( key )
+        if action==self.checkaction : 
+           self.storeKeywordsForCheckAction( keywords )
         if len(label)>0 and label not in all_labels and label not in self.valuedict.keys() :
            all_labels.add( label )
            if action in self.keyword_dict and "output" in self.keyword_dict[action]["syntax"] : self.writeValuesData( outfile, action, label, keywords, self.keyword_dict[action]["syntax"]["output"] )
@@ -354,4 +346,14 @@ class PlumedFormatter(Formatter):
 
     def getCheckActionKeywords( self ) :
         return self.checkaction_keywords 
+
+    def storeKeywordsForCheckAction( self, keywords ) :
+        for key in keywords :
+            if key in self.keyword_dict[self.checkaction]["syntax"] : 
+               self.checkaction_keywords.add( key )
+            else : 
+               # This makes sure we find numbered keywords
+               for kkkk in self.keyword_dict[self.checkaction]["syntax"] :
+                   if kkkk=="output" or self.keyword_dict[self.checkaction]["syntax"][kkkk]["multiple"]==0 : continue
+                   if kkkk in key : self.checkaction_keywords.add( kkkk )
  
