@@ -358,7 +358,8 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     plumed_formatter = load_formatter_from_file(formatfile, "PlumedFormatter", keyword_dict=keyword_dict, input_name=name, hasload=found_load, broken=any(broken), auxinputs=inputfiles, auxinputlines=inputfilelines, valuedict=valuedict, actions=actions, checkaction=checkaction )
 
     # Now generate html of input
-    html = '<div class="plumedpreheader">\n'
+    html = '<div class="plumedInputContainer">\n'
+    html += '<div class="plumedpreheader">\n'
     html += f'<div class="headerInfo" id="value_details_{name}"> Click on the labels of the actions for more information on what each action computes </div>\n'
     html += '<div class="containerBadge">\n'
     for i in range(len(tested)) :
@@ -404,7 +405,8 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
     else : 
        # html += highlight( final_inpt, plumed_lexer, HtmlFormatter() )
        html += highlight( final_inpt, plumed_lexer, plumed_formatter )
-
+    #close the html = '<div class="plumedInputContainer">\n'
+    html += '</div>\n'
     # Now remove keywords that appear in examples
     mykeywords = plumed_formatter.getCheckActionKeywords()
     for key in mykeywords : 
