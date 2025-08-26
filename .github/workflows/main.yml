@@ -32,7 +32,7 @@ jobs:
           # needed to avoid MPI warning
           echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
     #we need to checkout to access .ci/install.libtorch
-    # - uses: actions/checkout@v4
+    # - uses: actions/checkout@v5
     #   with:
     #     persist-credentials: false
 
@@ -73,7 +73,7 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12","3.13"]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         persist-credentials: false
     - name: Install plumed dependencies
