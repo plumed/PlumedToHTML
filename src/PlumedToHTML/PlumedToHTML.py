@@ -450,13 +450,14 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
         else : raise Exception("Could not find toggler command for " + val)
     return html
 
-def get_mermaid( executible, inpt, force, test_plumed_kwargs={} ) :
+def get_mermaid( executible, inpt, force,*, test_plumed_kwargs={} ) :
     """
      Generate the mermaid graph showing how data passes through PLUMED input file
 
      Keyword arguments:
      inpt -- A string containing the PLUMED input
      force -- Bool that if true ensures we show the graph for the backwards pass through the action list
+     test_plumed_kwargs -- a dictionary of extra keywords to pass to the test_plumed utility, useful for passing an"header"
     """
     # Write the plumed input to a file
     iff = open( "mermaid_plumed.dat", "w+")
@@ -735,9 +736,11 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
           if usemermaid!="" :
              skipplumedfile, mermaidinpt = True, ""
              if usemermaid=="value" :
-                mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, False )
+                mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, False,
+                        test_plumed_kwargs=test_plumed_kwargs)
              elif usemermaid=="force" :
-                mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, True )
+                mermaidinpt = get_mermaid( plumedexe[-1], plumed_inp, True,
+                        test_plumed_kwargs=test_plumed_kwargs)
              else :
                 raise RuntimeError(usemermaid + "is invalid instruction for use mermaid")
              if ghmarkdown : ofile.write("```mermaid\n" + mermaidinpt + "\n```\n")
