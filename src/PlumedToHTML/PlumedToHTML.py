@@ -51,7 +51,7 @@ def getPlumedSyntax( plumedexe ) :
            raise InvalidJSONError(ve)
     return keyword_dict  
 
-def test_and_get_html( inpt, name, actions=set({}) ) :
+def test_and_get_html( inpt, name, actions=set({}), test_plumed_kwargs={}) :
     """
         Test if the plumed input is broken and generate the html syntax
 
@@ -75,7 +75,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
     iff.write(test_inpt + "\n")
     iff.close()
     # Now do the test
-    broken = test_plumed( "plumed", filename, header="", printjson=True )
+    broken = test_plumed( "plumed", filename, header="", printjson=True, **test_plumed_kwargs)
     # Retrieve the html that is output by plumed
     html = get_html( inpt, filename, filename, ("master",), (broken,), ("plumed",), actions=actions )
     # Remove the tempory files that we created
@@ -83,7 +83,7 @@ def test_and_get_html( inpt, name, actions=set({}) ) :
 
     return html
 
-def test_plumed( executible, filename, header=[], printjson=False, jsondir="./", cmdTimeout:"None|float"=None, ghmarkdown=True ) :
+def test_plumed( executible, filename, header="", printjson=False, jsondir="./", cmdTimeout:"None|float"=None, ghmarkdown=True ) :
     """
         Test if plumed can parse this input file
 
@@ -136,7 +136,8 @@ def test_plumed( executible, filename, header=[], printjson=False, jsondir="./",
                     
     # write header and preamble to errfile
     with open(errfile,"w") as stderr:
-        if len(header)>0 : print(header,file=stderr)
+        if len(header)>0 : 
+            print(header,file=stderr)
         print("Stderr for source: ",re.sub("^data/","",filename),"  ",file=stderr)
         print("Download: [zipped raw stdout](" + plumed_file + "." + executible + ".stdout.txt.zip) - [zipped raw stderr](" + plumed_file + "." + executible + ".stderr.txt.zip) ",file=stderr)
         if ghmarkdown : print("{% raw %}\n<pre style=\"overflow:scroll;\">",file=stderr)
@@ -449,7 +450,7 @@ def get_html( inpt, name, outloc, tested, broken, plumedexe, usejson=None, maxch
         else : raise Exception("Could not find toggler command for " + val)
     return html
 
-def get_mermaid( executible, inpt, force ) :
+def get_mermaid( executible, inpt, force, test_plumed_kwargs={} ) :
     """
      Generate the mermaid graph showing how data passes through PLUMED input file
 
@@ -462,7 +463,7 @@ def get_mermaid( executible, inpt, force ) :
     iff.write(inpt+ "\n")
     iff.close()
     # Now check the input is OK
-    broken = test_plumed( executible, "mermaid_plumed.dat", header="" )
+    broken = test_plumed( executible, "mermaid_plumed.dat",**test_plumed_kwargs)
     if broken!=0 : raise Exception("invalid plumed input file -- cannot create mermaid graph")
     # Run mermaid
     cmd = [executible, 'show_graph', '--plumed', 'mermaid_plumed.dat', '--out', 'mermaid.md']
@@ -657,7 +658,8 @@ def compare_to_reference( output, reference ) :
 
     return True
 
-def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", ghmarkdown=True ) :
+def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", ghmarkdown=True,
+        *,test_plumed_kwargs={} ) :
     """
         Process a markdown file that contains PLUMED input files using PlumedtoHTML
 
@@ -667,6 +669,7 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", g
         plumed_names -- the names of the plumed executibles to use in the badges
         actions -- names of actions used in the plumed inputs in this markdown file
         jsondir -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries 
+        test_plumed_kwargs -- a dictionary of extra keywords to pass to the test_plumed utility, only "header" and "cmdTimeout" works
     """
     if not os.path.exists(filename) :
        raise RuntimeError("Found no file called " + filename + " in lesson")
@@ -675,10 +678,13 @@ def processMarkdown( filename, plumedexe, plumed_names, actions, jsondir="./", g
        inp = f.read()
 
     with open( filename, "w+" ) as ofile: 
-       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir, ghmarkdown )
+       ninputs, nfail = processMarkdownString( inp, filename, plumedexe, plumed_names,
+               actions, ofile, jsondir, ghmarkdown, test_plumed_kwargs=test_plumed_kwargs )
     return ninputs, nfail
 
-def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile, jsondir="./", ghmarkdown=True, checkaction="ignore", checkactionkeywords=set({}) ) :
+def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofile,
+        jsondir="./", ghmarkdown=True, checkaction="ignore", checkactionkeywords=set({}),
+        *,test_plumed_kwargs={}) :
     """
        Process a string of markdown that contains LUMED input files using PlumedtoHTML
 
@@ -691,6 +697,7 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
         dirname -- the directory in which to find solution files
         ofile -- the file on which to output the processed markdown
         jsondir -- The directory in which to output the files containing the expansions of the shortcuts and the value dictionaries 
+        test_plumed_kwargs -- a dictionary of extra keywords to pass to the test_plumed utility, only "header" and "cmdTimeout" works
     """
     dirname = os.path.dirname(filename)
     if dirname=="" : dirname = "." 
@@ -782,12 +789,17 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
                     # PlumedToHTML finds them when we do get_html (i.e. these will be in
                     # the data directory where the calculation is run)
                     if incomplete :
-                       success[i]=test_plumed(plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
+                       success[i]=test_plumed(plumedexe[i], solutionfile, ghmarkdown=ghmarkdown,
+                               **test_plumed_kwargs)
                     else :                        
                        success[i]=test_plumed(plumedexe[i], solutionfile,
-                                                  printjson=True, jsondir=jsondir, ghmarkdown=ghmarkdown ) 
+                                                  printjson=True, jsondir=jsondir, ghmarkdown=ghmarkdown,
+                                                  **test_plumed_kwargs)
                  else : 
-                    success[i]=test_plumed( plumedexe[i], solutionfile, ghmarkdown=ghmarkdown )
+                    success[i]=test_plumed( plumedexe[i],
+                            solutionfile,
+                            ghmarkdown=ghmarkdown,
+                            **test_plumed_kwargs,)
                  if(success[i]!=0 and success[i]!="custom") : nfail[i] = nfail[i] + 1
              # Use PlumedToHTML to create the input with all the bells and whistles
              html = get_html(plumed_inp,
