@@ -58,7 +58,7 @@ jobs:
         tar cf plumed-master.tar opt/
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: plumed-master
         path: ~/plumed-master.tar
