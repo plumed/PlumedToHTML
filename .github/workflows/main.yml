@@ -93,7 +93,7 @@ jobs:
           # needed to avoid MPI warning
           echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
     - name: Download artifacts with plumed
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: plumed-master
         path: ~
