@@ -67,7 +67,7 @@ class PlumedFormatter(Formatter):
                outfile.write( value )
             elif ttype==Literal :
                # mpirun -np for command line tools
-               if re.search("mpirun\s+-np", value ) :
+               if re.search(r"mpirun\s+-np", value ) :
                    outfile.write('<span class="plumedtooltip">' + value + '<span class="right">Run instances of PLUMED on this number of MPI processes<i></i></span></span>') 
                # --no-mpmi for command such as plumed --no-mpi tool ...
                elif value=="--no-mpi" :

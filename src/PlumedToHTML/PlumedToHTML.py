@@ -231,10 +231,10 @@ def get_cltoolarg_html( inpt, name, plumedexe ) :
     """
     # Get the cltool that we are using
     pl, tool = inpt.split()[0], inpt.split()[1]
-    if re.search("^mpirun\s+-np\s+[0-9]+\s+plumed",inpt) : 
+    if re.search(r"^mpirun\s+-np\s+[0-9]+\s+plumed",inpt) : 
        tool = inpt.split()[4]
        pl = inpt.split()[3]
-    if re.search("^plumed\s+\--no-mpi\s+", inpt) :
+    if re.search(r"^plumed\s+\--no-mpi\s+", inpt) :
        tool = inpt.split()[2]  
     if pl!="plumed" and pl!="plumed-runtime" :
        raise Exception("first word in the command should be plumed or plumed-runtime")
@@ -712,13 +712,14 @@ def processMarkdownString( inp, filename, plumedexe, plumed_names, actions, ofil
     usemermaid = ""
     # Create a collection of cltools to regexp for
     plumed_syntax = getPlumedSyntax( plumedexe )
-    cltoolregexps, clfileregexps = [], []
+    cltoolregexps = []
+    clfileregexps = []
     for key, data in plumed_syntax["cltools"].items() :
-        cltoolregexps.append("plumed\s+" + key )
-        cltoolregexps.append("plumed\s+--no-mpi\s+" + key )
-        cltoolregexps.append("plumed-runtime\s+" + key )
+        cltoolregexps.append(r"plumed\s+" + key )
+        cltoolregexps.append(r"plumed\s+--no-mpi\s+" + key )
+        cltoolregexps.append(r"plumed-runtime\s+" + key )
         if data["inputtype"]=="file" :
-           clfileregexps.append( "#TOOL\s*=\s*" + key )
+           clfileregexps.append( r"#TOOL\s*=\s*" + key )
 
     for line in inp.splitlines() :
        # Detect and copy plumed input files 
