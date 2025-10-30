@@ -57,28 +57,31 @@ where = ["src"]
 #we state which files we want to include per package
 PlumedToHTML = ['assets/*.html']
 
+[tool.ruff]
+indent-width = 2
+
 #this is not elegant, but having all the settings in a single file is cozier
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-env_list =
-    tests
-    lint
+requires = ["tox>=4.19"]
+#enviroments run by simply calling "tox"
+envlist=["format", "linting" , "tests"]
 
-[testenv:tests]
-deps = pytest
-       pytest-cov
-commands = pytest --cov=PlumedToHTML --cov-report=term-missing
+[tool.tox.env_run_base]
+deps = ["pytest", "pytest-cov"]
+commands = [[ "pytest", "tests", "--cov=PlumedToHTML",  "--cov-report=term-missing"]]
 
-[pytest]
-testpaths =
-    tests
-
-[testenv:lint]
+[tool.tox.env.linting]
 skip_install = true
-deps = 
-    ruff==0.9.6
-commands = 
-    ruff check src/PlumedToHTML
-    ruff format src/PlumedToHTML --check
-"""
+deps = ["ruff==0.9.6"]
+commands = [["ruff", "check", "src/PlumedToHTML", "tests"]]
+
+[tool.tox.env.format]
+skip_install = true
+deps = ["ruff==0.9.6"]
+commands = [["ruff", "format", "src/PlumedToHTML", "tests"]]
+
+[tool.tox.env.check-format]
+skip_install = true
+deps = ["ruff==0.9.6"]
+commands = [["ruff", "format", "--check", "src/PlumedToHTML", "tests"]]
+
