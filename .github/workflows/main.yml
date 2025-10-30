@@ -3,6 +3,29 @@ name: CI
 on: [push, pull_request]
 
 jobs: 
+  check-code:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+        check: ["linting", "check-format"]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        persist-credentials: false
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: pyproject.toml
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox
+    - name: Check ${{ matrix.check }}
+      run: python -m tox -e ${{ matrix.check }}
   #this is setting up a new "test workflow" following the one we use for the plumed-testcenter
   setup-plumed:
     runs-on: ubuntu-latest
@@ -117,7 +140,6 @@ jobs:
         python -m pip install tox
     - name: Run tests
       run: |
-        #as now we do not want to be insulted by ruff, so only tests:
         python -m tox -e tests
 
     - name: Upload Coverage to Codecov
