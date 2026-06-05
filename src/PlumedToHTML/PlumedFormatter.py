@@ -23,6 +23,7 @@ class PlumedFormatter(Formatter):
         self.actions=options["actions"]
         self.checkaction=options["checkaction"]
         self.checkaction_keywords = set({})
+        self.input_store = options["input_store"]
         self.valcolors = { 
            "scalar": "black", 
            "atoms": "violet", 
@@ -33,11 +34,15 @@ class PlumedFormatter(Formatter):
         }
 
     def format(self, tokensource, outfile):
+        input_dict = {}
         action, label, all_labels, keywords, shortcut_state, shortcut_depth, default_state, notooltips, expansion_label, hidden_state, hidenum, nfiles = "", "", set(), [], 0, 0, 0, False, "", 0, 0, 0
         outfile.write('<pre class="plumedlisting">\n')
         for ttype, value in tokensource :
             # This checks if we are at the start of a new action.  If we are we should be reading a value or an action and the label and action for the previous one should be set
             if len(action)>0 and (ttype==String or ttype==Keyword or ttype==Comment.Preproc) :
+               if shortcut_depth<1 and shortcut_state<2 and default_state<2 : 
+                  self.input_store.append({"action": action, "label": label, "input": input_dict})
+                  input_dict = {} 
                if action==self.checkaction : 
                   self.storeKeywordsForCheckAction( keywords )
                if notooltips : 
@@ -131,7 +136,8 @@ class PlumedFormatter(Formatter):
                   if label!="" and label!=act_label : raise Exception("label for shortcut (" + act_label + ") doesn't match action label (" + label + ")")
                   elif label=="" : label = act_label 
             elif ttype==Generic:
-               # whatever in KEYWORD=whatever 
+               # whatever in KEYWORD=whatever
+               if len(keywords)>0 and shortcut_depth<2 and shortcut_state<2 and default_state<2 : input_dict[keywords[-1]] = value
                if action=="INCLUDE" and shortcut_state==1 : 
                   # special treatment for filename in INCLUDE FILE=filename
                   outfile.write('<a class="toggler" href=\'javascript:;\' onclick=\'toggleDisplay("' + self.egname + label + '");\'>' + value + '</a>') 
@@ -224,6 +230,8 @@ class PlumedFormatter(Formatter):
             elif ttype==Name.Attribute :
                # KEYWORD in KEYWORD=whatever and FLAGS
                keywords.append( value.strip().upper() )
+               if shortcut_depth<2 and shortcut_state<2 and default_state<2 and keywords[-1].casefold()!="LABEL".casefold() :
+                  input_dict[keywords[-1]] = "true" 
                if notooltips :
                   outfile.write( value.strip() )
                else :
@@ -295,6 +303,9 @@ class PlumedFormatter(Formatter):
                else :
                      outfile.write('<span class="plumedtooltip" style="color:green">' + value.strip() + '<span class="right">'+ self.keyword_dict[action]["description"] + ' <a href="' + self.keyword_dict[action]["hyperlink"] + '" style="color:green">More details</a><i></i></span></span>')
         # Check if there is stuff to output for the last action in the file
+        if len(action)>0 :
+           if shortcut_depth<2 and shortcut_state<2 and default_state<2 : 
+              self.input_store.append({"action": action, "label": label, "input": input_dict})
         if action==self.checkaction : 
            self.storeKeywordsForCheckAction( keywords )
         if len(label)>0 and label not in all_labels and label not in self.valuedict.keys() :

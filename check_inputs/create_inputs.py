@@ -2,6 +2,7 @@ from pygments.styles import get_style_by_name
 from pygments.formatters import HtmlFormatter
 import os
 import json
+from json2html import *
 import PlumedToHTML
 
 # Output css file for codehighlighting
@@ -53,6 +54,12 @@ for item in tests["regtests"] :
     print(item["input"])
     print("</pre>")
     print( out )
+
+    if "__FILL__" not in item["input"] :
+       input_store, filename = [], "plinp" + str(item["index"]) 
+       out = PlumedToHTML.get_html( item["input"], filename, filename, ("master",), (True,), ("plumed",), input_store=input_store )
+       json_data = json.dumps(input_store, indent=2)
+       print( json2html.convert( json=json_data ) )
 
 f = open("./tdata/cltooltests.json")
 tests = json.load(f)

@@ -80,14 +80,14 @@
          "badges": ["fail", "load"] 
       },
       {
-         "input": "dist: DISTANCE ATOMS=1,2\n INCLUDE FILE=tdata/testInclude.inc",
+         "input": "dist: DISTANCE ATOMS=1,2 \nINCLUDE FILE=tdata/testInclude.inc",
          "index": 13,
          "actions": ["DISTANCE", "RESTRAINT", "INCLUDE"],
          "tooltips": ["DISTANCE", "ATOMS", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"],
          "badges": ["pass"]
       },
       {
-         "input": "dist: DISTANCE ATOMS=1,2\n INCLUDE FILE=tdata/recursive.inc",
+         "input": "dist: DISTANCE ATOMS=1,2 \nINCLUDE FILE=tdata/recursive.inc",
          "index": 14,
          "actions": ["DISTANCE", "RESTRAINT", "INCLUDE"],
          "tooltips": ["DISTANCE", "ATOMS", "INCLUDE", "FILE", "INCLUDE", "FILE", "RESTRAINT", "ARG", "AT", "KAPPA"],
@@ -102,7 +102,7 @@
         "badges": ["pass"]
       },
       {  
-         "input": "dist: DISTANCE ATOMS=1,2\n INCLUDE FILE=tdata/testInclude.inc   # Trailing comment",
+         "input": "dist: DISTANCE ATOMS=1,2 \nINCLUDE FILE=tdata/testInclude.inc   # Trailing comment",
          "index": 16,
          "actions": ["DISTANCE", "RESTRAINT", "INCLUDE"],
          "comments": ["# Trailing comment"],
