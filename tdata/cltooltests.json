@@ -63,7 +63,7 @@
        {  
           "input": "plumed plotswitch --switch=\"RATIONAL NN=5 MM=9 R_0=1.3\" --from=1.29999 --to=1.30001 --steps=100 > plot.dat",
           "index": 10,
-          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">plotswitch</span> <span class=\"na\">--switch</span>=&quot;RATIONAL NN=5 MM=9 R_0=1.3&quot; <span class=\"na\">--from</span>=1.29999 <span class=\"na\">--to</span>=1.30001 <span class=\"na\">--steps</span>=100 &gt; <span class=\"ni\">plot.dat</span>\n</pre></div>\n",
+          "output": "<div class=\"highlight\"><pre><span></span><span class=\"s\">plumed</span> <span class=\"k\">plotswitch</span> <span class=\"na\">--switch</span>=\"RATIONAL NN=5 MM=9 R_0=1.3\" <span class=\"na\">--from</span>=1.29999 <span class=\"na\">--to</span>=1.30001 <span class=\"na\">--steps</span>=100 &gt; <span class=\"ni\">plot.dat</span>\n</pre></div>\n",
           "tooltips": ["plotswitch", "--switch", "--from", "--to", "--steps", "plot.dat", "plotswitch", "--switch", "--from", "--to", "--steps","--plotprecision", "--rationalR_0", "--rationalNN", "--rationalMM", "--rationalD_0", "--centerrange", "plot.dat"]
        }
    ]
