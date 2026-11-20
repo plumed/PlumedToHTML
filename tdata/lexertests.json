@@ -111,6 +111,10 @@
        {
         "input": "#SETTINGS MOLFILE=tdata/helix.pdb \nMOLINFO STRUCTURE=tdata/helix.pdb",
         "output": "<div class=\"highlight\"><pre><span></span><span class=\"c\">#SETTINGS MOLFILE=tdata/helix.pdb </span>\n<span class=\"k\">MOLINFO</span> <span class=\"na\">STRUCTURE</span>=<span class=\"g\">tdata/helix.pdb</span>\n</pre></div>\n"
+       },
+       {
+        "input": "COEFFICIENTS={ { 0 1 } \n {2 3} \n {4 5 }}",
+        "output": "<div class=\"highlight\"><pre><span></span><span class=\"na\">COEFFICIENTS</span>=<span class=\"g\">{ { 0 1 } </span>\n<span class=\"g\"> {2 3} </span>\n<span class=\"g\"> {4 5 }}</span>\n</pre></div>\n"
        }
    ]
 }
